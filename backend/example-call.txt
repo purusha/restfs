@@ -1,0 +1,7 @@
+
+	example call's
+	
+	$> curl -v -H "Authorization: 42" -H "X-Container: 7c06a24f-50ed-4966-bc9c-19dd3eaf1baa" http://localhost:8081/restfs/v1/tmp/a.txt
+	
+	
+	

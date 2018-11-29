@@ -6,13 +6,14 @@ import com.typesafe.config.ConfigFactory;
 import akka.actor.ActorSystem;
 import akka.http.javadsl.Http;
 import akka.stream.ActorMaterializer;
+import it.at.restfs.http.HTTPListener;
 
 public class AkkaModule implements Module {
 
     @Override
     public void configure(Binder binder) {
 
-        final ActorSystem actorSystem = ActorSystem.create("engine", ConfigFactory.load());
+        final ActorSystem actorSystem = ActorSystem.create(HTTPListener.APP_NAME, ConfigFactory.load());
         
         binder
             .bind(ActorSystem.class)

@@ -28,21 +28,20 @@ public class RestFsApplication {
         
         system.registerExtension(GuiceExtension.provider);
 
-//        //Add shutdownhook
-//        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-//            system.terminate();
-//        }));
-
-        //configure Guice
+        //configure Guice inside Akka
         final GuiceExtensionImpl guiceExtension = GuiceExtension.provider.get(system);
         guiceExtension.setInjector(injector);
         
-        system.actorOf(build(MachineStatusInfoActor.class));        
+        //start actors
+        system.actorOf(build(MachineStatusInfoActor.class));  
+        
+        //start http endpoint
         injector.getInstance(HTTPListener.class);            
         
         LOGGER.info("-------------------------------------------------");
         LOGGER.info("   >    RestFS STARTED                           ");
         LOGGER.info("-------------------------------------------------");
+        
     }
     
     private Props build(Class<?> clazz) {

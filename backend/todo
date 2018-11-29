@@ -1,3 +1,9 @@
 
-	see https://github.com/kn0ll/restfs for simple example
+
+	add application.conf (for akka)
+	
+	add logback.xml
+	
+	add service.conf (our service configuration)
+	
 	
