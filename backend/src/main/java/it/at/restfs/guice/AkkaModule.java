@@ -18,6 +18,8 @@ import it.at.restfs.http.HTTPListener;
 import it.at.restfs.http.HTTPListener.Request;
 import it.at.restfs.http.PostController;
 import it.at.restfs.http.PutController;
+import it.at.restfs.storage.FileSystemStorage;
+import it.at.restfs.storage.Storage;
 
 public class AkkaModule implements Module {
 
@@ -52,6 +54,10 @@ public class AkkaModule implements Module {
         mapBinder.addBinding(HttpMethods.POST).to(PostController.class);
         mapBinder.addBinding(HttpMethods.PUT).to(PutController.class);
         mapBinder.addBinding(HttpMethods.DELETE).to(DeleteController.class);
+        
+        binder
+            .bind(Storage.class)
+            .to(FileSystemStorage.class);
                 
     }
 

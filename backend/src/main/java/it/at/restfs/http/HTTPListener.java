@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 import com.google.inject.Inject;
 import akka.NotUsed;
 import akka.actor.ActorSystem;
@@ -111,7 +112,9 @@ public class HTTPListener {
                         headerValueByName("X-Container", (String container) ->
                             extractUri(uri ->
                                 extractMethod(method ->
-                                    handler(UUID.fromString(container), authorization, uri, method)
+                                    parameter("op", (String operation) ->
+                                        callHandler(UUID.fromString(container), authorization, uri, method, operation)
+                                    )
                                 )
                             )
                         )
@@ -121,8 +124,8 @@ public class HTTPListener {
         );
     }
     
-    private Route handler(UUID container, String authorization, Uri uri, HttpMethod method) {        
-        LOGGER.info("Http method is {}", method);
+    private Route callHandler(UUID container, String authorization, Uri uri, HttpMethod method, String operation) {        
+        LOGGER.debug("Http method is {}", method);
         
         if (! authManager.isTokenValidFor(authorization, container)) {
             throw new RuntimeException("token not valid"); //XXX client receive: HTTP/1.1 500 Internal Server Error
@@ -134,7 +137,9 @@ public class HTTPListener {
             throw new RuntimeException("can't handle " + method); //XXX client receive: HTTP/1.1 500 Internal Server Error
         }
         
-        return controller.apply(new Request(container, uri.getPathString()));
+        return controller.apply(new Request(
+            container, StringUtils.substringAfter(uri.getPathString(), APP_NAME + "/" + VERSION), operation
+        ));
     }
     
     @Data
@@ -142,6 +147,7 @@ public class HTTPListener {
     public class Request {
         final UUID container;
         final String path;
+        final String operation;
     }
-    
+        
 }
