@@ -6,4 +6,10 @@
 	
 	add service.conf (our service configuration)
 	
-	
+    sarebbe utile avere anche l'implementazione che scrive su S3 di AWS
+    
+    sarebbe utile intercettare anche gzip content 
+        (https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding)
+        
+    
+    	
