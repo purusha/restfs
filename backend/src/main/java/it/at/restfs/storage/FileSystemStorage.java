@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
 import java.util.List;
@@ -111,7 +112,7 @@ public class FileSystemStorage implements Storage {
     public void append(UUID container, String path, String body) {
         final Path realPath = resolve(container, path, false);
 
-        Files.write(realPath, body.getBytes());
+        Files.write(realPath, body.getBytes(), StandardOpenOption.APPEND);
     }
     
 }

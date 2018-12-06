@@ -1,7 +1,13 @@
 package it.at.restfs.http;
 
-import static akka.http.javadsl.server.Directives.*;
-import static akka.http.javadsl.server.PathMatchers.*;
+import static akka.http.javadsl.server.Directives.complete;
+import static akka.http.javadsl.server.Directives.extractMethod;
+import static akka.http.javadsl.server.Directives.extractUri;
+import static akka.http.javadsl.server.Directives.headerValueByName;
+import static akka.http.javadsl.server.Directives.logRequestResult;
+import static akka.http.javadsl.server.Directives.parameter;
+import static akka.http.javadsl.server.Directives.pathPrefix;
+import static akka.http.javadsl.server.PathMatchers.segment;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -21,6 +27,7 @@ import akka.http.javadsl.ServerBinding;
 import akka.http.javadsl.model.HttpMethod;
 import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.HttpResponse;
+import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.model.Uri;
 import akka.http.javadsl.server.Rejection;
 import akka.http.javadsl.server.Route;
@@ -107,18 +114,26 @@ public class HTTPListener {
                 
         logRequestResult(REQ, REJ, () -> 
             pathPrefix(segment(APP_NAME), () ->
-                pathPrefix(segment(VERSION), () ->                                        
-                    headerValueByName("Authorization", (String authorization) ->
-                        headerValueByName("X-Container", (String container) ->
-                            extractUri(uri ->
-                                extractMethod(method ->
-                                    parameter("op", (String operation) ->
-                                        callHandler(UUID.fromString(container), authorization, uri, method, operation)
+                pathPrefix(segment(VERSION), () ->
+                    headerValueByName("Accept", (String accept) -> {
+
+                        if (! StringUtils.equals(accept, "application/json")) {
+                            return complete(StatusCodes.BAD_REQUEST, "add header \"Accept: application/json\"");
+                        }
+                    
+                        return headerValueByName("Authorization", (String authorization) ->
+                            headerValueByName("X-Container", (String container) ->                            
+                                extractUri(uri ->
+                                    extractMethod(method ->
+                                        parameter("op", (String operation) ->
+                                            callHandler(UUID.fromString(container), authorization, uri, method, operation)
+                                        )
                                     )
                                 )
                             )
-                        )
-                    )                                        
+                        );
+                        
+                    })                                        
                 )
             )
         );

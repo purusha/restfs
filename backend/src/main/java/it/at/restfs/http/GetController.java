@@ -33,10 +33,6 @@ public class GetController extends BaseController {
         final List<GetStatus> listStatus = getStorage().listStatus(t.getContainer(), t.getPath());
         
         return complete(StatusCodes.OK, listStatus, Jackson.<List<GetStatus>>marshaller());
-        
-//        return complete(
-//            String.format("Container %s\nUri %s\nOperation %s\n", t.getContainer(), t.getPath(), t.getOperation())
-//        );        
     }
 
     //operation = GETSTATUS
