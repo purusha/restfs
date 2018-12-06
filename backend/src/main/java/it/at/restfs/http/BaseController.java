@@ -34,7 +34,7 @@ public abstract class BaseController implements Function<Request, Route> {
         try {
             return (Route)this.getClass().getDeclaredMethod(operation.toLowerCase(), Request.class).invoke(this, t);
         } catch (Exception e) {
-            LOGGER.info("", e);
+            LOGGER.info("", e.getCause()); //java.lang.reflect.InvocationTargetException: null ... https://stackoverflow.com/questions/6020719/what-could-cause-java-lang-reflect-invocationtargetexception     
             throw new RuntimeException("can't handle " + t); //XXX client receive: HTTP/1.1 500 Internal Server Error
         }
     }    

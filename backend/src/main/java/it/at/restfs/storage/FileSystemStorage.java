@@ -22,12 +22,7 @@ public class FileSystemStorage implements Storage {
     @SneakyThrows(IOException.class)
     @Override
     public List<GetStatus> listStatus(UUID container, String path) {
-        final Path realPath = Paths.get(ROOT + "/" + container + path);
-        final File realFile = realPath.toFile();
-        
-        if (! realFile.exists()) {
-            throw new RuntimeException("path " + path + " on " + container + " does not exist");
-        }
+        final Path realPath = resolve(container, path, false);
         
         return Files
             .list(realPath)
@@ -46,14 +41,41 @@ public class FileSystemStorage implements Storage {
     @SneakyThrows(IOException.class)
     @Override
     public GetStatus getStatus(UUID container, String path) {
-        final Path realPath = Paths.get(ROOT + "/" + container + path);        
-        final File realFile = realPath.toFile();
+        final Path realPath = resolve(container, path, false);
         
-        if (! realFile.exists()) {
+        return build(realPath, realPath.toFile());
+    }
+    
+    @Override
+    public void open(UUID container, String path) {
+        
+    }
+
+    @SneakyThrows(IOException.class)
+    @Override
+    public void make(UUID container, String path, AssetType type) {
+        final Path realPath = resolve(container, path, true);
+        
+        switch(type) {
+            case FOLDER:
+                Files.createDirectories(realPath);
+                break;
+                
+            case FILE:
+                Files.createFile(realPath);
+                break;
+        }
+    }
+
+    private Path resolve(UUID container, String path, boolean flag) {
+        final Path realPath = Paths.get(ROOT + "/" + container + path);        
+        final File realFile = realPath.toFile();        
+        
+        if (!realFile.exists() && !flag) {
             throw new RuntimeException("path " + path + " on " + container + " does not exist");
         }
-        
-        return build(realPath, realFile);
+
+        return realPath;
     }
     
     private GetStatus build(Path path, File file) throws IOException {
@@ -84,9 +106,12 @@ public class FileSystemStorage implements Storage {
         return result;
     }
 
+    @SneakyThrows(IOException.class)
     @Override
-    public void open(UUID container, String path) {
-        
-    }
+    public void append(UUID container, String path, String body) {
+        final Path realPath = resolve(container, path, false);
 
+        Files.write(realPath, body.getBytes());
+    }
+    
 }

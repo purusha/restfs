@@ -125,12 +125,11 @@ public class HTTPListener {
     }
     
     private Route callHandler(UUID container, String authorization, Uri uri, HttpMethod method, String operation) {        
-        LOGGER.debug("Http method is {}", method);
-        
         if (! authManager.isTokenValidFor(authorization, container)) {
             throw new RuntimeException("token not valid"); //XXX client receive: HTTP/1.1 500 Internal Server Error
         }
-                
+
+        LOGGER.debug("Http method is {}", method);
         final Function<Request, Route> controller = mapping.get(method);
         
         if (Objects.isNull(controller)) {

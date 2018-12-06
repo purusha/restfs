@@ -15,4 +15,8 @@ public interface Storage {
 
     void open(UUID container, String path);
 
+    void make(UUID container, String path, AssetType folder);
+
+    void append(UUID container, String path, String body);
+
 }
