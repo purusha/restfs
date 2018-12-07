@@ -1,7 +1,10 @@
 package it.at.restfs.http;
 
+import static akka.http.javadsl.server.Directives.complete;
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.Function;
 import com.google.inject.Inject;
+import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.Route;
 import it.at.restfs.http.HTTPListener.Request;
 import it.at.restfs.storage.Storage;
@@ -32,10 +35,19 @@ public abstract class BaseController implements Function<Request, Route> {
         final String operation = t.getOperation();
         
         try {
+            
             return (Route)this.getClass().getDeclaredMethod(operation.toLowerCase(), Request.class).invoke(this, t);
+            
+        } catch (InvocationTargetException e) {
+            
+            LOGGER.error("handling {} there was an error =>", t, e.getCause());
+            return complete(StatusCodes.INTERNAL_SERVER_ERROR);
+            
         } catch (Exception e) {
-            LOGGER.info("", e.getCause()); //java.lang.reflect.InvocationTargetException: null ... https://stackoverflow.com/questions/6020719/what-could-cause-java-lang-reflect-invocationtargetexception     
-            throw new RuntimeException("can't handle " + t); //XXX client receive: HTTP/1.1 500 Internal Server Error
+            
+            LOGGER.error("handling {} there was an error =>", t, e);      
+            return complete(StatusCodes.INTERNAL_SERVER_ERROR);
+            
         }
     }    
     

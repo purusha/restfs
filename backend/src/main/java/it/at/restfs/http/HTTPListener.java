@@ -19,7 +19,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import com.google.inject.Inject;
-import akka.NotUsed;
 import akka.actor.ActorSystem;
 import akka.http.javadsl.ConnectHttp;
 import akka.http.javadsl.Http;
@@ -33,7 +32,6 @@ import akka.http.javadsl.server.Rejection;
 import akka.http.javadsl.server.Route;
 import akka.http.javadsl.server.directives.LogEntry;
 import akka.stream.ActorMaterializer;
-import akka.stream.javadsl.Flow;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -97,9 +95,12 @@ public class HTTPListener {
         LOGGER.info("Expose following PUBLIC http endpoint");
         LOGGER.info("[GET] http://" + HOST + ":" + PORT + "/" + APP_NAME + "/" + VERSION + "/...");
         LOGGER.info("\n");
-        
-        final Flow<HttpRequest, HttpResponse, NotUsed> flow = createRoute().flow(system, materializer);
-        this.bindAndHandle = http.bindAndHandle(flow, ConnectHttp.toHost(HOST, PORT), materializer);
+                
+        this.bindAndHandle = http.bindAndHandle(
+            createRoute().flow(system, materializer), 
+            ConnectHttp.toHost(HOST, PORT), 
+            materializer
+        );
     }
 
     //XXX call this please when application shutdown
@@ -110,9 +111,7 @@ public class HTTPListener {
     }
 
     private Route createRoute() {
-        return
-                
-        logRequestResult(REQ, REJ, () -> 
+        return logRequestResult(REQ, REJ, () -> 
             pathPrefix(segment(APP_NAME), () ->
                 pathPrefix(segment(VERSION), () ->
                     headerValueByName("Accept", (String accept) -> {
@@ -141,14 +140,14 @@ public class HTTPListener {
     
     private Route callHandler(UUID container, String authorization, Uri uri, HttpMethod method, String operation) {        
         if (! authManager.isTokenValidFor(authorization, container)) {
-            throw new RuntimeException("token not valid"); //XXX client receive: HTTP/1.1 500 Internal Server Error
+            return complete(StatusCodes.FORBIDDEN);
         }
 
         LOGGER.debug("Http method is {}", method);
         final Function<Request, Route> controller = mapping.get(method);
         
         if (Objects.isNull(controller)) {
-            throw new RuntimeException("can't handle " + method); //XXX client receive: HTTP/1.1 500 Internal Server Error
+            return complete(StatusCodes.METHOD_NOT_ALLOWED);
         }
         
         return controller.apply(new Request(

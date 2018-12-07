@@ -4,7 +4,6 @@ import static akka.http.javadsl.server.Directives.complete;
 import static akka.http.javadsl.server.Directives.extractRequestEntity;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.concurrent.CompletionStage;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import akka.http.javadsl.marshallers.jackson.Jackson;
@@ -47,30 +46,27 @@ public class PostController extends BaseController {
 
     //operation = APPEND
     public Route append(Request t) {
-        final Sink<String, CompletionStage<String>> last = Sink.last();        
-        
         return extractRequestEntity(request -> {            
             try {
-                                
-                getStorage().append(
-                    t.getContainer(), 
-                    t.getPath(),
-                    request.getDataBytes()
-                        .map(data -> data.utf8String())
-                        .toMat(last, Keep.right())
-                        .run(materializer)
-                        .toCompletableFuture()
-                        .get()                    
-                );
                 
-                final GetStatus status = getStorage().getStatus(t.getContainer(), t.getPath());                
+                final String body = request.getDataBytes()
+                    .map(data -> data.utf8String())
+                    .toMat(Sink.last(), Keep.right())
+                    .run(materializer)
+                    .toCompletableFuture()
+                    .get();
+                
+                getStorage().append(t.getContainer(), t.getPath(), body);
+                                                
+                final GetStatus status = getStorage().getStatus(t.getContainer(), t.getPath());
+                
                 return complete(StatusCodes.OK, status, Jackson.<GetStatus>marshaller());
                 
             } catch (Exception e) {
                 LOGGER.error("", e);
-            }
-            
-            return complete(StatusCodes.BAD_REQUEST);               
+                
+                return complete(StatusCodes.INTERNAL_SERVER_ERROR);
+            }                                       
         });
     }
     
