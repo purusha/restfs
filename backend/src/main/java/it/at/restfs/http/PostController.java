@@ -14,7 +14,6 @@ import akka.stream.javadsl.Keep;
 import akka.stream.javadsl.Sink;
 import it.at.restfs.http.HTTPListener.Request;
 import it.at.restfs.storage.AssetType;
-import it.at.restfs.storage.GetStatus;
 import it.at.restfs.storage.Storage;
 import lombok.extern.slf4j.Slf4j;
 
@@ -58,9 +57,7 @@ public class PostController extends BaseController {
                 
                 getStorage().append(t.getContainer(), t.getPath(), body);
                                                 
-                final GetStatus status = getStorage().getStatus(t.getContainer(), t.getPath());
-                
-                return complete(StatusCodes.OK, status, Jackson.<GetStatus>marshaller());
+                return getFileStatus(t);
                 
             } catch (Exception e) {
                 LOGGER.error("", e);

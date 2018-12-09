@@ -10,6 +10,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -47,9 +48,20 @@ public class FileSystemStorage implements Storage {
         return build(realPath, realPath.toFile());
     }
     
+    @SneakyThrows(IOException.class)
     @Override
-    public void open(UUID container, String path) {
+    public OpenFile open(UUID container, String path) {        
+        final Path realPath = resolve(container, path, false);
         
+        if(AssetType.FOLDER == typeOf(container, path).get()) {
+            throw new RuntimeException("can't download directory " + path + " on " + container);
+        }
+        
+        final OpenFile result = new OpenFile();
+        result.setPath(path);
+        result.setContent(new String(Files.readAllBytes(realPath)));
+
+        return result;
     }
 
     @SneakyThrows(IOException.class)
@@ -114,5 +126,25 @@ public class FileSystemStorage implements Storage {
 
         Files.write(realPath, body.getBytes(), StandardOpenOption.APPEND);
     }
+
+    @SneakyThrows(IOException.class)
+    @Override
+    public void delete(UUID container, String path) {
+        final Path realPath = resolve(container, path, false);
+        
+        Files.delete(realPath);
+    }
+    
+    @Override
+    public Optional<AssetType> typeOf(UUID container, String path) {
+        final Path realPath = Paths.get(ROOT + "/" + container + path);        
+        final File realFile = realPath.toFile();        
+        
+        if (! realFile.exists()) {
+            return Optional.empty();
+        }
+        
+        return Optional.of(realFile.isDirectory() ? AssetType.FOLDER : AssetType.FILE);
+    }    
     
 }
