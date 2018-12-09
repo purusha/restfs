@@ -24,7 +24,7 @@ public abstract class BaseController implements Function<Request, Route> {
 
     enum Operation {
         GETSTATUS, LISTSTATUS, OPEN,                        //GET
-        SETPERMISSION, SETOWNER, RENAME,                    //PUT
+        MOVE, RENAME,                                       //PUT
         MKDIRS, CREATE, APPEND,                             //POST
         DELETE,                                             //DELETE
     }

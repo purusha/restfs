@@ -10,6 +10,7 @@
     
     sarebbe utile intercettare anche gzip content 
         (https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding)
-        
+            
+    esporre lo swagger file per gli endpoint esposti
     
-    	
+    
