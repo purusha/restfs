@@ -26,4 +26,6 @@ public interface Storage {
 
     String rename(UUID container, String path, String target);
 
+    String move(UUID container, String path, String target);
+
 }

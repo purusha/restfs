@@ -2,12 +2,14 @@ package it.at.restfs.http;
 
 import static akka.http.javadsl.server.Directives.complete;
 import static akka.http.javadsl.server.Directives.parameter;
+import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.Route;
 import it.at.restfs.http.HTTPListener.Request;
+import it.at.restfs.storage.AssetType;
 import it.at.restfs.storage.Storage;
 
 @Singleton
@@ -30,20 +32,33 @@ public class PutController extends BaseController {
                 );
                 
             } else {
-                return complete(StatusCodes.BAD_REQUEST, "target contains not allowed character");
+                return complete(StatusCodes.BAD_REQUEST, "target cannot be a directory");
             }
         });
     }
     
 
-    //operation = move
+    //operation = MOVE
     public Route move(Request t) {
-                
         /*
-             support to move file/directory in another existing directory
-         */
+            support to move file/directory in another existing directory
+        */
         
-        return null;
+        return parameter("target", target -> {
+            if(StringUtils.indexOfAny(target, "\\/") >= 0) { //XXX move only to another directory
+                
+                final String result = getStorage().move(t.getContainer(), t.getPath(), target);
+                final Optional<AssetType> typeOf = getStorage().typeOf(t.getContainer(), result);
+                final Request targetRequest = new Request(t.getContainer(), result, t.getOperation());
+                
+                return AssetType.FILE == typeOf.get() ?
+                    getFileStatus(targetRequest) :
+                    getDirectoryStatus(targetRequest);
+                
+            } else {
+                return complete(StatusCodes.BAD_REQUEST, "target must be a directory");
+            }
+        });                
     }
     
 }

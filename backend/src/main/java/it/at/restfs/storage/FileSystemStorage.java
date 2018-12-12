@@ -159,6 +159,17 @@ public class FileSystemStorage implements Storage {
         Files.move(sourcePath, targetPath);
         
         return StringUtils.substringAfter(targetPath.toFile().getAbsolutePath(), container.toString());
+    }
+
+    @SneakyThrows(IOException.class)
+    @Override
+    public String move(UUID container, String path, String target) {
+        final Path sourcePath = resolve(container, path, false);
+        final Path targetPath = resolve(container, target, true);
+        
+        Files.move(sourcePath, targetPath);
+        
+        return StringUtils.substringAfter(targetPath.toFile().getAbsolutePath(), container.toString());
     }    
     
 }
