@@ -157,7 +157,7 @@ public class HTTPListener {
     
     @Data
     @RequiredArgsConstructor    
-    public class Request {
+    static public class Request {
         final UUID container;
         final String path;
         final String operation;

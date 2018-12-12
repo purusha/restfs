@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 import it.at.restfs.http.HTTPListener;
 import lombok.SneakyThrows;
 
@@ -145,6 +146,19 @@ public class FileSystemStorage implements Storage {
         }
         
         return Optional.of(realFile.isDirectory() ? AssetType.FOLDER : AssetType.FILE);
+    }
+
+    @SneakyThrows(IOException.class)
+    @Override
+    public String rename(UUID container, String path, String target) {
+        final Path sourcePath = resolve(container, path, false);
+        
+        final Path targetPath = sourcePath.resolveSibling(path);
+        //final Path targetPath = resolve(container, target, true);
+        
+        Files.move(sourcePath, targetPath);
+        
+        return StringUtils.substringAfter(targetPath.toFile().getAbsolutePath(), container.toString());
     }    
     
 }

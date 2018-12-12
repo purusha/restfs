@@ -1,7 +1,6 @@
 package it.at.restfs.http;
 
-import static akka.http.javadsl.server.Directives.complete;
-import static akka.http.javadsl.server.Directives.extractRequestEntity;
+import static akka.http.javadsl.server.Directives.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import com.google.inject.Inject;

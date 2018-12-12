@@ -24,4 +24,6 @@ public interface Storage {
     
     Optional<AssetType> typeOf(UUID container, String path);
 
+    String rename(UUID container, String path, String target);
+
 }
