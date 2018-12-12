@@ -26,11 +26,13 @@ public class PutController extends BaseController {
             if(StringUtils.indexOfAny(target, "\\/") == -1) { //XXX can't move to another directory
                 
                 final String result = getStorage().rename(t.getContainer(), t.getPath(), target);
-                                
-                return getFileStatus(
-                    new Request(t.getContainer(), result, t.getOperation())
-                );
+                final Optional<AssetType> typeOf = getStorage().typeOf(t.getContainer(), result);
+                final Request targetRequest = new Request(t.getContainer(), result, t.getOperation());
                 
+                return AssetType.FILE == typeOf.get() ?
+                    getFileStatus(targetRequest) :
+                    getDirectoryStatus(targetRequest);
+                                
             } else {
                 return complete(StatusCodes.BAD_REQUEST, "target cannot be a directory");
             }

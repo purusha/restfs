@@ -1,11 +1,9 @@
 package it.at.restfs.http;
 
-import static akka.http.javadsl.server.Directives.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import static akka.http.javadsl.server.Directives.complete;
+import static akka.http.javadsl.server.Directives.extractRequestEntity;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import akka.http.javadsl.marshallers.jackson.Jackson;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.Route;
 import akka.stream.ActorMaterializer;
@@ -32,14 +30,14 @@ public class PostController extends BaseController {
     public Route mkdirs(Request t) {        
         getStorage().make(t.getContainer(), t.getPath(), AssetType.FOLDER);
         
-        return complete(StatusCodes.OK, Paths.get(t.getPath()), Jackson.<Path>marshaller());            
+        return getDirectoryStatus(t);
     }
 
     //operation = CREATE
     public Route create(Request t) {
         getStorage().make(t.getContainer(), t.getPath(), AssetType.FILE);
         
-        return complete(StatusCodes.OK, Paths.get(t.getPath()), Jackson.<Path>marshaller());
+        return getFileStatus(t);
     }
 
     //operation = APPEND
