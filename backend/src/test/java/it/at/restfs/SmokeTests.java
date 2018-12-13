@@ -9,13 +9,15 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import it.at.restfs.http.HTTPListener;
 import it.at.restfs.storage.FileSystemStorage;
 import lombok.SneakyThrows;
@@ -29,7 +31,7 @@ public class SmokeTests {
     public static void main(String[] args) {
         
         Lists.newArrayList(
-            Stage0.class //, Stage1.class, Stage2.class
+            Stage0.class, Stage1.class //, Stage2.class
         ).forEach(s -> {
             try {
                 
@@ -74,14 +76,20 @@ class Stage1 extends Stage {
     public void accept(UUID container) {
         createContainer(container);
         
+        final Map<String, String> file2 = Maps.newHashMap();
+        file2.put("target", "file2");
+
+        final Map<String, String> dir2 = Maps.newHashMap();
+        dir2.put("target", "dir2");
+        
         runCommands(
             container, 
             buildCommand("file", Operation.CREATE),
             buildCommand("dir", Operation.MKDIRS),
             buildCommand("file", Operation.GETSTATUS),
             buildCommand("dir", Operation.LISTSTATUS),
-            buildCommand("file&target=file2", Operation.RENAME),
-            buildCommand("dir&target=dir2", Operation.RENAME),
+            buildCommand("file", Operation.RENAME, file2),
+            buildCommand("dir", Operation.RENAME, dir2),
             buildCommand("file2", Operation.GETSTATUS),
             buildCommand("dir2", Operation.LISTSTATUS)            
         );
@@ -100,17 +108,71 @@ class Stage2 extends Stage {
     public void accept(UUID container) {
         createContainer(container);
         
+        final Map<String, String> file2 = Maps.newHashMap();
+        file2.put("target", "file2");
+
+        final Map<String, String> dir2 = Maps.newHashMap();
+        dir2.put("target", "dir2");
+        
         runCommands(
             container,                
             buildCommand("file", Operation.CREATE),
             buildCommand("dir", Operation.MKDIRS),
             buildCommand("file", Operation.GETSTATUS),
             buildCommand("dir", Operation.LISTSTATUS),
-            buildCommand("file&target=file2", Operation.RENAME),
-            buildCommand("dir&target=dir2", Operation.RENAME),
+            buildCommand("file", Operation.RENAME, file2),
+            buildCommand("dir", Operation.RENAME, dir2),
             buildCommand("file2", Operation.DELETE),
             buildCommand("dir2", Operation.DELETE)            
         );
+        
+        showDiff(
+            printHierarchy(container)
+        );
+    }
+    
+}
+
+class Stage3 extends Stage {
+    
+    /*
+        operation on file/directory that does not exist
+     */
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void accept(UUID container) {
+        createContainer(container);
+        
+        runCommands(
+            container,                
+            buildCommand("file", Operation.GETSTATUS)
+        );
+
+        runCommands(
+            container,                
+            buildCommand("dir", Operation.LISTSTATUS)
+        );
+
+        runCommands(
+            container,                
+            buildCommand("file&target=file2", Operation.RENAME)
+        );
+
+        runCommands(
+            container,                
+            buildCommand("dir&target=dir2", Operation.RENAME)
+        );
+        
+        runCommands(
+            container,                
+            buildCommand("file", Operation.DELETE)
+        );
+
+        runCommands(
+            container,                
+            buildCommand("dir", Operation.DELETE)
+        );        
         
         showDiff(
             printHierarchy(container)
@@ -171,22 +233,27 @@ abstract class Stage implements Consumer<UUID> {
     }
 
     @SuppressWarnings("unchecked")
-    void runCommands(UUID container, Pair<String, Operation> ... cmds) {
+    void runCommands(UUID container, Triple<String, Operation, Map<String, String>> ... cmds) {
         Arrays.stream(cmds).forEach(cmd -> {
             System.out.println("> " + cmd);
             
             try {
                 
                 final Call<Void> result = (Call<Void>)Arrays.stream(RestFs.class.getMethods())
-                    .filter(m -> StringUtils.equals(m.getName(), cmd.getRight().toString().toLowerCase()))
+                    .filter(m -> StringUtils.equals(m.getName(), cmd.getMiddle().toString().toLowerCase()))
                     .findFirst()
                     .get()
                     .invoke(
-                        service, cmd.getLeft(), "42", container, "application/json"
+                        service, cmd.getLeft(), "42", container, cmd.getRight()
                     );
                 
-                final Response<Void> execute = result.execute();
-                System.out.println(execute);
+                final Response<Void> execute = result.execute();                
+                
+                if (! execute.isSuccessful()) {
+                    System.out.println(execute);
+                    
+                    throw new RuntimeException();                    
+                }
                 
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -214,8 +281,12 @@ abstract class Stage implements Consumer<UUID> {
         System.out.println(resource);
     }        
     
-    Pair<String, Operation> buildCommand(String data, Operation op) {
-        return Pair.of(data, op);
+    Triple<String, Operation, Map<String, String>> buildCommand(String data, Operation op) {
+        return buildCommand(data, op, Maps.newHashMap());
+    }    
+
+    Triple<String, Operation, Map<String, String>> buildCommand(String data, Operation op, Map<String, String> query) {
+        return Triple.of(data, op, query);
     }    
     
     /*
