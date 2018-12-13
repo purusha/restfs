@@ -12,11 +12,4 @@
 	curl -X POST -v -H "Authorization: 42" -H "X-Container: 7c06a24f-50ed-4966-bc9c-19dd3eaf1baa" http://localhost:8081/restfs/v1/tmp/test1/ciccio?op=CREATE
 	
 	date | curl -X POST -d @- -v -H "Accept: application/json" -H "Authorization: 42" -H "X-Container: 7c06a24f-50ed-4966-bc9c-19dd3eaf1baa" http://localhost:8081/restfs/v1/tmp/test1/ciccio?op=APPEND    
-	
-	
-	
-	1) create container
-	2) lancia un data test (n call http)
-	3) dalla root del container ... run $> ls -lR1 > file
-	4) diff between expected and file to show diff
-	
+		
