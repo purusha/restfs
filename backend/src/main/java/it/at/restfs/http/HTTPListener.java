@@ -39,11 +39,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HTTPListener {
     
+    
     //XXX HTTP binding
     public static final String APP_NAME = "restfs";
     public static final String VERSION = "v1";
     public static final String HOST = "localhost";
     public static final int PORT = 8081;    
+    public static final String X_CONTAINER = "X-Container";
+    public static final String AUTHORIZATION = "Authorization";
+
     
     /*
      
@@ -120,8 +124,8 @@ public class HTTPListener {
                             return complete(StatusCodes.BAD_REQUEST, "add header \"Accept: application/json\"");
                         }
                     
-                        return headerValueByName("Authorization", (String authorization) ->
-                            headerValueByName("X-Container", (String container) ->                            
+                        return headerValueByName(AUTHORIZATION, (String authorization) ->
+                            headerValueByName(X_CONTAINER, (String container) ->                            
                                 extractUri(uri ->
                                     extractMethod(method ->
                                         parameter("op", (String operation) ->

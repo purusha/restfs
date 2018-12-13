@@ -19,18 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public abstract class BaseController implements Function<Request, Route> {
-    
-    /*
-
-    enum Operation {
-        GETSTATUS, LISTSTATUS, OPEN,                        //GET
-        MOVE, RENAME,                                       //PUT
-        MKDIRS, CREATE, APPEND,                             //POST
-        DELETE,                                             //DELETE
-    }
-    
-    */        
-    
+        
     private final Storage storage;
     
     @Override

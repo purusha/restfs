@@ -9,6 +9,8 @@ public interface Storage {
     /*
         hide real implementation that use local fs as a default storage                
      */
+    
+    boolean exist(UUID container);
 
     List<GetStatus> listStatus(UUID container, String path);
 

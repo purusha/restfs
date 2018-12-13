@@ -20,7 +20,7 @@ import lombok.SneakyThrows;
 
 public class FileSystemStorage implements Storage {
     
-    private static final String ROOT = "/tmp/" + HTTPListener.APP_NAME + "/";
+    public static final String ROOT = "/tmp/" + HTTPListener.APP_NAME + "/";
 
     @SneakyThrows(IOException.class)
     @Override
@@ -170,6 +170,17 @@ public class FileSystemStorage implements Storage {
         Files.move(sourcePath, targetPath);
         
         return StringUtils.substringAfter(targetPath.toFile().getAbsolutePath(), container.toString());
+    }
+
+    @Override
+    public boolean exist(UUID container) {
+        try{
+            resolve(container, "", false);
+        } catch (Exception e) {
+            return false;
+        }
+
+        return true;
     }    
     
 }

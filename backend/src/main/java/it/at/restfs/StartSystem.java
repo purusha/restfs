@@ -9,8 +9,6 @@ public class StartSystem {
         Guice
             .createInjector(
                 new AkkaModule()
-//                new HBaseRepositoryModule(),
-//                new DiagnosticsModule()
             )
             .getInstance(
                 RestFsApplication.class
