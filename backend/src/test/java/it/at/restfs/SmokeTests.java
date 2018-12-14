@@ -3,7 +3,7 @@ package it.at.restfs;
 import static java.nio.charset.Charset.defaultCharset;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -31,8 +31,7 @@ public class SmokeTests {
     public static void main(String[] args) {
         
         Lists.newArrayList(
-            Stage0.class, 
-            Stage1.class
+            Stage0.class, Stage1.class, Stage2.class, Stage3.class
         ).forEach(s -> {
             try {
                 
@@ -62,10 +61,8 @@ class Stage0 extends Stage {
             buildCommand("file", Operation.GETSTATUS),
             buildCommand("dir", Operation.LISTSTATUS)
         );
-
-        showDiff(
-            printHierarchy(container)                
-        );        
+        
+        showDiff(container);
     }
     
 }
@@ -77,27 +74,19 @@ class Stage1 extends Stage {
     public void accept(UUID container) {
         createContainer(container);
         
-        final Map<String, String> file2 = Maps.newHashMap();
-        file2.put("target", "file2");
-
-        final Map<String, String> dir2 = Maps.newHashMap();
-        dir2.put("target", "dir2");
-        
         runCommands(
             container, 
             buildCommand("file", Operation.CREATE),
             buildCommand("dir", Operation.MKDIRS),
             buildCommand("file", Operation.GETSTATUS),
             buildCommand("dir", Operation.LISTSTATUS),
-            buildCommand("file", Operation.RENAME, file2),
-            buildCommand("dir", Operation.RENAME, dir2),
+            buildCommand("file", Operation.RENAME, queryBuilder("target", "file2")),
+            buildCommand("dir", Operation.RENAME, queryBuilder("target", "dir2")),
             buildCommand("file2", Operation.GETSTATUS),
             buildCommand("dir2", Operation.LISTSTATUS)            
         );
 
-        showDiff(
-            printHierarchy(container)
-        );        
+        showDiff(container);        
     }
     
 }
@@ -109,27 +98,19 @@ class Stage2 extends Stage {
     public void accept(UUID container) {
         createContainer(container);
         
-        final Map<String, String> file2 = Maps.newHashMap();
-        file2.put("target", "file2");
-
-        final Map<String, String> dir2 = Maps.newHashMap();
-        dir2.put("target", "dir2");
-        
         runCommands(
             container,                
             buildCommand("file", Operation.CREATE),
             buildCommand("dir", Operation.MKDIRS),
             buildCommand("file", Operation.GETSTATUS),
             buildCommand("dir", Operation.LISTSTATUS),
-            buildCommand("file", Operation.RENAME, file2),
-            buildCommand("dir", Operation.RENAME, dir2),
+            buildCommand("file", Operation.RENAME, queryBuilder("target", "file2")),
+            buildCommand("dir", Operation.RENAME, queryBuilder("target", "dir2")),
             buildCommand("file2", Operation.DELETE),
             buildCommand("dir2", Operation.DELETE)            
         );
         
-        showDiff(
-            printHierarchy(container)
-        );
+        showDiff(container);
     }
     
 }
@@ -154,15 +135,15 @@ class Stage3 extends Stage {
             container,                
             buildCommand("dir", Operation.LISTSTATUS)
         );
-
+        
         runCommands(
             container,                
-            buildCommand("file&target=file2", Operation.RENAME)
+            buildCommand("file", Operation.RENAME, queryBuilder("target", "file2"))
         );
 
         runCommands(
             container,                
-            buildCommand("dir&target=dir2", Operation.RENAME)
+            buildCommand("dir", Operation.RENAME, queryBuilder("target", "dir2"))
         );
         
         runCommands(
@@ -175,9 +156,7 @@ class Stage3 extends Stage {
             buildCommand("dir", Operation.DELETE)
         );        
         
-        showDiff(
-            printHierarchy(container)
-        );
+        showDiff(container);
     }
     
 }
@@ -203,8 +182,7 @@ abstract class Stage implements Consumer<UUID> {
         
     }
 
-    @SneakyThrows(value = {IOException.class, InterruptedException.class})
-    Path printHierarchy(UUID container) {
+    private Path printHierarchy(UUID container) throws IOException, InterruptedException {
         final File root = getContainer(container);
                 
         final ProcessBuilder pb = new ProcessBuilder(LS);        
@@ -275,11 +253,20 @@ abstract class Stage implements Consumer<UUID> {
         return path.toFile();
     }
     
-    void showDiff(Path result) {
-        final String expectedResult = this.getClass().getSimpleName() + ".tree";
-        final URL resource = getClass().getClassLoader().getResource(expectedResult);
+    @SneakyThrows(value = {IOException.class, InterruptedException.class, URISyntaxException.class})
+    void showDiff(UUID container) {      
+      
+        final Path expected = Paths.get(
+            getClass().getClassLoader().getResource(this.getClass().getSimpleName() + ".tree").toURI()
+        );
         
-        System.out.println(resource);
+        final Path result = printHierarchy(container);
+        
+        System.out.println(this.getClass().getSimpleName() + " on " + container);
+        System.out.println("run diff command on file:");
+        System.out.println(result);
+        System.out.println(expected);
+        System.out.println();
     }        
     
     Triple<String, Operation, Map<String, String>> buildCommand(String data, Operation op) {
@@ -290,14 +277,12 @@ abstract class Stage implements Consumer<UUID> {
         return Triple.of(data, op, query);
     }    
     
-    /*
-
-        1) create container
-        2) lancia un data test (n call http)
-        3) dalla root del container ... run $> ls -lR1 > file
-        4) diff between expected and file to show diff
- 
-     */
-        
+    Map<String, String> queryBuilder(String key, String value) {
+        final Map<String, String> r = Maps.newHashMap();
+        r.put(key, value);
+      
+        return r;
+    }
+            
 }
 
