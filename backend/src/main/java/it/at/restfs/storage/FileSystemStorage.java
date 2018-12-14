@@ -152,9 +152,7 @@ public class FileSystemStorage implements Storage {
     @Override
     public String rename(UUID container, String path, String target) {
         final Path sourcePath = resolve(container, path, false);
-        
-        final Path targetPath = sourcePath.resolveSibling(path);
-        //final Path targetPath = resolve(container, target, true);
+        final Path targetPath = resolve(container, "/" + target, true);
         
         Files.move(sourcePath, targetPath);
         

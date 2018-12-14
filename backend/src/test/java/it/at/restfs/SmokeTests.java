@@ -31,7 +31,8 @@ public class SmokeTests {
     public static void main(String[] args) {
         
         Lists.newArrayList(
-            Stage0.class, Stage1.class //, Stage2.class
+            Stage0.class, 
+            Stage1.class
         ).forEach(s -> {
             try {
                 
