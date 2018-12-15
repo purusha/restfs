@@ -1,7 +1,6 @@
 package it.at.restfs.storage;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface Storage {
@@ -24,7 +23,7 @@ public interface Storage {
     
     void delete(UUID container, String path);
     
-    Optional<AssetType> typeOf(UUID container, String path);
+    AssetType typeOf(UUID container, String path);
 
     String rename(UUID container, String path, String target);
 

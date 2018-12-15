@@ -10,7 +10,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -54,7 +53,7 @@ public class FileSystemStorage implements Storage {
     public OpenFile open(UUID container, String path) {        
         final Path realPath = resolve(container, path, false);
         
-        if(AssetType.FOLDER == typeOf(container, path).get()) {
+        if(AssetType.FOLDER == typeOf(container, path)) {
             throw new RuntimeException("can't download directory " + path + " on " + container);
         }
         
@@ -86,7 +85,7 @@ public class FileSystemStorage implements Storage {
         final File realFile = realPath.toFile();        
         
         if (!realFile.exists() && !flag) {
-            throw new RuntimeException("path " + path + " on " + container + " does not exist");
+            throw new ResouceNotFoundException("path " + path + " on " + container + " does not exist");
         }
 
         return realPath;
@@ -137,15 +136,11 @@ public class FileSystemStorage implements Storage {
     }
     
     @Override
-    public Optional<AssetType> typeOf(UUID container, String path) {
-        final Path realPath = Paths.get(ROOT + "/" + container + path);        
+    public AssetType typeOf(UUID container, String path) {
+        final Path realPath = resolve(container, path, false);        
         final File realFile = realPath.toFile();        
         
-        if (! realFile.exists()) {
-            return Optional.empty();
-        }
-        
-        return Optional.of(realFile.isDirectory() ? AssetType.FOLDER : AssetType.FILE);
+        return realFile.isDirectory() ? AssetType.FOLDER : AssetType.FILE;
     }
 
     @SneakyThrows(IOException.class)

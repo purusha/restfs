@@ -27,6 +27,15 @@ import retrofit2.Retrofit;
 
 public class SmokeTests {
     
+    /*
+
+        this test must be running in double mode:
+        
+        > single thread
+        > multiple thread
+        
+     */
+    
     @SuppressWarnings("unchecked")
     public static void main(String[] args) {
         
@@ -127,36 +136,16 @@ class Stage3 extends Stage {
         createContainer(container);
         
         runCommands(
-            container,                
-            buildCommand("file", Operation.GETSTATUS)
-        );
-
-        runCommands(
-            container,                
-            buildCommand("dir", Operation.LISTSTATUS)
-        );
-        
-        runCommands(
-            container,                
-            buildCommand("file", Operation.RENAME, queryBuilder("target", "file2"))
-        );
-
-        runCommands(
-            container,                
-            buildCommand("dir", Operation.RENAME, queryBuilder("target", "dir2"))
-        );
-        
-        runCommands(
-            container,                
-            buildCommand("file", Operation.DELETE)
-        );
-
-        runCommands(
-            container,                
+            container,
+            false,
+            buildCommand("file", Operation.GETSTATUS),
+            buildCommand("dir", Operation.LISTSTATUS),
+            buildCommand("file", Operation.RENAME, queryBuilder("target", "file2")),
+            buildCommand("dir", Operation.RENAME, queryBuilder("target", "dir2")),
+            buildCommand("file", Operation.DELETE),
             buildCommand("dir", Operation.DELETE)
         );        
         
-        showDiff(container);
     }
     
 }
@@ -213,6 +202,11 @@ abstract class Stage implements Consumer<UUID> {
 
     @SuppressWarnings("unchecked")
     void runCommands(UUID container, Triple<String, Operation, Map<String, String>> ... cmds) {
+        runCommands(container, true, cmds);
+    }
+    
+    @SuppressWarnings("unchecked")
+    void runCommands(UUID container, boolean existOnError, Triple<String, Operation, Map<String, String>> ... cmds) {
         Arrays.stream(cmds).forEach(cmd -> {
             System.out.println("> " + cmd);
             
@@ -231,7 +225,9 @@ abstract class Stage implements Consumer<UUID> {
                 if (! execute.isSuccessful()) {
                     System.out.println(execute);
                     
-                    throw new RuntimeException();                    
+                    if (existOnError) {
+                        throw new RuntimeException();                        
+                    }                                       
                 }
                 
             } catch (Exception e) {
@@ -254,13 +250,13 @@ abstract class Stage implements Consumer<UUID> {
     }
     
     @SneakyThrows(value = {IOException.class, InterruptedException.class, URISyntaxException.class})
-    void showDiff(UUID container) {      
+    void showDiff(UUID container) {
+        
+        final Path result = printHierarchy(container);
       
         final Path expected = Paths.get(
             getClass().getClassLoader().getResource(this.getClass().getSimpleName() + ".tree").toURI()
         );
-        
-        final Path result = printHierarchy(container);
         
         System.out.println(this.getClass().getSimpleName() + " on " + container);
         System.out.println("run diff command on file:");

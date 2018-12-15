@@ -1,12 +1,6 @@
 package it.at.restfs.http;
 
-import static akka.http.javadsl.server.Directives.complete;
-import static akka.http.javadsl.server.Directives.extractMethod;
-import static akka.http.javadsl.server.Directives.extractUri;
-import static akka.http.javadsl.server.Directives.headerValueByName;
-import static akka.http.javadsl.server.Directives.logRequestResult;
-import static akka.http.javadsl.server.Directives.parameter;
-import static akka.http.javadsl.server.Directives.pathPrefix;
+import static akka.http.javadsl.server.Directives.*;
 import static akka.http.javadsl.server.PathMatchers.segment;
 import java.util.List;
 import java.util.Map;
@@ -28,10 +22,12 @@ import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.HttpResponse;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.model.Uri;
+import akka.http.javadsl.server.ExceptionHandler;
 import akka.http.javadsl.server.Rejection;
 import akka.http.javadsl.server.Route;
 import akka.http.javadsl.server.directives.LogEntry;
 import akka.stream.ActorMaterializer;
+import it.at.restfs.storage.ResouceNotFoundException;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +35,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HTTPListener {
     
+    final ExceptionHandler handler = ExceptionHandler.newBuilder()
+        .match(ResouceNotFoundException.class, x ->
+            complete(StatusCodes.NOT_FOUND, x.getMessage())
+        )
+        .build();    
     
     //XXX HTTP binding
     public static final String APP_NAME = "restfs";
@@ -115,28 +116,30 @@ public class HTTPListener {
     }
 
     private Route createRoute() {
-        return logRequestResult(REQ, REJ, () -> 
-            pathPrefix(segment(APP_NAME), () ->
-                pathPrefix(segment(VERSION), () ->
-                    headerValueByName("Accept", (String accept) -> {
-
-                        if (! StringUtils.equals(accept, "application/json")) {
-                            return complete(StatusCodes.BAD_REQUEST, "add header \"Accept: application/json\"");
-                        }
-                    
-                        return headerValueByName(AUTHORIZATION, (String authorization) ->
-                            headerValueByName(X_CONTAINER, (String container) ->                            
-                                extractUri(uri ->
-                                    extractMethod(method ->
-                                        parameter("op", (String operation) ->
-                                            callHandler(UUID.fromString(container), authorization, uri, method, operation)
+        return handleExceptions(handler, () ->                             
+            logRequestResult(REQ, REJ, () -> 
+                pathPrefix(segment(APP_NAME), () ->
+                    pathPrefix(segment(VERSION), () ->
+                        headerValueByName("Accept", (String accept) -> {
+    
+                            if (! StringUtils.equals(accept, "application/json")) {
+                                return complete(StatusCodes.BAD_REQUEST, "add header \"Accept: application/json\"");
+                            }
+                        
+                            return headerValueByName(AUTHORIZATION, (String authorization) ->
+                                headerValueByName(X_CONTAINER, (String container) ->                            
+                                    extractUri(uri ->
+                                        extractMethod(method ->
+                                            parameter("op", (String operation) ->
+                                                callHandler(UUID.fromString(container), authorization, uri, method, operation)
+                                            )
                                         )
                                     )
                                 )
-                            )
-                        );
-                        
-                    })                                        
+                            );
+                            
+                        })                                        
+                    )
                 )
             )
         );

@@ -2,7 +2,6 @@ package it.at.restfs.http;
 
 import static akka.http.javadsl.server.Directives.complete;
 import static akka.http.javadsl.server.Directives.parameter;
-import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -26,10 +25,10 @@ public class PutController extends BaseController {
             if(StringUtils.indexOfAny(target, "\\/") == -1) { //XXX can't move to another directory
                 
                 final String result = getStorage().rename(t.getContainer(), t.getPath(), target);
-                final Optional<AssetType> typeOf = getStorage().typeOf(t.getContainer(), result);
+                final AssetType typeOf = getStorage().typeOf(t.getContainer(), result);
                 final Request targetRequest = new Request(t.getContainer(), result, t.getOperation());
                 
-                return AssetType.FILE == typeOf.get() ?
+                return AssetType.FILE == typeOf ?
                     getFileStatus(targetRequest) :
                     getDirectoryStatus(targetRequest);
                                 
@@ -50,10 +49,10 @@ public class PutController extends BaseController {
             if(StringUtils.indexOfAny(target, "\\/") >= 0) { //XXX move only to another directory
                 
                 final String result = getStorage().move(t.getContainer(), t.getPath(), target);
-                final Optional<AssetType> typeOf = getStorage().typeOf(t.getContainer(), result);
+                final AssetType typeOf = getStorage().typeOf(t.getContainer(), result);
                 final Request targetRequest = new Request(t.getContainer(), result, t.getOperation());
                 
-                return AssetType.FILE == typeOf.get() ?
+                return AssetType.FILE == typeOf ?
                     getFileStatus(targetRequest) :
                     getDirectoryStatus(targetRequest);
                 

@@ -1,7 +1,4 @@
-.:
-total 4
-drwxr-xr-x 2 developer staff 4096 dic 14 12:12 dir2
--rw-r--r-- 1 developer staff    0 dic 14 12:12 file2
+dir2
+file2
 
 ./dir2:
-total 0

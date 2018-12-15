@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.UUID;
 import it.at.restfs.http.HTTPListener;
 import retrofit2.Call;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
@@ -62,6 +63,17 @@ public interface RestFs {
     })        
     @PUT("{path}?op=RENAME")
     Call<Void> rename(
+        @retrofit2.http.Path("path") String path,
+        @Header(HTTPListener.AUTHORIZATION) String authorization,
+        @Header(HTTPListener.X_CONTAINER) UUID container,
+        @QueryMap Map<String, String> options
+    );
+
+    @Headers({
+        "Accept: application/json",
+    })        
+    @DELETE("{path}?op=DELETE")
+    Call<Void> delete(
         @retrofit2.http.Path("path") String path,
         @Header(HTTPListener.AUTHORIZATION) String authorization,
         @Header(HTTPListener.X_CONTAINER) UUID container,
