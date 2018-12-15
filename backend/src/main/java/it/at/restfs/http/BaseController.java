@@ -14,9 +14,8 @@ import it.at.restfs.storage.Storage;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+
 @Getter
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public abstract class BaseController implements Function<Request, Route> {
@@ -29,14 +28,10 @@ public abstract class BaseController implements Function<Request, Route> {
         final String operation = t.getOperation();
         
         try {
-            return (Route)this.getClass().getDeclaredMethod(operation.toLowerCase(), Request.class).invoke(this, t);
+            return (Route) this.getClass().getDeclaredMethod(operation.toLowerCase(), Request.class).invoke(this, t);
         } catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException e) {
-            LOGGER.error("handling {} there was an error =>", t, e);
-            
             throw e;
         } catch (InvocationTargetException e) { //XXX important ... because we use Reflection !!!?
-            LOGGER.error("handling {} there was an error =>", t, e.getCause());
-            
             throw e.getCause();
         }
     }    

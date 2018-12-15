@@ -224,6 +224,7 @@ abstract class Stage implements Consumer<UUID> {
                 
                 if (! execute.isSuccessful()) {
                     System.out.println(execute);
+                    System.out.println(execute.errorBody().string() + "\n");
                     
                     if (existOnError) {
                         throw new RuntimeException();                        
@@ -239,6 +240,8 @@ abstract class Stage implements Consumer<UUID> {
 
     //XXX this implementation know's which is the real implementation
     void createContainer(UUID container) {
+        System.out.println("created " + container);
+        
         getContainer(container).mkdir();
     }
 
@@ -257,8 +260,7 @@ abstract class Stage implements Consumer<UUID> {
         final Path expected = Paths.get(
             getClass().getClassLoader().getResource(this.getClass().getSimpleName() + ".tree").toURI()
         );
-        
-        System.out.println(this.getClass().getSimpleName() + " on " + container);
+                
         System.out.println("run diff command on file:");
         System.out.println(result);
         System.out.println(expected);

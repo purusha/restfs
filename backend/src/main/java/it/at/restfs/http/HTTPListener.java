@@ -36,9 +36,11 @@ import lombok.extern.slf4j.Slf4j;
 public class HTTPListener {
     
     final ExceptionHandler handler = ExceptionHandler.newBuilder()
-        .match(ResouceNotFoundException.class, x ->
-            complete(StatusCodes.NOT_FOUND, x.getMessage())
-        )
+        .match(ResouceNotFoundException.class, x -> {
+            LOGGER.error("handling exception: ", x);
+            
+            return complete(StatusCodes.NOT_FOUND, x.getMessage());
+        })
         .build();    
     
     //XXX HTTP binding
