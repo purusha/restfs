@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -29,21 +32,17 @@ import retrofit2.Retrofit;
 
 public class SmokeTests {
     
-    /*
-
-        this test must be running in double mode:
-        
-        > single thread
-        > multiple thread (executor service with max thread pool)
-        
-     */
-    
     @SuppressWarnings("unchecked")
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        
+        final long startTime = System.currentTimeMillis();
+        final ExecutorService service = Executors.newSingleThreadExecutor();        
+//        final ExecutorService service = Executors.newFixedThreadPool(5);
         
         Lists.newArrayList(
             Stage0.class, Stage1.class, Stage2.class, Stage3.class
-        ).forEach(s -> {
+        ).forEach(s -> service.submit(() -> {
+
             try {
                 
                 final UUID container = UUID.randomUUID();
@@ -58,7 +57,14 @@ public class SmokeTests {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        });        
+                
+        }));     
+        
+        service.shutdown();        
+        service.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+        
+        final long stopTime = System.currentTimeMillis();
+        System.err.println("EXECUTION TIME: " + (stopTime - startTime) + " ms");        
 
     }        
 }

@@ -10,12 +10,26 @@
     
     sarebbe utile intercettare anche gzip content 
         (https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding)
+        
+    ----------------------
             
     esporre lo swagger file per gli endpoint esposti
     
+    ----------------------
+    
     alternative al file system:
     
-    1) neo4j
-    2) elastic search && hbase
-    3) 
+        1) neo4j
+        2) elastic search && hbase
+        3) 
+        
+    ----------------------
+    
+    come autenticare le call rest ??
+    
+        1) base
+        2) oauth
+        3) static authorization
+        4) ???
+        
     
