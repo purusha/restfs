@@ -13,4 +13,9 @@
             
     esporre lo swagger file per gli endpoint esposti
     
+    alternative al file system:
+    
+    1) neo4j
+    2) elastic search && hbase
+    3) 
     

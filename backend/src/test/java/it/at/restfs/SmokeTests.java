@@ -4,12 +4,14 @@ import static java.nio.charset.Charset.defaultCharset;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 import org.apache.commons.io.FileUtils;
@@ -32,7 +34,7 @@ public class SmokeTests {
         this test must be running in double mode:
         
         > single thread
-        > multiple thread
+        > multiple thread (executor service with max thread pool)
         
      */
     
@@ -44,16 +46,21 @@ public class SmokeTests {
         ).forEach(s -> {
             try {
                 
-                System.out.println("process " + s.getSimpleName());
-                s.newInstance().accept(UUID.randomUUID());
+                final UUID container = UUID.randomUUID();
+                System.out.println("process " + s.getSimpleName() + " on " + container);
+                
+                final Stage stage = s.newInstance();
+                
+                stage.createContainer(container);                
+                stage.accept(container);
+                stage.showDiff(container);
                 
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });        
 
-    }
-        
+    }        
 }
 
 class Stage0 extends Stage {
@@ -61,8 +68,6 @@ class Stage0 extends Stage {
     @SuppressWarnings("unchecked")
     @Override
     public void accept(UUID container) {
-        createContainer(container);
-        
         runCommands(
             container,                
             buildCommand("file", Operation.CREATE),
@@ -70,10 +75,7 @@ class Stage0 extends Stage {
             buildCommand("file", Operation.GETSTATUS),
             buildCommand("dir", Operation.LISTSTATUS)
         );
-        
-        showDiff(container);
-    }
-    
+    }    
 }
 
 class Stage1 extends Stage {
@@ -81,8 +83,6 @@ class Stage1 extends Stage {
     @SuppressWarnings("unchecked")
     @Override
     public void accept(UUID container) {
-        createContainer(container);
-        
         runCommands(
             container, 
             buildCommand("file", Operation.CREATE),
@@ -94,10 +94,7 @@ class Stage1 extends Stage {
             buildCommand("file2", Operation.GETSTATUS),
             buildCommand("dir2", Operation.LISTSTATUS)            
         );
-
-        showDiff(container);        
-    }
-    
+    }    
 }
 
 class Stage2 extends Stage {
@@ -105,8 +102,6 @@ class Stage2 extends Stage {
     @SuppressWarnings("unchecked")
     @Override
     public void accept(UUID container) {
-        createContainer(container);
-        
         runCommands(
             container,                
             buildCommand("file", Operation.CREATE),
@@ -118,8 +113,6 @@ class Stage2 extends Stage {
             buildCommand("file2", Operation.DELETE),
             buildCommand("dir2", Operation.DELETE)            
         );
-        
-        showDiff(container);
     }
     
 }
@@ -133,8 +126,6 @@ class Stage3 extends Stage {
     @SuppressWarnings("unchecked")
     @Override
     public void accept(UUID container) {
-        createContainer(container);
-        
         runCommands(
             container,
             false,
@@ -144,10 +135,8 @@ class Stage3 extends Stage {
             buildCommand("dir", Operation.RENAME, queryBuilder("target", "dir2")),
             buildCommand("file", Operation.DELETE),
             buildCommand("dir", Operation.DELETE)
-        );        
-        
-    }
-    
+        );               
+    }    
 }
 
 abstract class Stage implements Consumer<UUID> {
@@ -201,12 +190,12 @@ abstract class Stage implements Consumer<UUID> {
     }
 
     @SuppressWarnings("unchecked")
-    void runCommands(UUID container, Triple<String, Operation, Map<String, String>> ... cmds) {
+    protected void runCommands(UUID container, Triple<String, Operation, Map<String, String>> ... cmds) {
         runCommands(container, true, cmds);
     }
     
     @SuppressWarnings("unchecked")
-    void runCommands(UUID container, boolean existOnError, Triple<String, Operation, Map<String, String>> ... cmds) {
+    protected void runCommands(UUID container, boolean existOnError, Triple<String, Operation, Map<String, String>> ... cmds) {
         Arrays.stream(cmds).forEach(cmd -> {
             System.out.println("> " + cmd);
             
@@ -239,9 +228,7 @@ abstract class Stage implements Consumer<UUID> {
     }
 
     //XXX this code know's which is the real implementation ... is stupid
-    void createContainer(UUID container) {
-        System.out.println("created " + container);
-        
+    public void createContainer(UUID container) {
         getContainer(container).mkdir();
     }
 
@@ -253,29 +240,30 @@ abstract class Stage implements Consumer<UUID> {
     }
     
     @SneakyThrows(value = {IOException.class, InterruptedException.class, URISyntaxException.class})
-    void showDiff(UUID container) {
+    public void showDiff(UUID container) {
+        final URL resource = getClass().getClassLoader().getResource(this.getClass().getSimpleName() + ".tree");
         
+        if (Objects.isNull(resource)) {
+            System.out.println("can't run diff command because tree fiel does not exist");
+            return;
+        }
+        
+        final Path expected = Paths.get(resource.toURI());        
         final Path result = printHierarchy(container);
-      
-        final Path expected = Paths.get(
-            getClass().getClassLoader().getResource(this.getClass().getSimpleName() + ".tree").toURI()
-        );
                 
-        System.out.println("run diff command on file:");
-        System.out.println(result);
-        System.out.println(expected);
+        System.out.println("run diff command on " + expected + " and " + result);
         System.out.println();
     }        
     
-    Triple<String, Operation, Map<String, String>> buildCommand(String data, Operation op) {
+    protected Triple<String, Operation, Map<String, String>> buildCommand(String data, Operation op) {
         return buildCommand(data, op, Maps.newHashMap());
     }    
 
-    Triple<String, Operation, Map<String, String>> buildCommand(String data, Operation op, Map<String, String> query) {
+    protected Triple<String, Operation, Map<String, String>> buildCommand(String data, Operation op, Map<String, String> query) {
         return Triple.of(data, op, query);
     }    
     
-    Map<String, String> queryBuilder(String key, String value) {
+    protected Map<String, String> queryBuilder(String key, String value) {
         final Map<String, String> r = Maps.newHashMap();
         r.put(key, value);
       
