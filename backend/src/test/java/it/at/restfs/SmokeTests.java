@@ -238,14 +238,14 @@ abstract class Stage implements Consumer<UUID> {
         });
     }
 
-    //XXX this implementation know's which is the real implementation
+    //XXX this code know's which is the real implementation ... is stupid
     void createContainer(UUID container) {
         System.out.println("created " + container);
         
         getContainer(container).mkdir();
     }
 
-    //XXX this implementation know's which is the real implementation
+    //XXX this code know's which is the real implementation ... is stupid
     private File getContainer(UUID container) {
         final Path path = Paths.get(FileSystemStorage.ROOT + "/" + container);
         
