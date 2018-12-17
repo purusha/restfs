@@ -187,10 +187,10 @@ abstract class Stage implements Consumer<UUID> {
         );
 
         if (process.waitFor() == 0) {
-            System.out.println("Success!");
+            System.out.println("generate tree file: Success!");
             return Paths.get(root.getAbsolutePath(), container + ".tree");
         } else {
-            System.out.println("Failure!");
+            System.out.println("generate tree file: Failure!");
             throw new RuntimeException("no file create for printHierarchy");
         }
     }
@@ -202,35 +202,37 @@ abstract class Stage implements Consumer<UUID> {
     
     @SuppressWarnings("unchecked")
     protected void runCommands(UUID container, boolean existOnError, Triple<String, Operation, Map<String, String>> ... cmds) {
-        Arrays.stream(cmds).forEach(cmd -> {
-            System.out.println("> " + cmd);
-            
-            try {
+        Arrays
+            .stream(cmds)
+            .forEach(cmd -> {
+                System.out.println("> " + cmd);
                 
-                final Call<Void> result = (Call<Void>)Arrays.stream(RestFs.class.getMethods())
-                    .filter(m -> StringUtils.equals(m.getName(), cmd.getMiddle().toString().toLowerCase()))
-                    .findFirst()
-                    .get()
-                    .invoke(
-                        service, cmd.getLeft(), "42", container, cmd.getRight()
-                    );
-                
-                final Response<Void> execute = result.execute();                
-                
-                if (! execute.isSuccessful()) {
-                    System.out.println(execute);
-                    System.out.println(execute.errorBody().string() + "\n");
+                try {
                     
-                    if (existOnError) {
-                        throw new RuntimeException();                        
-                    }                                       
+                    final Call<Void> result = (Call<Void>)Arrays.stream(RestFs.class.getMethods())
+                        .filter(m -> StringUtils.equals(m.getName(), cmd.getMiddle().toString().toLowerCase()))
+                        .findFirst()
+                        .get()
+                        .invoke(
+                            service, cmd.getLeft(), "42", container, cmd.getRight()
+                        );
+                    
+                    final Response<Void> execute = result.execute();                
+                    
+                    if (! execute.isSuccessful()) {
+                        System.out.println(execute);
+                        System.out.println(execute.errorBody().string() + "\n");
+                        
+                        if (existOnError) {
+                            throw new RuntimeException();                        
+                        }                                       
+                    }
+                    
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
                 
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-            
-        });
+            });
     }
 
     //XXX this code know's which is the real implementation ... is stupid
@@ -250,15 +252,29 @@ abstract class Stage implements Consumer<UUID> {
         final URL resource = getClass().getClassLoader().getResource(this.getClass().getSimpleName() + ".tree");
         
         if (Objects.isNull(resource)) {
-            System.out.println("can't run diff command because tree fiel does not exist");
+            System.out.println("can't run diff command because tree file does not exist");
             return;
         }
         
         final Path expected = Paths.get(resource.toURI());        
         final Path result = printHierarchy(container);
-                
-        System.out.println("run diff command on " + expected + " and " + result);
-        System.out.println();
+        //System.out.println("run diff command on " + expected + " and " + result);
+        
+        final ProcessBuilder diffCommand = diffCommand(expected, result);
+        final Process process = diffCommand.start();
+        
+        final String diffOutput = String.join(
+            "\n", 
+            IOUtils.readLines(
+                process.getInputStream(), defaultCharset()
+            )
+        ); 
+        
+        if (process.waitFor() == 0 && StringUtils.isBlank(diffOutput)) {
+            System.out.println("diff: Success!\n");
+        } else {
+            System.out.println("diff: Failure!\n");
+        }        
     }        
     
     protected Triple<String, Operation, Map<String, String>> buildCommand(String data, Operation op) {
@@ -274,6 +290,24 @@ abstract class Stage implements Consumer<UUID> {
         r.put(key, value);
       
         return r;
+    }
+    
+    private ProcessBuilder diffCommand(Path p1, Path p2) {
+        final List<String> diff = new ArrayList<String>();
+        
+        if (StringUtils.equals("Mac OS X", System.getProperty("os.name"))) {
+            diff.add("/usr/bin/diff");    
+        } else {
+            diff.add("/bin/diff");            
+        }
+        
+        diff.add(p1.toFile().getAbsolutePath());
+        diff.add(p2.toFile().getAbsolutePath());
+        
+        final ProcessBuilder pb = new ProcessBuilder(diff);        
+        pb.redirectErrorStream(true);
+        
+        return pb;
     }
             
 }
