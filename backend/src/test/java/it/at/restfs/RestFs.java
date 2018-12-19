@@ -19,7 +19,7 @@ public interface RestFs {
     })    
     @POST("{path}?op=CREATE")
     Call<Void> create(
-        @retrofit2.http.Path("path") String path,
+        @retrofit2.http.Path(value = "path", encoded = true) String path,
         @Header(HTTPListener.AUTHORIZATION) String authorization,
         @Header(HTTPListener.X_CONTAINER) UUID container,
         @QueryMap Map<String, String> options        
@@ -30,7 +30,7 @@ public interface RestFs {
     })        
     @POST("{path}?op=MKDIRS")
     Call<Void> mkdirs(
-        @retrofit2.http.Path("path") String path,
+        @retrofit2.http.Path(value = "path", encoded = true) String path,
         @Header(HTTPListener.AUTHORIZATION) String authorization,
         @Header(HTTPListener.X_CONTAINER) UUID container,
         @QueryMap Map<String, String> options
@@ -41,7 +41,7 @@ public interface RestFs {
     })        
     @GET("{path}?op=GETSTATUS")
     Call<Void> getstatus(
-        @retrofit2.http.Path("path") String path,
+        @retrofit2.http.Path(value = "path", encoded = true) String path,
         @Header(HTTPListener.AUTHORIZATION) String authorization,
         @Header(HTTPListener.X_CONTAINER) UUID container,
         @QueryMap Map<String, String> options
@@ -52,7 +52,7 @@ public interface RestFs {
     })        
     @GET("{path}?op=LISTSTATUS")
     Call<Void> liststatus(
-        @retrofit2.http.Path("path") String path,
+        @retrofit2.http.Path(value = "path", encoded = true) String path,
         @Header(HTTPListener.AUTHORIZATION) String authorization,
         @Header(HTTPListener.X_CONTAINER) UUID container,
         @QueryMap Map<String, String> options
@@ -63,7 +63,7 @@ public interface RestFs {
     })        
     @PUT("{path}?op=RENAME")
     Call<Void> rename(
-        @retrofit2.http.Path("path") String path,
+        @retrofit2.http.Path(value = "path", encoded = true) String path,
         @Header(HTTPListener.AUTHORIZATION) String authorization,
         @Header(HTTPListener.X_CONTAINER) UUID container,
         @QueryMap Map<String, String> options
@@ -74,7 +74,7 @@ public interface RestFs {
     })        
     @DELETE("{path}?op=DELETE")
     Call<Void> delete(
-        @retrofit2.http.Path("path") String path,
+        @retrofit2.http.Path(value = "path", encoded = true) String path,
         @Header(HTTPListener.AUTHORIZATION) String authorization,
         @Header(HTTPListener.X_CONTAINER) UUID container,
         @QueryMap Map<String, String> options
