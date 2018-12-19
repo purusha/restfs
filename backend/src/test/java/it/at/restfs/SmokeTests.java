@@ -3,6 +3,7 @@ package it.at.restfs;
 import static java.nio.charset.Charset.defaultCharset;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -119,8 +120,7 @@ class Stage2 extends Stage {
             buildCommand("file2", Operation.DELETE),
             buildCommand("dir2", Operation.DELETE)            
         );
-    }
-    
+    }    
 }
 
 class Stage3 extends Stage {
@@ -141,7 +141,9 @@ class Stage3 extends Stage {
             buildCommand("dir", Operation.RENAME, queryBuilder("target", "dir2")),
             buildCommand("file", Operation.DELETE),
             buildCommand("dir", Operation.DELETE)
-        );               
+        ); 
+        
+        //XXX how to verify at least all http response status !!?
     }    
 }
 
@@ -201,40 +203,37 @@ abstract class Stage implements Consumer<UUID> {
     }
     
     @SuppressWarnings("unchecked")
-    protected void runCommands(UUID container, boolean existOnError, Triple<String, Operation, Map<String, String>> ... cmds) {
+    protected void runCommands(UUID container, boolean stopOnError, Triple<String, Operation, Map<String, String>> ... cmds) {
         Arrays
             .stream(cmds)
-            .forEach(cmd -> {
-                System.out.println("> " + cmd);
-                
-                try {
-                    
-                    final Call<Void> result = (Call<Void>)Arrays.stream(RestFs.class.getMethods())
-                        .filter(m -> StringUtils.equals(m.getName(), cmd.getMiddle().toString().toLowerCase()))
-                        .findFirst()
-                        .get()
-                        .invoke(
-                            service, cmd.getLeft(), "42", container, cmd.getRight()
-                        );
-                    
-                    final Response<Void> execute = result.execute();                
-                    
-                    if (! execute.isSuccessful()) {
-                        System.out.println(execute);
-                        System.out.println(execute.errorBody().string() + "\n");
-                        
-                        if (existOnError) {
-                            throw new RuntimeException();                        
-                        }                                       
-                    }
-                    
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-                
-            });
+            .forEach(cmd -> remoteCall(container, stopOnError, cmd));
     }
 
+    @SneakyThrows(value = {IllegalAccessException.class, InvocationTargetException.class, IOException.class})
+    private void remoteCall(UUID container, boolean stopOnError, Triple<String, Operation, Map<String, String>> cmd) {
+        System.out.println("$> " + cmd);
+        
+        @SuppressWarnings("unchecked")
+        final Call<Void> result = (Call<Void>)Arrays.stream(RestFs.class.getMethods())
+            .filter(m -> StringUtils.equals(m.getName(), cmd.getMiddle().toString().toLowerCase()))
+            .findFirst()
+            .get()
+            .invoke(
+                service, cmd.getLeft(), "42", container, cmd.getRight()
+            );
+        
+        final Response<Void> execute = result.execute();                
+        
+        if (! execute.isSuccessful()) {
+            System.out.println(execute);
+            System.out.println(execute.errorBody().string() + "\n");
+            
+            if (stopOnError) {
+                throw new RuntimeException();                        
+            }                                       
+        }
+    }
+    
     //XXX this code know's which is the real implementation ... is stupid
     public void createContainer(UUID container) {
         getContainer(container).mkdir();
@@ -275,12 +274,14 @@ abstract class Stage implements Consumer<UUID> {
         } else {
             System.out.println("diff: Failure!\n");
         }        
-    }        
+    }
     
+    //triple => targetResouce, operation, queryParams
     protected Triple<String, Operation, Map<String, String>> buildCommand(String data, Operation op) {
         return buildCommand(data, op, Maps.newHashMap());
     }    
 
+    //triple => targetResouce, operation, queryParams
     protected Triple<String, Operation, Map<String, String>> buildCommand(String data, Operation op, Map<String, String> query) {
         return Triple.of(data, op, query);
     }    
