@@ -294,6 +294,7 @@ abstract class Stage implements Consumer<UUID> {
             System.out.println("diff: Success!\n");
         } else {
             System.out.println("diff: Failure!\n");
+            System.out.println(diffOutput);
         }        
     }
     
