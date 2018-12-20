@@ -1,0 +1,16 @@
+.:
+dir
+
+./dir:
+dir2
+
+./dir/dir2:
+dir3
+dir4
+
+./dir/dir2/dir3:
+test.json
+test-no-extension
+test.xml
+
+./dir/dir2/dir4:

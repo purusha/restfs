@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -132,7 +133,10 @@ public class FileSystemStorage implements Storage {
     public void delete(UUID container, String path) {
         final Path realPath = resolve(container, path, false);
         
-        Files.delete(realPath);
+        Files.walk(realPath)
+          .sorted(Comparator.reverseOrder())
+          .map(Path::toFile)
+          .forEach(File::delete);
     }
     
     @Override

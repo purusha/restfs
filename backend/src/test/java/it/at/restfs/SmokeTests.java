@@ -41,13 +41,13 @@ public class SmokeTests {
 //        final ExecutorService service = Executors.newFixedThreadPool(5);
         
         Lists.newArrayList(
-            Stage0.class, Stage1.class, Stage2.class, Stage3.class
+            Stage0.class, Stage1.class, Stage2.class, Stage3.class, Stage21.class            
         ).forEach(s -> service.submit(() -> {
 
             try {
                 
                 final UUID container = UUID.randomUUID();
-                System.out.println("process " + s.getSimpleName() + " on " + container);
+                System.out.println("\nprocess " + s.getSimpleName() + " on " + container);
                 
                 final Stage stage = s.newInstance();
                 
@@ -123,6 +123,26 @@ class Stage2 extends Stage {
     }    
 }
 
+class Stage21 extends Stage {
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public void accept(UUID container) {
+      runCommands(
+          container,      
+          buildCommand("dir/dir2/dir3", Operation.MKDIRS),
+          buildCommand("dir/dir2/dir3/test-no-extension", Operation.CREATE),
+          buildCommand("dir/dir2/dir3/test.xml", Operation.CREATE),
+          buildCommand("dir/dir2/dir3/test.json", Operation.CREATE),
+          buildCommand("dir/dir2/dir4/dir5", Operation.MKDIRS),
+          buildCommand("dir/dir2/dir4/dir5/file1.html", Operation.CREATE),
+          buildCommand("dir/dir2/dir4/dir5/file2.html", Operation.CREATE),
+          buildCommand("dir/dir2/dir4/dir5/dir6", Operation.MKDIRS),
+          buildCommand("dir/dir2/dir4/dir5", Operation.DELETE)            
+      );
+  }    
+}
+
 class Stage3 extends Stage {
     
     /*
@@ -153,7 +173,8 @@ abstract class Stage implements Consumer<UUID> {
     
     static {
         LS.add("/bin/ls");
-        LS.add("-lR1");
+        //LS.add("-lR1"); //on MAC
+        LS.add("-R1"); //on LINUX
     }
     
     private final RestFs service;
@@ -296,11 +317,11 @@ abstract class Stage implements Consumer<UUID> {
     private ProcessBuilder diffCommand(Path p1, Path p2) {
         final List<String> diff = new ArrayList<String>();
         
-        if (StringUtils.equals("Mac OS X", System.getProperty("os.name"))) {
+//        if (StringUtils.equals("Mac OS X", System.getProperty("os.name"))) {
             diff.add("/usr/bin/diff");    
-        } else {
-            diff.add("/bin/diff");            
-        }
+//        } else {
+//            diff.add("/bin/diff");            
+//        }
         
         diff.add(p1.toFile().getAbsolutePath());
         diff.add(p2.toFile().getAbsolutePath());
