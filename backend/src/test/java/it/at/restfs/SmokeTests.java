@@ -26,7 +26,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import it.at.restfs.http.HTTPListener;
 import it.at.restfs.storage.FileSystemStorage;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.SneakyThrows;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -41,7 +44,8 @@ public class SmokeTests {
 //        final ExecutorService service = Executors.newFixedThreadPool(5);
         
         Lists.newArrayList(
-            Stage0.class, Stage1.class, Stage2.class, Stage3.class, Stage21.class            
+            Stage0.class, Stage1.class, Stage2.class, Stage3.class, Stage21.class
+            //Stage11.class, Stage111.class
         ).forEach(s -> service.submit(() -> {
 
             try {
@@ -76,7 +80,10 @@ class Stage0 extends Stage {
     @Override
     public void accept(UUID container) {
         runCommands(
-            container,                
+            ExecutionContext.builder()
+                .container(container)
+                .stopOnError(true)
+                .build(), 
             buildCommand("file", Operation.CREATE),
             buildCommand("dir", Operation.MKDIRS),
             buildCommand("file", Operation.GETSTATUS),
@@ -91,7 +98,10 @@ class Stage1 extends Stage {
     @Override
     public void accept(UUID container) {
         runCommands(
-            container, 
+            ExecutionContext.builder()
+                .container(container)
+                .stopOnError(true)
+                .build(), 
             buildCommand("file", Operation.CREATE),
             buildCommand("dir", Operation.MKDIRS),
             buildCommand("file", Operation.GETSTATUS),
@@ -104,13 +114,75 @@ class Stage1 extends Stage {
     }    
 }
 
+class Stage11 extends Stage {
+  
+    /*
+        non è possibile la rinomina di un file in uno che esiste già
+     */
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void accept(UUID container) {
+        runCommands(
+            ExecutionContext.builder()
+                .container(container)
+                .stopOnError(true)
+                .printResponse(true)
+                .build(), 
+            buildCommand("file", Operation.CREATE),
+            buildCommand("file2", Operation.CREATE),
+            buildCommand("", Operation.LISTSTATUS),
+            buildCommand("file", Operation.RENAME, queryBuilder("target", "file2"))
+        );
+        
+        /*
+    
+            Response{protocol=http/1.1, code=500, message=Internal Server Error, url=http://localhost:8081/restfs/v1/file?op=RENAME&target=file2}
+            There was an internal server error.
+    
+         */        
+    }    
+}
+
+class Stage111 extends Stage {
+
+    /*
+        non è possibile la rinomina di un file che esiste già
+    */
+  
+    @SuppressWarnings("unchecked")
+    @Override
+    public void accept(UUID container) {
+        runCommands(
+            ExecutionContext.builder()
+                .container(container)
+                .stopOnError(true)
+                .printResponse(true)
+                .build(), 
+            buildCommand("file", Operation.CREATE),
+            buildCommand("", Operation.LISTSTATUS),
+            buildCommand("file2", Operation.RENAME, queryBuilder("target", "file3"))
+        );   
+        
+        /*
+
+            Response{protocol=http/1.1, code=500, message=Internal Server Error, url=http://localhost:8081/restfs/v1/file?op=RENAME&target=file2}
+            There was an internal server error.
+ 
+         */
+    }    
+}
+
 class Stage2 extends Stage {
 
     @SuppressWarnings("unchecked")
     @Override
     public void accept(UUID container) {
         runCommands(
-            container,                
+            ExecutionContext.builder()
+                .container(container)
+                .stopOnError(true)
+                .build(), 
             buildCommand("file", Operation.CREATE),
             buildCommand("dir", Operation.MKDIRS),
             buildCommand("file", Operation.GETSTATUS),
@@ -129,7 +201,10 @@ class Stage21 extends Stage {
   @Override
   public void accept(UUID container) {
       runCommands(
-          container,      
+          ExecutionContext.builder()
+              .container(container)
+              .stopOnError(true)
+              .build(), 
           buildCommand("dir/dir2/dir3", Operation.MKDIRS),
           buildCommand("dir/dir2/dir3/test-no-extension", Operation.CREATE),
           buildCommand("dir/dir2/dir3/test.xml", Operation.CREATE),
@@ -151,10 +226,12 @@ class Stage3 extends Stage {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void accept(UUID container) {
+    public void accept(UUID container) {      
         runCommands(
-            container,
-            false,
+            ExecutionContext.builder()
+                .container(container)
+                .stopOnError(false)
+                .build(), 
             buildCommand("file", Operation.GETSTATUS),
             buildCommand("dir", Operation.LISTSTATUS),
             buildCommand("file", Operation.RENAME, queryBuilder("target", "file2")),
@@ -217,41 +294,40 @@ abstract class Stage implements Consumer<UUID> {
             throw new RuntimeException("no file create for printHierarchy");
         }
     }
-
-    @SuppressWarnings("unchecked")
-    protected void runCommands(UUID container, Triple<String, Operation, Map<String, String>> ... cmds) {
-        runCommands(container, true, cmds);
-    }
     
     @SuppressWarnings("unchecked")
-    protected void runCommands(UUID container, boolean stopOnError, Triple<String, Operation, Map<String, String>> ... cmds) {
+    protected void runCommands(ExecutionContext context, Triple<String, Operation, Map<String, String>> ... cmds) {
         Arrays
             .stream(cmds)
-            .forEach(cmd -> remoteCall(container, stopOnError, cmd));
+            .forEach(cmd -> remoteCall(context, cmd));
     }
 
     @SneakyThrows(value = {IllegalAccessException.class, InvocationTargetException.class, IOException.class})
-    private void remoteCall(UUID container, boolean stopOnError, Triple<String, Operation, Map<String, String>> cmd) {
+    private void remoteCall(ExecutionContext context, Triple<String, Operation, Map<String, String>> cmd) {
         System.out.println("$> " + cmd);
         
         @SuppressWarnings("unchecked")
-        final Call<Void> result = (Call<Void>)Arrays.stream(RestFs.class.getMethods())
+        final Call<ResponseBody> result = (Call<ResponseBody>)Arrays.stream(RestFs.class.getMethods())
             .filter(m -> StringUtils.equals(m.getName(), cmd.getMiddle().toString().toLowerCase()))
             .findFirst()
             .get()
             .invoke(
-                service, cmd.getLeft(), "42", container, cmd.getRight()
+                service, cmd.getLeft(), "42", context.getContainer(), cmd.getRight()
             );
         
-        final Response<Void> execute = result.execute();                
+        final Response<ResponseBody> execute = result.execute();
         
-        if (! execute.isSuccessful()) {
+        if (execute.isSuccessful()) {
+            if (context.isPrintResponse()) {          
+                System.out.println(execute.body().string() + "\n");
+            }
+        } else {
             System.out.println(execute);
             System.out.println(execute.errorBody().string() + "\n");
             
-            if (stopOnError) {
+            if (context.isStopOnError()) {
                 throw new RuntimeException();                        
-            }                                       
+            }                                                 
         }
     }
     
@@ -332,6 +408,13 @@ abstract class Stage implements Consumer<UUID> {
         
         return pb;
     }
-            
+        
+    @Getter
+    @Builder
+    static class ExecutionContext {
+        private final UUID container;
+        private final boolean stopOnError; 
+        private final boolean printResponse;
+    }
 }
 

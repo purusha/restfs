@@ -3,6 +3,7 @@ package it.at.restfs;
 import java.util.Map;
 import java.util.UUID;
 import it.at.restfs.http.HTTPListener;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
@@ -18,7 +19,7 @@ public interface RestFs {
         "Accept: application/json",
     })    
     @POST("{path}?op=CREATE")
-    Call<Void> create(
+    Call<ResponseBody> create(
         @retrofit2.http.Path(value = "path", encoded = true) String path,
         @Header(HTTPListener.AUTHORIZATION) String authorization,
         @Header(HTTPListener.X_CONTAINER) UUID container,
@@ -29,7 +30,7 @@ public interface RestFs {
         "Accept: application/json",
     })        
     @POST("{path}?op=MKDIRS")
-    Call<Void> mkdirs(
+    Call<ResponseBody> mkdirs(
         @retrofit2.http.Path(value = "path", encoded = true) String path,
         @Header(HTTPListener.AUTHORIZATION) String authorization,
         @Header(HTTPListener.X_CONTAINER) UUID container,
@@ -40,7 +41,7 @@ public interface RestFs {
         "Accept: application/json",
     })        
     @GET("{path}?op=GETSTATUS")
-    Call<Void> getstatus(
+    Call<ResponseBody> getstatus(
         @retrofit2.http.Path(value = "path", encoded = true) String path,
         @Header(HTTPListener.AUTHORIZATION) String authorization,
         @Header(HTTPListener.X_CONTAINER) UUID container,
@@ -51,7 +52,7 @@ public interface RestFs {
         "Accept: application/json",
     })        
     @GET("{path}?op=LISTSTATUS")
-    Call<Void> liststatus(
+    Call<ResponseBody> liststatus(
         @retrofit2.http.Path(value = "path", encoded = true) String path,
         @Header(HTTPListener.AUTHORIZATION) String authorization,
         @Header(HTTPListener.X_CONTAINER) UUID container,
@@ -62,7 +63,7 @@ public interface RestFs {
         "Accept: application/json",
     })        
     @PUT("{path}?op=RENAME")
-    Call<Void> rename(
+    Call<ResponseBody> rename(
         @retrofit2.http.Path(value = "path", encoded = true) String path,
         @Header(HTTPListener.AUTHORIZATION) String authorization,
         @Header(HTTPListener.X_CONTAINER) UUID container,
@@ -73,7 +74,7 @@ public interface RestFs {
         "Accept: application/json",
     })        
     @DELETE("{path}?op=DELETE")
-    Call<Void> delete(
+    Call<ResponseBody> delete(
         @retrofit2.http.Path(value = "path", encoded = true) String path,
         @Header(HTTPListener.AUTHORIZATION) String authorization,
         @Header(HTTPListener.X_CONTAINER) UUID container,
