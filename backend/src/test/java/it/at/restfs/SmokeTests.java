@@ -28,6 +28,7 @@ import it.at.restfs.http.HTTPListener;
 import it.at.restfs.storage.FileSystemStorage;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -44,8 +45,8 @@ public class SmokeTests {
 //        final ExecutorService service = Executors.newFixedThreadPool(5);
         
         Lists.newArrayList(
-            Stage0.class, Stage1.class, Stage2.class, Stage3.class, Stage21.class
-            //Stage11.class, Stage111.class
+            Stage0.class, Stage1.class, Stage2.class, Stage3.class, Stage21.class,
+            Stage11.class, Stage111.class
         ).forEach(s -> service.submit(() -> {
 
             try {
@@ -123,53 +124,67 @@ class Stage11 extends Stage {
     @SuppressWarnings("unchecked")
     @Override
     public void accept(UUID container) {
-        runCommands(
-            ExecutionContext.builder()
-                .container(container)
-                .stopOnError(true)
-                .printResponse(true)
-                .build(), 
-            buildCommand("file", Operation.CREATE),
-            buildCommand("file2", Operation.CREATE),
-            buildCommand("", Operation.LISTSTATUS),
-            buildCommand("file", Operation.RENAME, queryBuilder("target", "file2"))
+        
+        NotSuccessfullResult r = null;
+        
+        try {
+            
+            runCommands(
+                ExecutionContext.builder()
+                    .container(container)
+                    .stopOnError(true)
+                    .build(), 
+                buildCommand("file", Operation.CREATE),
+                buildCommand("file2", Operation.CREATE),
+                buildCommand("", Operation.LISTSTATUS),
+                buildCommand("file", Operation.RENAME, queryBuilder("target", "file2"))
+            );
+            
+        } catch (NotSuccessfullResult e) {
+            r = e;            
+        }
+        
+        expected(
+            "Response{protocol=http/1.1, code=409, message=Conflict, url=http://localhost:8081/restfs/v1/file?op=RENAME&target=file2}", 
+            r.getResponse().toString()
         );
         
-        /*
-    
-            Response{protocol=http/1.1, code=500, message=Internal Server Error, url=http://localhost:8081/restfs/v1/file?op=RENAME&target=file2}
-            There was an internal server error.
-    
-         */        
     }    
 }
 
 class Stage111 extends Stage {
 
     /*
-        non è possibile la rinomina di un file che esiste già
+        non è possibile la rinomina di un file che non esiste
     */
   
     @SuppressWarnings("unchecked")
     @Override
     public void accept(UUID container) {
-        runCommands(
-            ExecutionContext.builder()
-                .container(container)
-                .stopOnError(true)
-                .printResponse(true)
-                .build(), 
-            buildCommand("file", Operation.CREATE),
-            buildCommand("", Operation.LISTSTATUS),
-            buildCommand("file2", Operation.RENAME, queryBuilder("target", "file3"))
-        );   
         
-        /*
-
-            Response{protocol=http/1.1, code=500, message=Internal Server Error, url=http://localhost:8081/restfs/v1/file?op=RENAME&target=file2}
-            There was an internal server error.
- 
-         */
+        NotSuccessfullResult r = null;
+        
+        try {
+            
+            runCommands(
+                ExecutionContext.builder()
+                    .container(container)
+                    .stopOnError(true)
+                    .build(), 
+                buildCommand("file", Operation.CREATE),
+                buildCommand("", Operation.LISTSTATUS),
+                buildCommand("file2", Operation.RENAME, queryBuilder("target", "file3"))
+            );   
+            
+        } catch (NotSuccessfullResult e) {
+            r = e;            
+        }
+        
+        expected(
+            "Response{protocol=http/1.1, code=404, message=Not Found, url=http://localhost:8081/restfs/v1/file2?op=RENAME&target=file3}", 
+            r.getResponse().toString()
+        );
+                
     }    
 }
 
@@ -318,17 +333,22 @@ abstract class Stage implements Consumer<UUID> {
         final Response<ResponseBody> execute = result.execute();
         
         if (execute.isSuccessful()) {
+            
             if (context.isPrintResponse()) {          
                 System.out.println(execute.body().string() + "\n");
             }
+            
         } else {
-            System.out.println(execute);
-            System.out.println(execute.errorBody().string() + "\n");
             
             if (context.isStopOnError()) {
-                throw new RuntimeException();                        
-            }                                                 
-        }
+                System.out.println();
+                throw new NotSuccessfullResult(execute);                        
+            } else {
+                //System.out.println(execute);
+                System.out.println(execute.errorBody().string() + "\n");                
+            }
+            
+        }        
     }
     
     //XXX this code know's which is the real implementation ... is stupid
@@ -408,6 +428,16 @@ abstract class Stage implements Consumer<UUID> {
         
         return pb;
     }
+    
+    protected void expected(String expected, String result) {
+        if(! StringUtils.equals(expected, result)){
+            
+            System.err.println("expected: " + expected);
+            System.err.println("result: " + result);
+            
+            throw new RuntimeException("Not the same !!?");
+        }
+    }
         
     @Getter
     @Builder
@@ -416,5 +446,14 @@ abstract class Stage implements Consumer<UUID> {
         private final boolean stopOnError; 
         private final boolean printResponse;
     }
+
+    @Getter
+    @RequiredArgsConstructor
+    class NotSuccessfullResult extends RuntimeException {
+        private static final long serialVersionUID = 1363056864961261367L;
+        
+        private final Response<ResponseBody> response;
+    }
+    
 }
 

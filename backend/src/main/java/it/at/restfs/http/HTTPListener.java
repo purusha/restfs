@@ -2,6 +2,7 @@ package it.at.restfs.http;
 
 import static akka.http.javadsl.server.Directives.*;
 import static akka.http.javadsl.server.PathMatchers.segment;
+import java.nio.file.FileAlreadyExistsException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -40,6 +41,11 @@ public class HTTPListener {
             LOGGER.error("handling exception: ", x);
             
             return complete(StatusCodes.NOT_FOUND, x.getMessage());
+        })
+        .match(FileAlreadyExistsException.class, x -> {
+            LOGGER.error("handling exception: ", x);
+            
+            return complete(StatusCodes.CONFLICT, x.getMessage());
         })
         .build();    
     

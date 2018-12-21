@@ -153,7 +153,7 @@ public class FileSystemStorage implements Storage {
         final Path sourcePath = resolve(container, path, false);
         final Path targetPath = resolve(container, "/" + target, true);
         
-        Files.move(sourcePath, targetPath);
+        Files.move(sourcePath, targetPath); //throw FileAlreadyExistsException when targetPath just exist !!?
         
         return StringUtils.substringAfter(targetPath.toFile().getAbsolutePath(), container.toString());
     }
