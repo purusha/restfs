@@ -1,4 +1,3 @@
-.:
 dir
 
 ./dir:
@@ -9,8 +8,8 @@ dir3
 dir4
 
 ./dir/dir2/dir3:
-test.json
 test-no-extension
+test.json
 test.xml
 
 ./dir/dir2/dir4:

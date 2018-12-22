@@ -17,7 +17,7 @@ public class SmokeTests {
         
         Lists.newArrayList(
             Stage0.class, Stage1.class, Stage2.class, Stage3.class, Stage21.class,
-            Stage11.class, Stage111.class
+            Stage11.class, Stage12.class, Stage13.class, Stage14.class
         ).forEach(s -> service.submit(() -> {
 
             try {
@@ -121,7 +121,7 @@ class Stage11 extends Stage {
     }    
 }
 
-class Stage111 extends Stage {
+class Stage12 extends Stage {
 
     /*
         non è possibile la rinomina di un file che non esiste
@@ -150,6 +150,75 @@ class Stage111 extends Stage {
         
         expected(
             "Response{protocol=http/1.1, code=404, message=Not Found, url=http://localhost:8081/restfs/v1/file2?op=RENAME&target=file3}", 
+            r.getResponse().toString()
+        );                
+    }    
+}
+
+class Stage13 extends Stage {
+    
+    /*
+        non è possibile la rinomina di una directory in una che esiste già
+     */
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void accept(UUID container) {        
+        NotSuccessfullResult r = null;
+        
+        try {
+            
+            runCommands(
+                ExecutionContext.builder()
+                    .container(container)
+                    .stopOnError(true)
+                    .build(), 
+                buildCommand("dir", Operation.MKDIRS),
+                buildCommand("dir2", Operation.MKDIRS),
+                buildCommand("", Operation.LISTSTATUS),
+                buildCommand("dir", Operation.RENAME, queryBuilder("target", "dir2"))
+            );
+            
+        } catch (NotSuccessfullResult e) {
+            r = e;            
+        }
+        
+        expected(
+            "Response{protocol=http/1.1, code=409, message=Conflict, url=http://localhost:8081/restfs/v1/dir?op=RENAME&target=dir2}", 
+            r.getResponse().toString()
+        );        
+    }    
+}
+
+class Stage14 extends Stage {
+
+    /*
+        non è possibile la rinomina di una directory che non esiste
+    */
+  
+    @SuppressWarnings("unchecked")
+    @Override
+    public void accept(UUID container) {        
+        NotSuccessfullResult r = null;
+        
+        try {
+            
+            runCommands(
+                ExecutionContext.builder()
+                    .container(container)
+                    .stopOnError(true)
+                    .build(), 
+                buildCommand("dir", Operation.CREATE),
+                buildCommand("", Operation.LISTSTATUS),
+                buildCommand("dir2", Operation.RENAME, queryBuilder("target", "dir3"))
+            );   
+            
+        } catch (NotSuccessfullResult e) {
+            r = e;            
+        }
+        
+        expected(
+            "Response{protocol=http/1.1, code=404, message=Not Found, url=http://localhost:8081/restfs/v1/dir2?op=RENAME&target=dir3}",
             r.getResponse().toString()
         );                
     }    

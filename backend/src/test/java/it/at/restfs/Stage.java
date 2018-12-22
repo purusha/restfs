@@ -37,8 +37,7 @@ abstract class Stage implements Consumer<UUID> {
     
     static {
         LS.add("/bin/ls");
-        //LS.add("-lR1"); //on MAC
-        LS.add("-R1"); //on LINUX
+        LS.add("-R1");
     }
     
     private final RestFs service;
@@ -186,12 +185,7 @@ abstract class Stage implements Consumer<UUID> {
     private ProcessBuilder diffCommand(Path p1, Path p2) {
         final List<String> diff = new ArrayList<String>();
         
-//        if (StringUtils.equals("Mac OS X", System.getProperty("os.name"))) {
-            diff.add("/usr/bin/diff");    
-//        } else {
-//            diff.add("/bin/diff");            
-//        }
-        
+        diff.add("/usr/bin/diff");    
         diff.add(p1.toFile().getAbsolutePath());
         diff.add(p2.toFile().getAbsolutePath());
         
