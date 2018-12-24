@@ -80,5 +80,16 @@ public interface RestFs {
         @Header(HTTPListener.X_CONTAINER) UUID container,
         @QueryMap Map<String, String> options
     );
+
+    @Headers({
+        "Accept: application/json",
+    })        
+    @PUT("{path}?op=MOVE")
+    Call<ResponseBody> move(
+        @retrofit2.http.Path(value = "path", encoded = true) String path,
+        @Header(HTTPListener.AUTHORIZATION) String authorization,
+        @Header(HTTPListener.X_CONTAINER) UUID container,
+        @QueryMap Map<String, String> options
+    );
     
 }

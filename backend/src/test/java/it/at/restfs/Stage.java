@@ -60,10 +60,7 @@ abstract class Stage implements Consumer<UUID> {
 
         FileUtils.write(
             new File(root, container.toString() + ".tree"), 
-            String.join(
-                "\n", 
-                features.catchOutputOf(process)
-            ), 
+            String.join("\n", features.catchOutputOf(process)), 
             defaultCharset()
         );
 
@@ -134,7 +131,7 @@ abstract class Stage implements Consumer<UUID> {
         final URL resource = getClass().getClassLoader().getResource(this.getClass().getSimpleName() + ".tree");
         
         if (Objects.isNull(resource)) {
-            System.out.println("can't run diff command because tree file does not exist");
+            System.out.println("diff: can't run because tree file does not exist");
             return;
         }
         

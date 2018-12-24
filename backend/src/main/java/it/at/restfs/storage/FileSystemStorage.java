@@ -14,6 +14,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import it.at.restfs.http.HTTPListener;
 import lombok.SneakyThrows;
@@ -162,9 +163,10 @@ public class FileSystemStorage implements Storage {
     @Override
     public String move(UUID container, String path, String target) {
         final Path sourcePath = resolve(container, path, false);
-        final Path targetPath = resolve(container, target, true);
+        final Path targetPath = resolve(container, "/" + target, true);
         
-        Files.move(sourcePath, targetPath);
+        //Files.move(sourcePath, targetPath);
+        FileUtils.moveFileToDirectory(sourcePath.toFile(), targetPath.toFile(), false);
         
         return StringUtils.substringAfter(targetPath.toFile().getAbsolutePath(), container.toString());
     }

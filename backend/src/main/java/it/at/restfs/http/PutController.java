@@ -46,19 +46,16 @@ public class PutController extends BaseController {
         */
         
         return parameter("target", target -> {
-            if(StringUtils.indexOfAny(target, "\\/") >= 0) { //XXX move only to another directory
-                
-                final String result = getStorage().move(t.getContainer(), t.getPath(), target);
-                final AssetType typeOf = getStorage().typeOf(t.getContainer(), result);
-                final Request targetRequest = new Request(t.getContainer(), result, t.getOperation());
-                
-                return AssetType.FILE == typeOf ?
-                    getFileStatus(targetRequest) :
-                    getDirectoryStatus(targetRequest);
-                
-            } else {
+            final AssetType targetType = getStorage().typeOf(t.getContainer(), "/" + target);
+            
+            if(AssetType.FILE == targetType) {
                 return complete(StatusCodes.BAD_REQUEST, "target must be a directory");
             }
+          
+            final String result = getStorage().move(t.getContainer(), t.getPath(), target);
+            final Request targetRequest = new Request(t.getContainer(), result, t.getOperation());
+            
+            return getDirectoryStatus(targetRequest);            
         });                
     }
     

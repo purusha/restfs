@@ -16,8 +16,9 @@ public class SmokeTests {
 //        final ExecutorService service = Executors.newFixedThreadPool(5);
         
         Lists.newArrayList(
-            Stage0.class, Stage1.class, Stage2.class, Stage3.class, Stage21.class,
-            Stage11.class, Stage12.class, Stage13.class, Stage14.class
+            Stage0.class, Stage1.class, Stage2.class, Stage3.class, Stage4.class,
+            Stage11.class, Stage12.class, Stage13.class, Stage14.class, 
+            Stage21.class 
         ).forEach(s -> service.submit(() -> {
 
             try {
@@ -292,5 +293,24 @@ class Stage3 extends Stage {
         ); 
         
         //XXX how to verify at least all http response status !!?
+    }    
+}
+
+class Stage4 extends Stage {  
+  
+    @SuppressWarnings("unchecked")
+    @Override
+    public void accept(UUID container) {      
+        runCommands(
+            ExecutionContext.builder()
+                .container(container)
+                .stopOnError(true)
+                .build(),
+            buildCommand("file1", Operation.CREATE),
+            buildCommand("file2", Operation.CREATE),
+            buildCommand("dir/dir2", Operation.MKDIRS),               
+            buildCommand("file1", Operation.MOVE, queryBuilder("target", "dir/dir2")),
+            buildCommand("file2", Operation.MOVE, queryBuilder("target", "dir"))
+        );       
     }    
 }
