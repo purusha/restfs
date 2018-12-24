@@ -16,7 +16,7 @@ public class SmokeTests {
 //        final ExecutorService service = Executors.newFixedThreadPool(5);
         
         Lists.newArrayList(
-            Stage0.class, Stage1.class, Stage2.class, Stage3.class, Stage4.class,
+            Stage0.class, Stage1.class, Stage2.class, Stage3.class, Stage4.class, Stage5.class,
             Stage11.class, Stage12.class, Stage13.class, Stage14.class, 
             Stage21.class, Stage22.class
         ).forEach(s -> service.submit(() -> {
@@ -329,6 +329,23 @@ class Stage4 extends Stage {
             buildCommand("dir/dir2", Operation.MKDIRS),               
             buildCommand("file1", Operation.MOVE, queryBuilder("target", "dir/dir2")),
             buildCommand("file2", Operation.MOVE, queryBuilder("target", "dir"))
+        );       
+    }    
+}
+
+class Stage5 extends Stage {  
+  
+    @SuppressWarnings("unchecked")
+    @Override
+    public void accept(UUID container) {      
+        runCommands(
+            ExecutionContext.builder()
+                .container(container)
+                .stopOnError(true)
+                .build(),
+            buildCommand("dir/dir2/dir3/dir4/dir5", Operation.MKDIRS),               
+            buildCommand("dir/dir2/dir3/dir4", Operation.MOVE, queryBuilder("target", "dir/dir2")),
+            buildCommand("dir/dir2/dir3", Operation.MOVE, queryBuilder("target", "dir"))
         );       
     }    
 }

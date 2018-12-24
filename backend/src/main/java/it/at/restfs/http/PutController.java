@@ -45,11 +45,15 @@ public class PutController extends BaseController {
         */
         
         return parameter("target", target -> {
-            final AssetType targetType = getStorage().typeOf(t.getContainer(), "/" + target);
+            final AssetType typeOf = getStorage().typeOf(t.getContainer(), "/" + target);
             
-            if(AssetType.FILE == targetType) {
+            if(AssetType.FILE == typeOf) {
                 return complete(StatusCodes.BAD_REQUEST, "target must be a directory");
             }
+            
+//            if (! StringUtils.startsWith(target, t.getPath())) {
+//                return complete(StatusCodes.BAD_REQUEST, "target cannot start with currentPath");
+//            }
           
             final String result = getStorage().move(t.getContainer(), t.getPath(), target);
             final Request req = new Request(t.getContainer(), result, t.getOperation());

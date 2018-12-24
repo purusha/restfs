@@ -167,7 +167,11 @@ public class FileSystemStorage implements Storage {
         final Path sourcePath = resolve(container, path, false);
         final Path targetPath = resolve(container, "/" + target, true);
         
-        FileUtils.moveFileToDirectory(sourcePath.toFile(), targetPath.toFile(), false);
+        if (AssetType.FOLDER == typeOf(container, path)) {
+            FileUtils.moveDirectoryToDirectory(sourcePath.toFile(), targetPath.toFile(), false);  
+        } else {
+            FileUtils.moveFileToDirectory(sourcePath.toFile(), targetPath.toFile(), false);  
+        }
         
         return StringUtils.substringAfter(targetPath.toFile().getAbsolutePath(), container.toString());
     }
