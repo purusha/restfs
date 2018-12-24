@@ -82,6 +82,7 @@ public class FileSystemStorage implements Storage {
         }
     }
 
+    //XXX questo metodo è scritto moooolto male, che schifo !!? le bandiere si usavano al tempo di mio nonno!
     private Path resolve(UUID container, String path, boolean flag) {
         final Path realPath = Paths.get(ROOT + "/" + container + path);        
         final File realFile = realPath.toFile();        
@@ -152,7 +153,8 @@ public class FileSystemStorage implements Storage {
     @Override
     public String rename(UUID container, String path, String target) {
         final Path sourcePath = resolve(container, path, false);
-        final Path targetPath = resolve(container, "/" + target, true);
+        final String parent = StringUtils.substringAfter(sourcePath.getParent().toFile().getAbsolutePath(), container.toString());
+        final Path targetPath = resolve(container, parent + "/" + target, true);
         
         Files.move(sourcePath, targetPath); //throw FileAlreadyExistsException when targetPath just exist !!?
         
@@ -165,7 +167,6 @@ public class FileSystemStorage implements Storage {
         final Path sourcePath = resolve(container, path, false);
         final Path targetPath = resolve(container, "/" + target, true);
         
-        //Files.move(sourcePath, targetPath);
         FileUtils.moveFileToDirectory(sourcePath.toFile(), targetPath.toFile(), false);
         
         return StringUtils.substringAfter(targetPath.toFile().getAbsolutePath(), container.toString());

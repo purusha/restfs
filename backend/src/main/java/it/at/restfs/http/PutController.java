@@ -22,22 +22,21 @@ public class PutController extends BaseController {
     //operation = RENAME
     public Route rename(Request t) {
         return parameter("target", target -> {            
-            if(StringUtils.indexOfAny(target, "\\/") == -1) { //XXX can't move to another directory
+            if(StringUtils.indexOfAny(target, "\\/") == -1) { //XXX target non può essere un path
                 
                 final String result = getStorage().rename(t.getContainer(), t.getPath(), target);
                 final AssetType typeOf = getStorage().typeOf(t.getContainer(), result);
-                final Request targetRequest = new Request(t.getContainer(), result, t.getOperation());
+                final Request req = new Request(t.getContainer(), result, t.getOperation());
                 
                 return AssetType.FILE == typeOf ?
-                    getFileStatus(targetRequest) :
-                    getDirectoryStatus(targetRequest);
+                    getFileStatus(req) :
+                    getDirectoryStatus(req);
                                 
             } else {
                 return complete(StatusCodes.BAD_REQUEST, "target cannot be a directory");
             }
         });
-    }
-    
+    }    
 
     //operation = MOVE
     public Route move(Request t) {
@@ -53,9 +52,9 @@ public class PutController extends BaseController {
             }
           
             final String result = getStorage().move(t.getContainer(), t.getPath(), target);
-            final Request targetRequest = new Request(t.getContainer(), result, t.getOperation());
+            final Request req = new Request(t.getContainer(), result, t.getOperation());
             
-            return getDirectoryStatus(targetRequest);            
+            return getDirectoryStatus(req);            
         });                
     }
     

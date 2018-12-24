@@ -18,7 +18,7 @@ public class SmokeTests {
         Lists.newArrayList(
             Stage0.class, Stage1.class, Stage2.class, Stage3.class, Stage4.class,
             Stage11.class, Stage12.class, Stage13.class, Stage14.class, 
-            Stage21.class 
+            Stage21.class, Stage22.class
         ).forEach(s -> service.submit(() -> {
 
             try {
@@ -266,6 +266,24 @@ class Stage21 extends Stage {
             buildCommand("dir/dir2/dir4/dir5/file2.html", Operation.CREATE),
             buildCommand("dir/dir2/dir4/dir5/dir6", Operation.MKDIRS),
             buildCommand("dir/dir2/dir4/dir5", Operation.DELETE)            
+        );
+    }    
+}
+
+class Stage22 extends Stage {
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void accept(UUID container) {
+        runCommands(
+            ExecutionContext.builder()
+                .container(container)
+                .stopOnError(true)
+                .build(),
+            buildCommand("dir/dir2/dir4/dir5/dir6", Operation.MKDIRS),
+            buildCommand("dir/dir2/dir4", Operation.RENAME, queryBuilder("target", "dirX")),
+            buildCommand("dir/dir2/dirX/file1.html", Operation.CREATE),
+            buildCommand("dir/dir2/dirX/file1.html", Operation.RENAME, queryBuilder("target", "fileX.html"))
         );
     }    
 }
