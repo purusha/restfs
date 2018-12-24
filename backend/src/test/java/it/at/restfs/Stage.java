@@ -32,13 +32,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 abstract class Stage implements Consumer<UUID> {
-    
-    final static List<String> LS = new ArrayList<String>();
-    
-    static {
-        LS.add("/bin/ls");
-        LS.add("-R1");
-    }
+  
+    private final OSFeatures features;
     
     private final RestFs service;
 
@@ -50,12 +45,14 @@ abstract class Stage implements Consumer<UUID> {
             .build()
             .create(RestFs.class);
         
+        
+        features = OSFeatures.build();
     }
 
     private Path printHierarchy(UUID container) throws IOException, InterruptedException {
         final File root = getContainer(container);
                 
-        final ProcessBuilder pb = new ProcessBuilder(LS);        
+        final ProcessBuilder pb = new ProcessBuilder(features.ls());        
         pb.directory(root);
         pb.redirectErrorStream(true);
         
@@ -65,9 +62,7 @@ abstract class Stage implements Consumer<UUID> {
             new File(root, container.toString() + ".tree"), 
             String.join(
                 "\n", 
-                IOUtils.readLines(
-                    process.getInputStream(), defaultCharset()
-                )
+                features.catchOutputOf(process)
             ), 
             defaultCharset()
         );
