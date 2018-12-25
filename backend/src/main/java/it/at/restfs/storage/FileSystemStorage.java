@@ -70,15 +70,18 @@ public class FileSystemStorage implements Storage {
     @Override
     public void make(UUID container, String path, AssetType type) {
         final Path realPath = resolve(container, path, true);
-        
-        switch(type) {
-            case FOLDER:
-                Files.createDirectories(realPath);
-                break;
                 
-            case FILE:
+        switch(type) {
+            case FOLDER:{
+                Files.createDirectories(realPath);
+            }break;
+                
+            case FILE: {
+                final String parent = StringUtils.substringAfter(realPath.getParent().toFile().getAbsolutePath(), container.toString());
+                resolve(container, parent, false); //XXX la directory parent deve esistere
+                
                 Files.createFile(realPath);
-                break;
+            }break;
         }
     }
 
@@ -90,7 +93,7 @@ public class FileSystemStorage implements Storage {
         if (!realFile.exists() && !flag) {
             throw new ResouceNotFoundException("path " + path + " on " + container + " does not exist");
         }
-
+        
         return realPath;
     }
     

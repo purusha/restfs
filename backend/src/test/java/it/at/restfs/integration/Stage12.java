@@ -32,7 +32,7 @@ public class Stage12 extends BaseTest {
         }
         
         expected(
-            "Response{protocol=http/1.1, code=404, message=Not Found, url=http://localhost:8081/restfs/v1/file2?op=RENAME&target=file3}", 
+            "Response{protocol=http/1.1, code=404, message=Not Found, url=http://localhost:8081/restfs/v1/file2?op=RENAME&target=file3}",
             r.getResponse().toString()
         );                
     }    
