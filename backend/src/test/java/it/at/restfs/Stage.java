@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.function.Consumer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,7 +30,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-abstract class Stage implements Consumer<UUID> {
+public abstract class Stage {
   
     private final OSFeatures features;
     
@@ -199,7 +198,7 @@ abstract class Stage implements Consumer<UUID> {
         
     @Getter
     @Builder
-    static class ExecutionContext {
+    public static class ExecutionContext {
         private final UUID container;
         private final boolean stopOnError; 
         private final boolean printResponse;
@@ -207,7 +206,7 @@ abstract class Stage implements Consumer<UUID> {
 
     @Getter
     @RequiredArgsConstructor
-    class NotSuccessfullResult extends RuntimeException {
+    public class NotSuccessfullResult extends RuntimeException {
         private static final long serialVersionUID = 1363056864961261367L;
         
         private final Response<ResponseBody> response;

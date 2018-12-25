@@ -1,0 +1,15 @@
+dir
+
+./dir:
+dir2
+dir3
+
+./dir/dir2:
+dir4
+
+./dir/dir2/dir4:
+dir5
+
+./dir/dir2/dir4/dir5:
+
+./dir/dir3:
