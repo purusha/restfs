@@ -1,8 +1,0 @@
-dir
-
-./dir:
-dir2
-file2
-
-./dir/dir2:
-file1
