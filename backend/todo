@@ -32,4 +32,11 @@
         3) static authorization
         4) ???
         
+    -------------------------------
+    
+    use AbsolutePath instead of "/" + XXX
+    
+    
+    
+        
     
