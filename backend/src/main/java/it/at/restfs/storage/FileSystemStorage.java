@@ -22,6 +22,16 @@ import lombok.SneakyThrows;
 public class FileSystemStorage implements Storage {
     
     public static final String ROOT = "/tmp/" + HTTPListener.APP_NAME + "/";
+    
+    /*
+
+        TODO
+        
+        - move out all check that are usefull regardless of this implementation
+        - think about resolve method (try to write it better)
+        - 
+
+     */
 
     @SneakyThrows(IOException.class)
     @Override
@@ -72,20 +82,19 @@ public class FileSystemStorage implements Storage {
         final Path realPath = resolve(container, path, true);
                 
         switch(type) {
-            case FOLDER:{
+            case FOLDER: {
                 Files.createDirectories(realPath);
-            }break;
+            } break;
                 
             case FILE: {
-                final String parent = StringUtils.substringAfter(realPath.getParent().toFile().getAbsolutePath(), container.toString());
+                final String parent = extractParentSubpath(realPath, container);
                 resolve(container, parent, false); //XXX la directory parent deve esistere
                 
                 Files.createFile(realPath);
-            }break;
+            } break;
         }
     }
 
-    //XXX questo metodo è scritto moooolto male, che schifo !!? le bandiere si usavano al tempo di mio nonno!
     private Path resolve(UUID container, String path, boolean flag) {
         final Path realPath = Paths.get(ROOT + "/" + container + path);        
         final File realFile = realPath.toFile();        
@@ -114,13 +123,16 @@ public class FileSystemStorage implements Storage {
         final BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
         
         result.setCreated(
-            new Date(attr.creationTime().to(TimeUnit.MILLISECONDS)));
+            new Date(attr.creationTime().to(TimeUnit.MILLISECONDS))
+        );
         
         result.setModified(
-            new Date(attr.lastModifiedTime().to(TimeUnit.MILLISECONDS)));
+            new Date(attr.lastModifiedTime().to(TimeUnit.MILLISECONDS))
+        );
         
         result.setLastAccess(
-            new Date(attr.lastAccessTime().to(TimeUnit.MILLISECONDS)));
+            new Date(attr.lastAccessTime().to(TimeUnit.MILLISECONDS))
+        );
                 
         return result;
     }
@@ -156,12 +168,12 @@ public class FileSystemStorage implements Storage {
     @Override
     public String rename(UUID container, String path, String target) {
         final Path sourcePath = resolve(container, path, false);
-        final String parent = StringUtils.substringAfter(sourcePath.getParent().toFile().getAbsolutePath(), container.toString());
+        final String parent = extractParentSubpath(sourcePath, container);
         final Path targetPath = resolve(container, parent + "/" + target, true);
         
         Files.move(sourcePath, targetPath); //throw FileAlreadyExistsException when targetPath just exist !!?
         
-        return StringUtils.substringAfter(targetPath.toFile().getAbsolutePath(), container.toString());
+        return extractSubpath(targetPath, container);
     }
 
     @SneakyThrows(IOException.class)
@@ -176,7 +188,7 @@ public class FileSystemStorage implements Storage {
             FileUtils.moveFileToDirectory(sourcePath.toFile(), targetPath.toFile(), false);  
         }
         
-        return StringUtils.substringAfter(targetPath.toFile().getAbsolutePath(), container.toString());
+        return extractSubpath(targetPath, container);
     }
 
     @Override
@@ -189,5 +201,13 @@ public class FileSystemStorage implements Storage {
 
         return true;
     }    
+    
+    private String extractSubpath(Path path, UUID container) {
+        return StringUtils.substringAfter(path.toFile().getAbsolutePath(), container.toString());
+    }
+
+    private String extractParentSubpath(Path path, UUID container) {
+        return StringUtils.substringAfter(path.getParent().toFile().getAbsolutePath(), container.toString());
+    }
     
 }
