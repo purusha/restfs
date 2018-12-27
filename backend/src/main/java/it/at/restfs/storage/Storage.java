@@ -23,10 +23,10 @@ public interface Storage {
     
     void delete(UUID container, String path);
     
-    AssetType typeOf(UUID container, String path);
+    AssetType typeOf(UUID container, AbsolutePath path);
 
     String rename(UUID container, String path, String target);
 
-    String move(UUID container, String path, String target);
+    String move(UUID container, String path, AbsolutePath target);
 
 }

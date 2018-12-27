@@ -8,6 +8,7 @@ import com.google.inject.Singleton;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.Route;
 import it.at.restfs.http.HTTPListener.Request;
+import it.at.restfs.storage.AbsolutePath;
 import it.at.restfs.storage.AssetType;
 import it.at.restfs.storage.Storage;
 
@@ -25,7 +26,7 @@ public class PutController extends BaseController {
             if(StringUtils.indexOfAny(target, "\\/") == -1) { //XXX target non può essere un path
                 
                 final String result = getStorage().rename(t.getContainer(), t.getPath(), target);
-                final AssetType typeOf = getStorage().typeOf(t.getContainer(), result);
+                final AssetType typeOf = getStorage().typeOf(t.getContainer(), AbsolutePath.of(result));
                 final Request req = new Request(t.getContainer(), result, t.getOperation());
                 
                 return AssetType.FILE == typeOf ?
@@ -45,19 +46,20 @@ public class PutController extends BaseController {
         */
         
         return parameter("target", target -> {
-            final AssetType targetType = getStorage().typeOf(t.getContainer(), "/" + target);
+            final AbsolutePath targetPath = AbsolutePath.of(target);
+            final AssetType targetType = getStorage().typeOf(t.getContainer(), targetPath);
             
             if(AssetType.FILE == targetType) {
                 return complete(StatusCodes.BAD_REQUEST, "target must be a directory");
             }
             
-            final AssetType currentType = getStorage().typeOf(t.getContainer(), t.getPath());
+            final AssetType currentType = getStorage().typeOf(t.getContainer(), AbsolutePath.of(t.getPath()));
             
-            if (AssetType.FOLDER == currentType && ! StringUtils.startsWith(t.getPath(), "/" + target)) {
+            if (AssetType.FOLDER == currentType && ! StringUtils.startsWith(t.getPath(), targetPath.getPath())) {
                 return complete(StatusCodes.BAD_REQUEST, "target cannot start with currentPath");
             }
           
-            final String result = getStorage().move(t.getContainer(), t.getPath(), target);
+            final String result = getStorage().move(t.getContainer(), t.getPath(), targetPath);
             final Request req = new Request(t.getContainer(), result, t.getOperation());
             
             return getDirectoryStatus(req);            

@@ -65,7 +65,7 @@ public class FileSystemStorage implements Storage {
     public OpenFile open(UUID container, String path) {        
         final Path realPath = resolve(container, path, false);
         
-        if(AssetType.FOLDER == typeOf(container, path)) {
+        if(AssetType.FOLDER == typeOf(container, AbsolutePath.of(path))) {
             throw new RuntimeException("can't download directory " + path + " on " + container);
         }
         
@@ -157,8 +157,8 @@ public class FileSystemStorage implements Storage {
     }
     
     @Override
-    public AssetType typeOf(UUID container, String path) {
-        final Path realPath = resolve(container, path, false);        
+    public AssetType typeOf(UUID container, AbsolutePath path) {
+        final Path realPath = resolve(container, path.getPath(), false);        
         final File realFile = realPath.toFile();        
         
         return realFile.isDirectory() ? AssetType.FOLDER : AssetType.FILE;
@@ -178,11 +178,11 @@ public class FileSystemStorage implements Storage {
 
     @SneakyThrows(IOException.class)
     @Override
-    public String move(UUID container, String path, String target) {
+    public String move(UUID container, String path, AbsolutePath target) {
         final Path sourcePath = resolve(container, path, false);
-        final Path targetPath = resolve(container, "/" + target, true);
+        final Path targetPath = resolve(container, target.getPath(), true);
         
-        if (AssetType.FOLDER == typeOf(container, path)) {
+        if (AssetType.FOLDER == typeOf(container, AbsolutePath.of(path))) {
             FileUtils.moveDirectoryToDirectory(sourcePath.toFile(), targetPath.toFile(), false);  
         } else {
             FileUtils.moveFileToDirectory(sourcePath.toFile(), targetPath.toFile(), false);  
