@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class Permission {
 
-    private char r;
-    private char w;
-    private char e;
+    private boolean read;
+    private boolean write;
+    private boolean execute;
 }

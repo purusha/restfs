@@ -108,16 +108,15 @@ public class FileSystemStorage implements Storage {
     
     private GetStatus build(Path path, File file) throws IOException {
         final GetStatus result = new GetStatus();
+
+        final Permission permission = new Permission();
+        permission.setRead(file.canRead());
+        permission.setWrite(file.canWrite());
+        permission.setExecute(file.canExecute());
         
         result.setName(file.getName());
         result.setHidden(file.isHidden());        
         result.setLength(file.length());        
-        
-        final Permission permission = new Permission();
-        permission.setR(file.canRead() ? 'R' : '-');
-        permission.setW(file.canWrite() ? 'W' : '-');
-        permission.setE(file.canExecute() ? 'X' : '-');
-        
         result.setPermission(permission);
         
         final BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
