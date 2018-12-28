@@ -21,7 +21,9 @@
     
         1) neo4j
         2) elastic search && hbase
-        3) 
+        3) https://github.com/Azure/azure-storage-java ( https://docs.microsoft.com/en-us/azure/storage/common/storage-samples-java )
+        4) amazon S3
+        5) 
         
     ----------------------
     
