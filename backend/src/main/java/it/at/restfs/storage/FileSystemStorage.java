@@ -9,7 +9,6 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -35,29 +34,43 @@ public class FileSystemStorage implements Storage {
 
     @SneakyThrows(IOException.class)
     @Override
-    public List<GetStatus> listStatus(UUID container, String path) {
+    public FolderStatus listStatus(UUID container, String path) {
         final Path realPath = resolve(container, path, false);
+      
+        final FolderStatus result = new FolderStatus();
+        build(realPath, realPath.toFile(), result);   
         
-        return Files
-            .list(realPath)
-            .filter(Files::isRegularFile)
-            .map(p -> {
-                try {
-                    return build(p, p.toFile());
-                } catch (IOException e) {
-                    return null;
-                }
-            })
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+        result.setFiles(        
+            Files
+                .list(realPath)
+                .filter(Files::isRegularFile)
+                .map(p -> {
+                    try {
+                        final FileStatus f = new FileStatus();         
+                        build(realPath, realPath.toFile(), f);
+                        
+                        return f;
+                    } catch (IOException e) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList())
+            
+        );
+        
+        return result;
     }
 
     @SneakyThrows(IOException.class)
     @Override
-    public GetStatus getStatus(UUID container, String path) {
+    public FileStatus getStatus(UUID container, String path) {
         final Path realPath = resolve(container, path, false);
         
-        return build(realPath, realPath.toFile());
+        final FileStatus result = new FileStatus();         
+        build(realPath, realPath.toFile(), result);
+        
+        return result;
     }
     
     @SneakyThrows(IOException.class)
@@ -106,18 +119,19 @@ public class FileSystemStorage implements Storage {
         return realPath;
     }
     
-    private GetStatus build(Path path, File file) throws IOException {
-        final GetStatus result = new GetStatus();
-
-        final Permission permission = new Permission();
-        permission.setRead(file.canRead());
-        permission.setWrite(file.canWrite());
-        permission.setExecute(file.canExecute());
-        
+    private void build(final Path path, final File file, final FileStatus result) throws IOException {
+        result.setType(file.isFile() ? AssetType.FILE : AssetType.FOLDER);
         result.setName(file.getName());
-        result.setHidden(file.isHidden());        
-        result.setLength(file.length());        
-        result.setPermission(permission);
+        
+        if (file.isFile()) {
+            final Permission permission = new Permission();
+            permission.setRead(file.canRead());
+            permission.setWrite(file.canWrite());
+            permission.setExecute(file.canExecute());
+            
+            result.setLength(file.length());        
+            result.setPermission(permission);          
+        }
         
         final BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
         
@@ -132,8 +146,6 @@ public class FileSystemStorage implements Storage {
         result.setLastAccess(
             new Date(attr.lastAccessTime().to(TimeUnit.MILLISECONDS))
         );
-                
-        return result;
     }
 
     @SneakyThrows(IOException.class)
