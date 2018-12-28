@@ -1,6 +1,5 @@
 package it.at.restfs.storage;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface Storage {
@@ -11,9 +10,9 @@ public interface Storage {
     
     boolean exist(UUID container);
 
-    List<GetStatus> listStatus(UUID container, String path);
+    FolderStatus listStatus(UUID container, String path);
 
-    GetStatus getStatus(UUID container, String path);
+    FileStatus getStatus(UUID container, String path);
 
     OpenFile open(UUID container, String path);
 

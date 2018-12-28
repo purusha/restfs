@@ -13,6 +13,7 @@ public class Stage0 extends BaseTest {
             ExecutionContext.builder()
                 .container(getContainer())
                 .stopOnError(true)
+                .printResponse(true)
                 .build(), 
             buildCommand("file", Operation.CREATE),
             buildCommand("dir", Operation.MKDIRS),
