@@ -7,6 +7,8 @@ import akka.http.javadsl.marshallers.jackson.Jackson;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.Route;
 import it.at.restfs.http.HTTPListener.Request;
+import it.at.restfs.storage.AbsolutePath;
+import it.at.restfs.storage.AssetType;
 import it.at.restfs.storage.OpenFile;
 import it.at.restfs.storage.Storage;
 
@@ -24,6 +26,10 @@ public class GetController extends BaseController {
         /*
          * XXX this implementation is too stupid ... how to meet the correct file encoding !!?
          */
+        
+        if(AssetType.FOLDER == getStorage().typeOf(t.getContainer(), AbsolutePath.of(t.getPath()))) {
+            return complete(StatusCodes.BAD_REQUEST, "dowload is available only for file objects");
+        }
         
         final OpenFile result = getStorage().open(t.getContainer(), t.getPath());
         

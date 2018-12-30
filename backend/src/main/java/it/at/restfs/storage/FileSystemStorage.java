@@ -26,7 +26,6 @@ public class FileSystemStorage implements Storage {
 
         TODO
         
-        - move out all check that are usefull regardless of this implementation
         - think about resolve method (try to write it better)
         - 
 
@@ -76,11 +75,7 @@ public class FileSystemStorage implements Storage {
     @Override
     public OpenFile open(UUID container, String path) {        
         final Path realPath = resolve(container, path, false);
-        
-        if(AssetType.FOLDER == typeOf(container, AbsolutePath.of(path))) {
-            throw new RuntimeException("can't download directory " + path + " on " + container);
-        }
-        
+                
         final OpenFile result = new OpenFile();
         result.setPath(path);
         result.setContent(new String(Files.readAllBytes(realPath)));
