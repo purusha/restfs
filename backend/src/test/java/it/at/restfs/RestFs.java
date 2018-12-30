@@ -23,8 +23,7 @@ public interface RestFs {
     Call<ResponseBody> create(
         @retrofit2.http.Path(value = "path", encoded = true) String path,
         @Header(HTTPListener.AUTHORIZATION) String authorization,
-        @Header(HTTPListener.X_CONTAINER) UUID container,
-        @QueryMap Map<String, String> options        
+        @Header(HTTPListener.X_CONTAINER) UUID container        
     );
 
     @Headers({
@@ -34,8 +33,7 @@ public interface RestFs {
     Call<ResponseBody> mkdirs(
         @retrofit2.http.Path(value = "path", encoded = true) String path,
         @Header(HTTPListener.AUTHORIZATION) String authorization,
-        @Header(HTTPListener.X_CONTAINER) UUID container,
-        @QueryMap Map<String, String> options
+        @Header(HTTPListener.X_CONTAINER) UUID container
     );
 
     @Headers({
@@ -45,8 +43,7 @@ public interface RestFs {
     Call<ResponseBody> getstatus(
         @retrofit2.http.Path(value = "path", encoded = true) String path,
         @Header(HTTPListener.AUTHORIZATION) String authorization,
-        @Header(HTTPListener.X_CONTAINER) UUID container,
-        @QueryMap Map<String, String> options
+        @Header(HTTPListener.X_CONTAINER) UUID container
     );
 
     @Headers({
@@ -56,8 +53,7 @@ public interface RestFs {
     Call<ResponseBody> liststatus(
         @retrofit2.http.Path(value = "path", encoded = true) String path,
         @Header(HTTPListener.AUTHORIZATION) String authorization,
-        @Header(HTTPListener.X_CONTAINER) UUID container,
-        @QueryMap Map<String, String> options
+        @Header(HTTPListener.X_CONTAINER) UUID container
     );
 
     @Headers({
@@ -78,8 +74,7 @@ public interface RestFs {
     Call<ResponseBody> delete(
         @retrofit2.http.Path(value = "path", encoded = true) String path,
         @Header(HTTPListener.AUTHORIZATION) String authorization,
-        @Header(HTTPListener.X_CONTAINER) UUID container,
-        @QueryMap Map<String, String> options
+        @Header(HTTPListener.X_CONTAINER) UUID container
     );
 
     @Headers({

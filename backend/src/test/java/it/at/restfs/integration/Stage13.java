@@ -10,7 +10,6 @@ public class Stage13 extends BaseTest {
         non è possibile la rinomina di una directory in una che esiste già
      */
     
-    @SuppressWarnings("unchecked")
     @Test
     public void simpleCase() {    
         NotSuccessfullResult r = null;

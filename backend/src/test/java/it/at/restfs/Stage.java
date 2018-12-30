@@ -17,7 +17,9 @@ import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Triple;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import it.at.restfs.http.HTTPListener;
 import it.at.restfs.storage.FileSystemStorage;
@@ -72,24 +74,25 @@ public abstract class Stage {
         }
     }
     
-    @SuppressWarnings("unchecked")
-    protected void runCommands(ExecutionContext context, Triple<String, Operation, Map<String, String>> ... cmds) {
+    protected void runCommands(ExecutionContext context, ExecutionCommand ... cmds) {
         Arrays
             .stream(cmds)
             .forEach(cmd -> remoteCall(context, cmd));
     }
 
     @SneakyThrows(value = {IllegalAccessException.class, InvocationTargetException.class, IOException.class})
-    private void remoteCall(ExecutionContext context, Triple<String, Operation, Map<String, String>> cmd) {
+    //private void remoteCall(ExecutionContext context, Triple<String, Operation, Map<String, String>> cmd) {
+    private void remoteCall(ExecutionContext context, ExecutionCommand cmd) {
         System.out.println("$> " + cmd);
         
         @SuppressWarnings("unchecked")
         final Call<ResponseBody> result = (Call<ResponseBody>)Arrays.stream(RestFs.class.getMethods())
-            .filter(m -> StringUtils.equals(m.getName(), cmd.getMiddle().toString().toLowerCase()))
+            .filter(m -> StringUtils.equals(m.getName(), cmd.getOperation().toString().toLowerCase()))
             .findFirst()
             .get()
             .invoke(
-                service, cmd.getLeft(), "42", context.getContainer(), cmd.getRight()
+                //service, cmd.getLeft(), "42", context.getContainer(), cmd.getRight()
+                service, cmd.callParams("42", context.getContainer())
             );
         
         final Response<ResponseBody> execute = result.execute();
@@ -161,14 +164,16 @@ public abstract class Stage {
         }        
     }
     
-    //triple => targetResouce, operation, queryParams
-    protected Triple<String, Operation, Map<String, String>> buildCommand(String data, Operation op) {
-        return buildCommand(data, op, Maps.newHashMap());
+    protected ExecutionCommand buildCommand(String data, Operation op) {
+        return new ExecutionCommand(data, op);
     }    
 
-    //triple => targetResouce, operation, queryParams
-    protected Triple<String, Operation, Map<String, String>> buildCommand(String data, Operation op, Map<String, String> query) {
-        return Triple.of(data, op, query);
+    protected ExecutionCommand buildCommand(String data, Operation op, Map<String, String> query) {       
+        return new ExecutionCommand(data, op, query);
+    }    
+
+    protected ExecutionCommand buildCommand(String data, Operation op, String body) {
+        return new ExecutionCommand(data, op, body);
     }    
     
     protected Map<String, String> queryBuilder(String key, String value) {
@@ -206,7 +211,59 @@ public abstract class Stage {
     public static class ExecutionContext {
         private final UUID container;
         private final boolean stopOnError; 
-        private final boolean printResponse;
+        private final boolean printResponse;                
+    }
+
+    @Getter
+    public static class ExecutionCommand {
+        private final String resouce; 
+        private final Operation operation; 
+        private final Map<String, String> query;
+        private final String body;
+        
+        public ExecutionCommand(String targetResouce, Operation operation) {
+            this.resouce = targetResouce;
+            this.operation = operation;
+            this.query = null;
+            this.body = null;
+        }
+        
+        public ExecutionCommand(String targetResouce, Operation operation, Map<String, String> queryParams) {
+            this.resouce = targetResouce;
+            this.operation = operation;
+            this.query = queryParams;
+            this.body = null;
+        }
+        
+        public ExecutionCommand(String targetResouce, Operation operation, String body) {
+            this.resouce = targetResouce;
+            this.operation = operation;
+            this.query = null;
+            this.body = body;
+        }
+        
+        private Object[] callParams(String authorization, UUID container) {
+            final List<Object> result = Lists.newArrayList();
+            
+            result.add(resouce);
+            result.add(authorization);
+            result.add(container);
+            
+            if (Objects.nonNull(query)) {
+                result.add(query);
+            }
+            
+            if (Objects.nonNull(body)) {
+                result.add(body);
+            }
+
+            return result.toArray(new Object[result.size()]);
+        }
+        
+        @Override
+        public String toString() {
+            return ReflectionToStringBuilder.toString(this, ToStringStyle.NO_CLASS_NAME_STYLE);
+        }
     }
 
     @Getter

@@ -6,7 +6,6 @@ import it.at.restfs.Operation;
 
 public class Stage4 extends BaseTest {  
   
-    @SuppressWarnings("unchecked")
     @Test
     public void simpleCase() {      
         runCommands(

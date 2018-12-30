@@ -10,7 +10,6 @@ public class Stage12 extends BaseTest {
         non è possibile la rinomina di un file che non esiste
     */
     
-    @SuppressWarnings("unchecked")
     @Test
     public void simpleCase() {        
         NotSuccessfullResult r = null;

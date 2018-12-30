@@ -7,7 +7,6 @@ import it.at.restfs.Operation;
 
 public class Stage3 extends BaseTest {  
   
-    @SuppressWarnings("unchecked")
     @Test
     public void fileGetStatus() {             
         NotSuccessfullResult r = null;
@@ -32,7 +31,6 @@ public class Stage3 extends BaseTest {
         );                
     }
     
-    @SuppressWarnings("unchecked")
     @Test
     public void dirListStatus() {             
         NotSuccessfullResult r = null;
@@ -57,7 +55,6 @@ public class Stage3 extends BaseTest {
         );                
     }    
     
-    @SuppressWarnings("unchecked")
     @Test
     public void rename() {             
         NotSuccessfullResult r = null;
@@ -82,7 +79,6 @@ public class Stage3 extends BaseTest {
         );                
     }
     
-    @SuppressWarnings("unchecked")
     @Test
     public void delete() {             
         NotSuccessfullResult r = null;
@@ -107,7 +103,6 @@ public class Stage3 extends BaseTest {
         );                
     }    
     
-    @SuppressWarnings("unchecked")
     @Test
     public void create() {             
         NotSuccessfullResult r = null;
@@ -132,7 +127,6 @@ public class Stage3 extends BaseTest {
         );                
     }    
     
-    @SuppressWarnings("unchecked")
     @Test
     public void createDoubleFile() {             
         NotSuccessfullResult r = null;
@@ -159,7 +153,6 @@ public class Stage3 extends BaseTest {
     }    
 
     @Ignore
-    @SuppressWarnings("unchecked")
     @Test
     public void createDoubleFolder() {             
         NotSuccessfullResult r = null;

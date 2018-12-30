@@ -6,7 +6,6 @@ import it.at.restfs.Operation;
 
 public class Stage6 extends BaseTest {  
   
-    @SuppressWarnings("unchecked")
     @Test
     public void simpleCase() {      
         runCommands(
@@ -15,7 +14,7 @@ public class Stage6 extends BaseTest {
                 .stopOnError(true)
                 .build(),
             buildCommand("file", Operation.CREATE),
-            buildCommand("file", Operation.APPEND)
+            buildCommand("file", Operation.APPEND, "my body")
         );       
     }    
     
