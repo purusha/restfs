@@ -5,6 +5,7 @@ import java.util.UUID;
 import it.at.restfs.http.HTTPListener;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
@@ -90,6 +91,17 @@ public interface RestFs {
         @Header(HTTPListener.AUTHORIZATION) String authorization,
         @Header(HTTPListener.X_CONTAINER) UUID container,
         @QueryMap Map<String, String> options
+    );
+
+    @Headers({
+        "Accept: application/json",
+    })        
+    @PUT("{path}?op=APPEND")
+    Call<ResponseBody> append(
+        @retrofit2.http.Path(value = "path", encoded = true) String path,
+        @Header(HTTPListener.AUTHORIZATION) String authorization,
+        @Header(HTTPListener.X_CONTAINER) UUID container,
+        @Body String body
     );
     
 }

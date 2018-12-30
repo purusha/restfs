@@ -93,8 +93,11 @@ public abstract class Stage {
             );
         
         final Response<ResponseBody> execute = result.execute();
-        
+                
         if (execute.isSuccessful()) {
+            
+            //close the stream before return !!?
+            execute.body().close();            
             
             if (context.isPrintResponse()) {          
                 System.out.println(execute.body().string() + "\n");
@@ -102,11 +105,13 @@ public abstract class Stage {
             
         } else {
             
+            //close the stream before return !!?
+            execute.errorBody().close();
+            
             if (context.isStopOnError()) {
                 System.out.println();
                 throw new NotSuccessfullResult(execute);                        
             } else {
-                //System.out.println(execute);
                 System.out.println(execute.errorBody().string() + "\n");                
             }
             
