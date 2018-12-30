@@ -26,8 +26,6 @@ public class FileStatus {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd@HH:mm")
     private Date lastAccess;
     
-    private Permission permission;
-    
     private Long length;
     
     private AssetType type;

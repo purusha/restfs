@@ -40,7 +40,7 @@ public class FileSystemStorage implements Storage {
         final FolderStatus result = new FolderStatus();
         build(realPath, realPath.toFile(), result);   
         
-        result.setFiles(        
+        result.setChildren(        
             Files
                 .list(realPath)
                 .filter(Files::isRegularFile)
@@ -55,8 +55,7 @@ public class FileSystemStorage implements Storage {
                     }
                 })
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList())
-            
+                .collect(Collectors.toList())            
         );
         
         return result;
@@ -124,15 +123,9 @@ public class FileSystemStorage implements Storage {
         result.setName(file.getName());
         
         if (file.isFile()) {
-            final Permission permission = new Permission();
-            permission.setRead(file.canRead());
-            permission.setWrite(file.canWrite());
-            permission.setExecute(file.canExecute());
-            
-            result.setLength(file.length());        
-            result.setPermission(permission);          
+            result.setLength(file.length());
         }
-        
+                        
         final BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
         
         result.setCreated(
