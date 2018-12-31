@@ -19,10 +19,9 @@ public class Stage6 extends BaseTest {
             buildCommand("file", Operation.OPEN)
         );       
     }    
-    
-    /*
+        
     @Test
-    public void simpleCase() {
+    public void downloadDirectoryIsNotAllowed() {      
         NotSuccessfullResult r = null;
         
         try {
@@ -31,24 +30,22 @@ public class Stage6 extends BaseTest {
                 ExecutionContext.builder()
                     .container(getContainer())
                     .stopOnError(true)
-                    .build(), 
-                buildCommand("file", Operation.CREATE),
-                buildCommand("file2", Operation.CREATE),
-                buildCommand("", Operation.LISTSTATUS),
-                buildCommand("file", Operation.RENAME, queryBuilder("target", "file2"))
-            );
+                    .printResponse(true)
+                    .build(),
+                buildCommand("dir", Operation.MKDIRS),
+                buildCommand("dir", Operation.OPEN)
+            );       
             
         } catch (NotSuccessfullResult e) {
             r = e;            
         }
-        
+            
         expected(
-            "Response{protocol=http/1.1, code=409, message=Conflict, url=http://localhost:8081/restfs/v1/file?op=RENAME&target=file2}", 
+            "Response{protocol=http/1.1, code=400, message=Bad Request, url=http://localhost:8081/restfs/v1/dir?op=OPEN}", 
             r.getResponse().toString()
-        );        
+        );                    
     }    
-    */
-    
+
     @Test
     public void appendOnNotExistingFile() {    
         NotSuccessfullResult r = null;
