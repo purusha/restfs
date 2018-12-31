@@ -91,12 +91,22 @@ public interface RestFs {
     @Headers({
         "Accept: application/json",
     })        
-    @PUT("{path}?op=APPEND")
+    @POST("{path}?op=APPEND")
     Call<ResponseBody> append(
         @retrofit2.http.Path(value = "path", encoded = true) String path,
         @Header(HTTPListener.AUTHORIZATION) String authorization,
         @Header(HTTPListener.X_CONTAINER) UUID container,
         @Body String body
+    );
+
+    @Headers({
+        "Accept: application/json",
+    })        
+    @GET("{path}?op=OPEN")
+    Call<ResponseBody> open(
+        @retrofit2.http.Path(value = "path", encoded = true) String path,
+        @Header(HTTPListener.AUTHORIZATION) String authorization,
+        @Header(HTTPListener.X_CONTAINER) UUID container
     );
     
 }

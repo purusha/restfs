@@ -17,8 +17,6 @@ import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import it.at.restfs.http.HTTPListener;
@@ -31,6 +29,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public abstract class Stage {
   
@@ -40,6 +39,7 @@ public abstract class Stage {
 
     public Stage() {
         service = new Retrofit.Builder()
+            .addConverterFactory(ScalarsConverterFactory.create())
             .baseUrl(String.format(
                 "http://%s:%d/%s/%s/", HTTPListener.HOST, HTTPListener.PORT, HTTPListener.APP_NAME, HTTPListener.VERSION                    
             ))
@@ -81,7 +81,6 @@ public abstract class Stage {
     }
 
     @SneakyThrows(value = {IllegalAccessException.class, InvocationTargetException.class, IOException.class})
-    //private void remoteCall(ExecutionContext context, Triple<String, Operation, Map<String, String>> cmd) {
     private void remoteCall(ExecutionContext context, ExecutionCommand cmd) {
         System.out.println("$> " + cmd);
         
@@ -91,14 +90,12 @@ public abstract class Stage {
             .findFirst()
             .get()
             .invoke(
-                //service, cmd.getLeft(), "42", context.getContainer(), cmd.getRight()
                 service, cmd.callParams("42", context.getContainer())
             );
         
         final Response<ResponseBody> execute = result.execute();
                 
         if (execute.isSuccessful()) {
-            
             //close the stream before return !!?
             execute.body().close();            
             
@@ -107,15 +104,16 @@ public abstract class Stage {
             }
             
         } else {
-            
             //close the stream before return !!?
             execute.errorBody().close();
             
+            if (context.isPrintResponse()) {          
+                System.out.println(execute.errorBody().string() + "\n");
+            }
+                        
             if (context.isStopOnError()) {
                 System.out.println();
                 throw new NotSuccessfullResult(execute);                        
-            } else {
-                System.out.println(execute.errorBody().string() + "\n");                
             }
             
         }        
@@ -216,8 +214,8 @@ public abstract class Stage {
 
     @Getter
     public static class ExecutionCommand {
-        private final String resouce; 
-        private final Operation operation; 
+        private final Operation operation;
+        private final String resouce;          
         private final Map<String, String> query;
         private final String body;
         
@@ -262,7 +260,8 @@ public abstract class Stage {
         
         @Override
         public String toString() {
-            return ReflectionToStringBuilder.toString(this, ToStringStyle.NO_CLASS_NAME_STYLE);
+            //return ReflectionToStringBuilder.toString(this, ToStringStyle.NO_CLASS_NAME_STYLE);
+            return "call " + operation + " on " + resouce + " with query=" + query + " and body=" + body;
         }
     }
 
