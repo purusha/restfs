@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -74,14 +75,15 @@ public abstract class Stage {
         }
     }
     
-    protected void runCommands(ExecutionContext context, ExecutionCommand ... cmds) {
-        Arrays
+    protected List<ResponseBody> runCommands(ExecutionContext context, ExecutionCommand ... cmds) {
+        return Arrays
             .stream(cmds)
-            .forEach(cmd -> remoteCall(context, cmd));
+            .map(cmd -> remoteCall(context, cmd))
+            .collect(Collectors.toList());
     }
 
     @SneakyThrows(value = {IllegalAccessException.class, InvocationTargetException.class, IOException.class})
-    private void remoteCall(ExecutionContext context, ExecutionCommand cmd) {
+    private ResponseBody remoteCall(ExecutionContext context, ExecutionCommand cmd) {
         System.out.println("$> " + cmd);
         
         @SuppressWarnings("unchecked")
@@ -103,6 +105,7 @@ public abstract class Stage {
                 System.out.println(execute.body().string() + "\n");
             }
             
+            return execute.body();           
         } else {
             //close the stream before return !!?
             execute.errorBody().close();
@@ -116,6 +119,7 @@ public abstract class Stage {
                 throw new NotSuccessfullResult(execute);                        
             }
             
+            return execute.errorBody();            
         }        
     }
     

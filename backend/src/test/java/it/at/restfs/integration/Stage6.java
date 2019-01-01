@@ -1,23 +1,31 @@
 package it.at.restfs.integration;
 
 import org.junit.Test;
+import com.google.common.collect.Iterables;
 import it.at.restfs.BaseTest;
 import it.at.restfs.Operation;
+import okhttp3.ResponseBody;
 
 public class Stage6 extends BaseTest {  
   
     @Test
-    public void simpleCase() {      
-        runCommands(
-            ExecutionContext.builder()
-                .container(getContainer())
-                .stopOnError(true)
-                .printResponse(true)
-                .build(),
-            buildCommand("file", Operation.CREATE),
-            buildCommand("file", Operation.APPEND, "my body"),
-            buildCommand("file", Operation.OPEN)
-        );       
+    public void simpleCase() throws Exception {              
+        final ResponseBody open = Iterables.getLast(
+            runCommands(
+                ExecutionContext.builder()
+                    .container(getContainer())
+                    .stopOnError(true)
+                    .build(),
+                buildCommand("file", Operation.CREATE),
+                buildCommand("file", Operation.APPEND, "my body"),
+                buildCommand("file", Operation.OPEN)
+            )                
+        );
+        
+        expected(
+            "{\"content\":\"my body\",\"path\":\"/file\"}", 
+            open.string()
+        );        
     }    
         
     @Test
@@ -30,7 +38,6 @@ public class Stage6 extends BaseTest {
                 ExecutionContext.builder()
                     .container(getContainer())
                     .stopOnError(true)
-                    .printResponse(true)
                     .build(),
                 buildCommand("dir", Operation.MKDIRS),
                 buildCommand("dir", Operation.OPEN)
@@ -56,7 +63,6 @@ public class Stage6 extends BaseTest {
                 ExecutionContext.builder()
                     .container(getContainer())
                     .stopOnError(true)
-                    .printResponse(true)
                     .build(),
                 buildCommand("file2", Operation.APPEND, "my body")
             );   
@@ -81,7 +87,6 @@ public class Stage6 extends BaseTest {
                 ExecutionContext.builder()
                     .container(getContainer())
                     .stopOnError(true)
-                    .printResponse(true)
                     .build(),
                 buildCommand("file3", Operation.OPEN)
             );
