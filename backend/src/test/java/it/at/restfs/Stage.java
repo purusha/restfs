@@ -35,10 +35,9 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 public abstract class Stage {
   
     private final OSFeatures features;
-    
     private final RestFs service;
 
-    public Stage() {
+    protected Stage() {
         service = new Retrofit.Builder()
             .addConverterFactory(ScalarsConverterFactory.create())
             .baseUrl(String.format(
@@ -124,7 +123,7 @@ public abstract class Stage {
     }
     
     //XXX this code know's which is the real implementation ... is stupid
-    public void createContainer(UUID container) {
+    protected void createContainer(UUID container) {
         getContainer(container).mkdir();
     }
 
@@ -136,7 +135,7 @@ public abstract class Stage {
     }
     
     @SneakyThrows(value = {IOException.class, InterruptedException.class, URISyntaxException.class})
-    public void showDiff(UUID container) {
+    protected void showDiff(UUID container) {
         final URL resource = getClass().getClassLoader().getResource(this.getClass().getSimpleName() + ".tree");
         
         if (Objects.isNull(resource)) {
@@ -145,11 +144,8 @@ public abstract class Stage {
         }
         
         final Path expected = Paths.get(resource.toURI());        
-        final Path result = printHierarchy(container);
-        //System.out.println("run diff command on " + expected + " and " + result);
-        
-        final ProcessBuilder diffCommand = diffCommand(expected, result);
-        final Process process = diffCommand.start();
+        final Path result = printHierarchy(container);        
+        final Process process = diffCommand(expected, result).start();
         
         final String diffOutput = String.join(
             "\n", 
@@ -167,7 +163,7 @@ public abstract class Stage {
     }
     
     protected ExecutionCommand buildCommand(String data, Operation op) {
-        return new ExecutionCommand(data, op);
+        return new ExecutionCommand(data, op, null);
     }    
 
     protected ExecutionCommand buildCommand(String data, Operation op, Map<String, String> query) {       
@@ -223,25 +219,22 @@ public abstract class Stage {
         private final Map<String, String> query;
         private final String body;
         
-        public ExecutionCommand(String targetResouce, Operation operation) {
+        @SuppressWarnings("unchecked")
+        private ExecutionCommand(String targetResouce, Operation operation, Object o) {
             this.resouce = targetResouce;
             this.operation = operation;
-            this.query = null;
-            this.body = null;
-        }
-        
-        public ExecutionCommand(String targetResouce, Operation operation, Map<String, String> queryParams) {
-            this.resouce = targetResouce;
-            this.operation = operation;
-            this.query = queryParams;
-            this.body = null;
-        }
-        
-        public ExecutionCommand(String targetResouce, Operation operation, String body) {
-            this.resouce = targetResouce;
-            this.operation = operation;
-            this.query = null;
-            this.body = body;
+            
+            if (o instanceof Map) {
+                this.query = (Map<String, String>) o;    
+            } else {
+                this.query = null;
+            }
+            
+            if (o instanceof String) {
+                this.body = (String) o;                
+            } else {
+                this.body = null;                
+            }
         }
         
         private Object[] callParams(String authorization, UUID container) {
@@ -264,7 +257,6 @@ public abstract class Stage {
         
         @Override
         public String toString() {
-            //return ReflectionToStringBuilder.toString(this, ToStringStyle.NO_CLASS_NAME_STYLE);
             return "call " + operation + " on " + resouce + " with query=" + query + " and body=" + body;
         }
     }
