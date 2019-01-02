@@ -2,6 +2,7 @@ package it.at.restfs.storage;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -78,7 +79,7 @@ public class FileSystemStorage implements Storage {
                 
         final OpenFile result = new OpenFile();
         result.setPath(path);
-        result.setContent(new String(Files.readAllBytes(realPath)));
+        result.setContent(Files.readAllLines(realPath, StandardCharsets.UTF_8));
 
         return result;
     }
