@@ -2,6 +2,7 @@ package it.at.restfs.http;
 
 import static akka.http.javadsl.server.Directives.complete;
 import static akka.http.javadsl.server.Directives.extractRequestEntity;
+import java.util.concurrent.ExecutionException;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import akka.http.javadsl.model.StatusCodes;
@@ -56,7 +57,7 @@ public class PostController extends BaseController {
                                                 
                 return getFileStatus(t);
                 
-            } catch (Exception e) {
+            } catch (ExecutionException | InterruptedException e) {
                 LOGGER.error("", e);
                 
                 return complete(StatusCodes.INTERNAL_SERVER_ERROR);
