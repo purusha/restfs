@@ -27,7 +27,53 @@ public class Stage6 extends BaseTest {
             open.string()
         );        
     }    
+
+    @Test
+    public void htmlContent() throws Exception {              
+        final ResponseBody open = Iterables.getLast(
+            runCommands(
+                ExecutionContext.builder()
+                    .container(getContainer())
+                    .stopOnError(true)
+                    .build(),
+                buildCommand("file5", Operation.CREATE),
+                buildCommand("file5", Operation.APPEND, "<html><head></head><body><p>Hello World</p></body></html>"),
+                buildCommand("file5", Operation.OPEN)
+            )                
+        );
         
+        expected(
+            "{\"content\":[\"<html><head></head><body><p>Hello World</p></body></html>\"],\"path\":\"/file5\"}", 
+            open.string()
+        );        
+    }    
+    
+    @Test
+    public void moreAppendWithDifferenteCarriageReturn() throws Exception {              
+        final ResponseBody open = Iterables.getLast(
+            runCommands(
+                ExecutionContext.builder()
+                    .container(getContainer())
+                    .stopOnError(true)
+                    .build(),
+                buildCommand("file4", Operation.CREATE),
+                buildCommand("file4", Operation.APPEND, "my body"),
+                buildCommand("file4", Operation.APPEND, "\n"),
+                buildCommand("file4", Operation.APPEND, "my body"),
+                buildCommand("file4", Operation.APPEND, "\r"),
+                buildCommand("file4", Operation.APPEND, "my body"),
+                buildCommand("file4", Operation.APPEND, "\r\n"),
+                buildCommand("file4", Operation.APPEND, "my body"),
+                buildCommand("file4", Operation.OPEN)
+            )                
+        );
+        
+        expected(
+            "{\"content\":[\"my body\",\"my body\",\"my body\",\"my body\"],\"path\":\"/file4\"}", 
+            open.string()
+        );        
+    }    
+    
     @Test
     public void downloadDirectoryIsNotAllowed() {      
         NotSuccessfullResult r = null;

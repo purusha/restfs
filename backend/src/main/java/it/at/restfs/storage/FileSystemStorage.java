@@ -103,40 +103,6 @@ public class FileSystemStorage implements Storage {
         }
     }
 
-    private Path resolve(UUID container, String path, boolean flag) {
-        final Path realPath = Paths.get(ROOT + "/" + container + path);        
-        final File realFile = realPath.toFile();        
-        
-        if (!realFile.exists() && !flag) {
-            throw new ResouceNotFoundException("path " + path + " on " + container + " does not exist");
-        }
-        
-        return realPath;
-    }
-    
-    private void build(final Path path, final File file, final FileStatus result) throws IOException {
-        result.setType(file.isFile() ? AssetType.FILE : AssetType.FOLDER);
-        result.setName(file.getName());
-        
-        if (file.isFile()) {
-            result.setLength(file.length());
-        }
-                        
-        final BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
-        
-        result.setCreated(
-            new Date(attr.creationTime().to(TimeUnit.MILLISECONDS))
-        );
-        
-        result.setModified(
-            new Date(attr.lastModifiedTime().to(TimeUnit.MILLISECONDS))
-        );
-        
-        result.setLastAccess(
-            new Date(attr.lastAccessTime().to(TimeUnit.MILLISECONDS))
-        );
-    }
-
     @SneakyThrows(IOException.class)
     @Override
     public void append(UUID container, String path, String body) {
@@ -208,6 +174,40 @@ public class FileSystemStorage implements Storage {
 
     private String extractParentSubpath(Path path, UUID container) {
         return StringUtils.substringAfter(path.getParent().toFile().getAbsolutePath(), container.toString());
+    }
+
+    private Path resolve(UUID container, String path, boolean flag) {
+        final Path realPath = Paths.get(ROOT + "/" + container + path);        
+        final File realFile = realPath.toFile();        
+        
+        if (!realFile.exists() && !flag) {
+            throw new ResouceNotFoundException("path " + path + " on " + container + " does not exist");
+        }
+        
+        return realPath;
+    }
+    
+    private void build(final Path path, final File file, final FileStatus result) throws IOException {
+        result.setType(file.isFile() ? AssetType.FILE : AssetType.FOLDER);
+        result.setName(file.getName());
+        
+        if (file.isFile()) {
+            result.setLength(file.length());
+        }
+                        
+        final BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
+        
+        result.setCreated(
+            new Date(attr.creationTime().to(TimeUnit.MILLISECONDS))
+        );
+        
+        result.setModified(
+            new Date(attr.lastModifiedTime().to(TimeUnit.MILLISECONDS))
+        );
+        
+        result.setLastAccess(
+            new Date(attr.lastAccessTime().to(TimeUnit.MILLISECONDS))
+        );
     }
     
 }
