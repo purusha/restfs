@@ -1,6 +1,7 @@
 package it.at.restfs;
 
 import java.util.UUID;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import lombok.Getter;
@@ -21,5 +22,25 @@ public class BaseTest extends Stage {
     public void tearDown() {
         showDiff(container);                
     }
+    
+    protected void expected(String expected, String result) {
+        if(! StringUtils.equals(expected, result)){
+            
+            System.err.println("expected: " + expected);
+            System.err.println("result: " + result);
+            
+            throw new RuntimeException("Not the same !!?");
+        }
+    }    
 
+    protected void match(String match, String result) {
+        if(! result.matches(match)){
+            
+            System.err.println("match: " + match);
+            System.err.println("result: " + result);
+            
+            throw new RuntimeException("Not the same !!?");
+        }
+    }
+    
 }

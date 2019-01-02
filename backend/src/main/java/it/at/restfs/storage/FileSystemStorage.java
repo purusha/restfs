@@ -47,7 +47,7 @@ public class FileSystemStorage implements Storage {
                 .map(p -> {
                     try {
                         final FileStatus f = new FileStatus();         
-                        build(realPath, realPath.toFile(), f);
+                        build(realPath, p.toFile(), f);
                         
                         return f;
                     } catch (IOException e) {

@@ -193,17 +193,7 @@ public abstract class Stage {
         
         return pb;
     }
-    
-    protected void expected(String expected, String result) {
-        if(! StringUtils.equals(expected, result)){
             
-            System.err.println("expected: " + expected);
-            System.err.println("result: " + result);
-            
-            throw new RuntimeException("Not the same !!?");
-        }
-    }
-        
     @Getter
     @Builder
     public static class ExecutionContext {
