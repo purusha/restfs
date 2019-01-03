@@ -91,7 +91,7 @@ public abstract class Stage {
             .findFirst()
             .get()
             .invoke(
-                service, cmd.callParams("42", context.getContainer())
+                service, cmd.callParams("42", context.getContainer()) //XXX 42 is not a really auth header !!?
             );
         
         final Response<ResponseBody> execute = result.execute();
@@ -110,11 +110,11 @@ public abstract class Stage {
             execute.errorBody().close();
             
             if (context.isPrintResponse()) {          
-                System.out.println(execute.errorBody().string() + "\n");
+                System.err.println(execute.errorBody().string() + "\n");
             }
                         
             if (context.isStopOnError()) {
-                System.out.println();
+                System.err.println();
                 throw new NotSuccessfullResult(execute);                        
             }
             
@@ -227,6 +227,7 @@ public abstract class Stage {
             }
         }
         
+        //XXX this implementation is coupled to RestFs methods signature
         private Object[] callParams(String authorization, UUID container) {
             final List<Object> result = Lists.newArrayList();
             

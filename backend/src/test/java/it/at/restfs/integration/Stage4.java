@@ -1,5 +1,7 @@
 package it.at.restfs.integration;
 
+import static it.at.restfs.PatternBuilder.file;
+import static it.at.restfs.PatternBuilder.folder;
 import java.util.List;
 import org.junit.Test;
 import com.google.common.collect.Iterables;
@@ -23,9 +25,13 @@ public class Stage4 extends BaseTest {
             buildCommand("file2", Operation.MOVE, queryBuilder("target", "dir"))
         );    
         
-        System.out.println(Iterables.get(commands, 3).string());
-        
-        System.out.println(Iterables.get(commands, 4).string());
+        match(
+            folder("dir2", file("file1")), Iterables.get(commands, 3).string()
+        );        
+
+        match(
+            folder("dir", file("file2")), Iterables.get(commands, 4).string()
+        );                
     }    
     
 }
