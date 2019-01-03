@@ -1,15 +1,15 @@
 
 
-	add application.conf (for akka)
-	
-	add logback.xml
-	
 	add service.conf (our service configuration)
 	
-    sarebbe utile avere anche l'implementazione che scrive su S3 di AWS
-    
     sarebbe utile intercettare anche gzip content 
-        (https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding)
+        ( https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding )
+        
+    potrebbe essere utile fornire un API che fornisca   
+        solo parzialmente il contenuto di un file ... (OPEN op) 
+        ( https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests )
+        impostando per esempio un Accept-Ranges: bytes o Accept-Ranges: lines
+        ed accettando questo header in aggiunta (ed opzionale) e fornire una risposta adeguata        
         
     ----------------------
             
@@ -24,14 +24,15 @@
         3) https://github.com/Azure/azure-storage-java ( https://docs.microsoft.com/en-us/azure/storage/common/storage-samples-java )
         4) amazon S3
         5) https://github.com/yahoo/HaloDB
-        6)  
+        6) MongoDB ( https://stackoverflow.com/questions/1619058/storing-directory-hierarchy-in-a-key-value-data-store )
+        7)  
         
     ----------------------
     
     come autenticare le call rest ??
     
         1) base
-        2) oauth
+        2) oAuth
         3) static authorization
         4) ???
         
@@ -39,7 +40,4 @@
     
     use AbsolutePath instead of "/" + XXX
     
-    
-    
-        
     

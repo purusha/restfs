@@ -102,9 +102,6 @@ public class HTTPListener {
         this.authManager = authManager;
         
         LOGGER.info("\n");
-        LOGGER.info("Expose following PRIVATE http endpoint");
-        LOGGER.info("[GET] http://" + HOST + ":" + PORT + "/" + APP_NAME + "/" + VERSION + "/...");
-        LOGGER.info("\n");
         LOGGER.info("Expose following PUBLIC http endpoint");
         LOGGER.info("[GET] http://" + HOST + ":" + PORT + "/" + APP_NAME + "/" + VERSION + "/...");
         LOGGER.info("\n");
