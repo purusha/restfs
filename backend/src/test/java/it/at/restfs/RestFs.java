@@ -17,7 +17,7 @@ import retrofit2.http.QueryMap;
 public interface RestFs {
     
     @Headers({
-        "Accept: application/json",
+        "Accept: application/json",        
     })    
     @POST("{path}?op=CREATE")
     Call<ResponseBody> create(
@@ -90,6 +90,7 @@ public interface RestFs {
 
     @Headers({
         "Accept: application/json",
+//        "Accept-Encoding: gzip, deflate"
     })        
     @POST("{path}?op=APPEND")
     Call<ResponseBody> append(

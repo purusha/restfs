@@ -40,6 +40,7 @@ public abstract class Stage {
     protected Stage() {
         service = new Retrofit.Builder()
             .addConverterFactory(ScalarsConverterFactory.create())
+//            .addConverterFactory(GZipFactory.create())
             .baseUrl(String.format(
                 "http://%s:%d/%s/%s/", HTTPListener.HOST, HTTPListener.PORT, HTTPListener.APP_NAME, HTTPListener.VERSION                    
             ))
@@ -48,7 +49,7 @@ public abstract class Stage {
                 
         features = OSFeatures.build();
     }
-
+    
     private Path printHierarchy(UUID container) throws IOException, InterruptedException {
         final File root = getContainer(container);
                 

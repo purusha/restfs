@@ -5,6 +5,9 @@
     sarebbe utile intercettare anche gzip content 
         ( https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding )
         
+    only OPEN op 
+        ( https://doc.akka.io/docs/akka-http/current/routing-dsl/directives/coding-directives/decodeRequest.html )        
+        
     potrebbe essere utile fornire un API che fornisca   
         solo parzialmente il contenuto di un file ... (OPEN op) 
         ( https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests )
@@ -39,5 +42,4 @@
     -------------------------------
     
     use AbsolutePath instead of "/" + XXX
-    
-    
+        
