@@ -1,13 +1,11 @@
 
-
 	add service.conf (our service configuration)
 	
-    sarebbe utile intercettare anche gzip content 
-        ( https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding )
-        
-    only OPEN op 
-        ( https://doc.akka.io/docs/akka-http/current/routing-dsl/directives/coding-directives/decodeRequest.html )        
-        
+	https://github.com/mkuthan/example-akka-http/blob/master/src/main/resources/application.conf
+	https://doc.akka.io/docs/akka/2.5/general/configuration.html#configuring-multiple-actorsystem
+	
+	-------------------------------
+	
     potrebbe essere utile fornire un API che fornisca   
         solo parzialmente il contenuto di un file ... (OPEN op) 
         ( https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests )
@@ -28,18 +26,26 @@
         4) amazon S3
         5) https://github.com/yahoo/HaloDB
         6) MongoDB ( https://stackoverflow.com/questions/1619058/storing-directory-hierarchy-in-a-key-value-data-store )
-        7)  
+        7) hbase  
         
     ----------------------
     
     come autenticare le call rest ??
     
-        1) base
+        1) http base auth (static mapping on container conf)
         2) oAuth
         3) static authorization
         4) ???
         
     -------------------------------
     
+    Storage Interface:
+    
     use AbsolutePath instead of "/" + XXX
+    
+    -------------------------------
+    
+    add unit test 
+    
+    -------------------------------
         
