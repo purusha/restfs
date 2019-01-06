@@ -16,9 +16,7 @@ import retrofit2.http.QueryMap;
 
 public interface RestFs {
     
-    @Headers({
-        "Accept: application/json",        
-    })    
+    @Headers("Accept: application/json")    
     @POST("{path}?op=CREATE")
     Call<ResponseBody> create(
         @retrofit2.http.Path(value = "path", encoded = true) String path,
@@ -26,9 +24,7 @@ public interface RestFs {
         @Header(HTTPListener.X_CONTAINER) UUID container        
     );
 
-    @Headers({
-        "Accept: application/json",
-    })        
+    @Headers("Accept: application/json")    
     @POST("{path}?op=MKDIRS")
     Call<ResponseBody> mkdirs(
         @retrofit2.http.Path(value = "path", encoded = true) String path,
@@ -36,9 +32,7 @@ public interface RestFs {
         @Header(HTTPListener.X_CONTAINER) UUID container
     );
 
-    @Headers({
-        "Accept: application/json",
-    })        
+    @Headers("Accept: application/json")    
     @GET("{path}?op=GETSTATUS")
     Call<ResponseBody> getstatus(
         @retrofit2.http.Path(value = "path", encoded = true) String path,
@@ -46,9 +40,7 @@ public interface RestFs {
         @Header(HTTPListener.X_CONTAINER) UUID container
     );
 
-    @Headers({
-        "Accept: application/json",
-    })        
+    @Headers("Accept: application/json")
     @GET("{path}?op=LISTSTATUS")
     Call<ResponseBody> liststatus(
         @retrofit2.http.Path(value = "path", encoded = true) String path,
@@ -56,9 +48,7 @@ public interface RestFs {
         @Header(HTTPListener.X_CONTAINER) UUID container
     );
 
-    @Headers({
-        "Accept: application/json",
-    })        
+    @Headers("Accept: application/json")
     @PUT("{path}?op=RENAME")
     Call<ResponseBody> rename(
         @retrofit2.http.Path(value = "path", encoded = true) String path,
@@ -67,9 +57,7 @@ public interface RestFs {
         @QueryMap Map<String, String> options
     );
 
-    @Headers({
-        "Accept: application/json",
-    })        
+    @Headers("Accept: application/json")
     @DELETE("{path}?op=DELETE")
     Call<ResponseBody> delete(
         @retrofit2.http.Path(value = "path", encoded = true) String path,
@@ -77,9 +65,7 @@ public interface RestFs {
         @Header(HTTPListener.X_CONTAINER) UUID container
     );
 
-    @Headers({
-        "Accept: application/json",
-    })        
+    @Headers("Accept: application/json")
     @PUT("{path}?op=MOVE")
     Call<ResponseBody> move(
         @retrofit2.http.Path(value = "path", encoded = true) String path,
@@ -88,21 +74,16 @@ public interface RestFs {
         @QueryMap Map<String, String> options
     );
 
-    @Headers({
-        "Accept: application/json",
-//        "Accept-Encoding: gzip, deflate"
-    })        
+    @Headers("Accept: application/json")        
     @POST("{path}?op=APPEND")
     Call<ResponseBody> append(
         @retrofit2.http.Path(value = "path", encoded = true) String path,
         @Header(HTTPListener.AUTHORIZATION) String authorization,
-        @Header(HTTPListener.X_CONTAINER) UUID container,
-        @Body String body
+        @Header(HTTPListener.X_CONTAINER) UUID container,        
+        @Body String body        
     );
-
-    @Headers({
-        "Accept: application/json",
-    })        
+    
+    @Headers("Accept: application/json")
     @GET("{path}?op=OPEN")
     Call<ResponseBody> open(
         @retrofit2.http.Path(value = "path", encoded = true) String path,
