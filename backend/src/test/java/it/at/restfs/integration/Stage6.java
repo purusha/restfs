@@ -1,13 +1,12 @@
 package it.at.restfs.integration;
 
+import static it.at.restfs.PatternBuilder.file;
 import java.util.List;
 import org.junit.Test;
 import com.google.common.collect.Iterables;
 import it.at.restfs.BaseTest;
 import it.at.restfs.Operation;
 import okhttp3.ResponseBody;
-
-import static it.at.restfs.PatternBuilder.file;
 
 public class Stage6 extends BaseTest {  
     

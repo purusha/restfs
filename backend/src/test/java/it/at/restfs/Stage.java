@@ -40,7 +40,6 @@ public abstract class Stage {
     protected Stage() {
         service = new Retrofit.Builder()
             .addConverterFactory(ScalarsConverterFactory.create())
-//            .addConverterFactory(GZipFactory.create())
             .baseUrl(String.format(
                 "http://%s:%d/%s/%s/", HTTPListener.HOST, HTTPListener.PORT, HTTPListener.APP_NAME, HTTPListener.VERSION                    
             ))
@@ -84,15 +83,18 @@ public abstract class Stage {
     @SneakyThrows(value = {IllegalAccessException.class, InvocationTargetException.class, IOException.class})
     private ResponseBody remoteCall(ExecutionContext context, ExecutionCommand cmd) {
         System.out.println("$> " + cmd);
-        
+                
+        //XXX 42 is not a really auth value header !!?
+        final Object[] callParams = cmd.callParams("42", context.getContainer());
+//        System.out.println(Arrays.toString(callParams));
+                
         @SuppressWarnings("unchecked")
         final Call<ResponseBody> result = (Call<ResponseBody>)Arrays.stream(RestFs.class.getMethods())
             .filter(m -> StringUtils.equals(m.getName(), cmd.getOperation().toString().toLowerCase()))
+            .filter(method -> method.getParameterTypes().length == callParams.length)
             .findFirst()
             .get()
-            .invoke(
-                service, cmd.callParams("42", context.getContainer()) //XXX 42 is not a really auth header !!?
-            );
+            .invoke(service, callParams);
         
         final Response<ResponseBody> execute = result.execute();
                 
@@ -170,10 +172,10 @@ public abstract class Stage {
         return new ExecutionCommand(data, op, query);
     }    
 
-    protected ExecutionCommand buildCommand(String data, Operation op, String body) {
+    protected ExecutionCommand buildCommand(String data, Operation op, String body) {                                
         return new ExecutionCommand(data, op, body);
     }    
-    
+        
     protected Map<String, String> queryBuilder(String key, String value) {
         final Map<String, String> r = Maps.newHashMap();
         r.put(key, value);
@@ -223,7 +225,7 @@ public abstract class Stage {
             if (o instanceof String) {
                 this.body = (String) o;                
             } else {
-                this.body = null;                
+                this.body = null;    
             }
         }
         
@@ -242,7 +244,7 @@ public abstract class Stage {
             if (Objects.nonNull(body)) {
                 result.add(body);
             }
-
+            
             return result.toArray(new Object[result.size()]);
         }
         

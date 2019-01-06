@@ -1,6 +1,7 @@
 package it.at.restfs.http;
 
 import static akka.http.javadsl.server.Directives.complete;
+import static akka.http.javadsl.server.Directives.decodeRequest;
 import static akka.http.javadsl.server.Directives.extractRequestEntity;
 import java.util.concurrent.ExecutionException;
 import com.google.inject.Inject;
@@ -10,6 +11,8 @@ import akka.http.javadsl.server.Route;
 import akka.stream.ActorMaterializer;
 import akka.stream.javadsl.Keep;
 import akka.stream.javadsl.Sink;
+import akka.stream.javadsl.Source;
+import akka.util.ByteString;
 import it.at.restfs.http.HTTPListener.Request;
 import it.at.restfs.storage.AssetType;
 import it.at.restfs.storage.Storage;
@@ -43,26 +46,31 @@ public class PostController extends BaseController {
 
     //operation = APPEND
     public Route append(Request t) {
-        return extractRequestEntity(request -> {            
-            try {
-                
-                final String body = request.getDataBytes()
-                    .map(data -> data.utf8String())
-                    .toMat(Sink.last(), Keep.right())
-                    .run(materializer)
-                    .toCompletableFuture()
-                    .get();
-                
-                getStorage().append(t.getContainer(), t.getPath(), body);
-                                                
-                return getFileStatus(t);
-                
-            } catch (ExecutionException | InterruptedException e) {
-                LOGGER.error("", e);
-                
-                return complete(StatusCodes.INTERNAL_SERVER_ERROR);
-            }                                       
-        });
+        return decodeRequest(() ->
+            extractRequestEntity(request -> {                    
+                try {
+                    
+                    getStorage().append(
+                        t.getContainer(), t.getPath(), getBody(request.getDataBytes())
+                    );
+                                                    
+                    return getFileStatus(t);
+                    
+                } catch (ExecutionException | InterruptedException e) {
+                    LOGGER.error("", e);
+                    
+                    return complete(StatusCodes.INTERNAL_SERVER_ERROR);
+                }                                                           
+            })
+        );            
+    }
+    
+    private String getBody(Source<ByteString, Object> source) throws InterruptedException, ExecutionException {
+        return source.map(data -> data.utf8String())
+            .toMat(Sink.last(), Keep.right())
+            .run(materializer)
+            .toCompletableFuture()
+            .get();                                                        
     }
     
 }
