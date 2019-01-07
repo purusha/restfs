@@ -1,0 +1,62 @@
+version: '2' #don't use version 3 because we have an error: networks.http.ipam.config value Additional properties are not allowed ('gateway' was unexpected)
+
+# exposed services:
+# - 2181: Zookeeper
+# - 9092: Kafka
+# - 8081/8086: Stargate
+# - 9093/9098: Thrift
+# - 16000/16010: HMaster
+# - 16201/16301: Region Server
+
+networks:
+  local:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "10.61.1.0/16"
+          gateway: "10.61.1.1"
+
+services:
+
+  zookeeper:
+    image: zookeeper:3.4.9
+    restart: always
+    ports:
+      - 2181:2181
+    container_name: restfs-zookeeper
+    #volumes:
+    #  - ./data/zookeeper/data:/data
+    #  - ./data/zookeeper/datalog:/datalog
+    networks:
+      - local
+
+  kafka:
+    build: ./build/kafka
+    ports:
+      - 9092:9092
+    container_name: restfs-kafka
+    depends_on:
+      - hbase
+    #volumes:
+    #  - ./data/kafka:/tmp/kafka-logs
+    networks:
+      - local
+
+  hbase:
+    build: ./build/hbase
+    hostname: hbase-restfs
+    ports:
+      - 8081:8080
+      - 8086:8085
+      - 9093:9093
+      - 9098:9098
+      - 16000:16000
+      - 16010:16010
+      - 16201:16201
+      - 16301:16301
+    container_name: restfs-hbase
+    depends_on:
+      - zookeeper
+    networks:
+      - local
+

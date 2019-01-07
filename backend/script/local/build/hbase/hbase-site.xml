@@ -1,0 +1,26 @@
+<configuration>
+    <property>
+        <name>hbase.rootdir</name>
+        <value>file:///tmp/hbase-${user.name}/hbase</value>;
+    </property>
+    <property>
+        <name>hbase.zookeeper.property.dataDir</name>
+        <value>/tmp/zookeeper</value>
+    </property>
+    <property>
+        <name>hbase.cluster.distributed</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>hbase.zookeeper.property.clientPort</name>
+        <value>ZOOKEEPER_PORT</value>
+    </property>
+    <property>
+        <name>hbase.zookeeper.quorum</name>
+        <value>ZOOKEEPER_HOST</value>
+    </property>
+    <property>
+        <name>zookeeper.znode.parent</name>
+        <value>/hbase-secure</value>
+    </property>
+</configuration>
