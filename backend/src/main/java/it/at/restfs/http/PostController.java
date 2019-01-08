@@ -46,7 +46,7 @@ public class PostController extends BaseController {
 
     //operation = APPEND
     public Route append(Request t) {
-        return decodeRequest(() ->
+        return decodeRequest(() -> //gzipped body content is decoded by this ... when text do nothing !
             extractRequestEntity(request -> {                    
                 try {
                     

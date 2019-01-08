@@ -80,14 +80,12 @@ public class HTTPListener {
         this.filter = filter;
         
         LOGGER.info("\n");
-        LOGGER.info("Expose following PUBLIC http endpoint");
-        LOGGER.info("[GET] http://" + HOST + ":" + PORT + "/" + APP_NAME + "/" + VERSION + "/...");
+        LOGGER.info("Expose following endpoint");
+        LOGGER.info("http://" + HOST + ":" + PORT + "/" + APP_NAME + "/" + VERSION + "/...");
         LOGGER.info("\n");
                 
         this.bindAndHandle = http.bindAndHandle(
-            createRoute().flow(system, materializer), 
-            ConnectHttp.toHost(HOST, PORT), 
-            materializer
+            createRoute().flow(system, materializer), ConnectHttp.toHost(HOST, PORT), materializer
         );
     }
 
