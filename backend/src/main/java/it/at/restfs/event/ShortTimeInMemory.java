@@ -32,10 +32,22 @@ public class ShortTimeInMemory implements EventRepository {
                 @Override
                 public void delete(UUID key, List<Event> value, RemovalCause cause) {
                     LOGGER.debug("delete {} => {} with {}", key, value, cause);
+                    
+                    /*
+
+                         use this information for:
+                         
+                         1) write statistical info for each container (use yaml file ???)
+                         2) write webhook info to be sent remotely 
+                         
+                     */
+                    
                 }
                 
             })
             .build();
+        
+        cache.cleanUp();
         
     }
 
@@ -44,6 +56,12 @@ public class ShortTimeInMemory implements EventRepository {
         cache
             .get(e.getRequest().getContainer(), uuid -> Lists.newArrayList())
             .add(e);
+    }
+
+    //XXX call this every X seconds !!? from Actor
+    @Override
+    public void cleanUp() {
+        cache.cleanUp();
     }
 
 }

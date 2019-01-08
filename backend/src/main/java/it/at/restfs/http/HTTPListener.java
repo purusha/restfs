@@ -12,7 +12,6 @@ import static akka.http.javadsl.server.Directives.pathPrefix;
 import static akka.http.javadsl.server.PathMatchers.segment;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
@@ -21,15 +20,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import com.google.inject.Inject;
-import akka.actor.ActorRef;
-import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
 import akka.http.javadsl.ConnectHttp;
 import akka.http.javadsl.Http;
 import akka.http.javadsl.ServerBinding;
 import akka.http.javadsl.model.HttpMethod;
 import akka.http.javadsl.model.HttpRequest;
-import akka.http.javadsl.model.HttpResponse;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.model.Uri;
 import akka.http.javadsl.server.ExceptionHandler;
@@ -37,22 +33,21 @@ import akka.http.javadsl.server.Rejection;
 import akka.http.javadsl.server.Route;
 import akka.http.javadsl.server.directives.LogEntry;
 import akka.stream.ActorMaterializer;
-import it.at.restfs.actor.EventHandler;
-import it.at.restfs.event.Event;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class HTTPListener {
-    
-    //XXX HTTP binding
+        
+    //XXX HTTP binding ... please use conf file for this
     public static final String APP_NAME = "restfs";
     public static final String VERSION = "v1";
     public static final String HOST = "localhost";
     public static final int PORT = 8081;    
     public static final String X_CONTAINER = "X-Container";
     public static final String AUTHORIZATION = "Authorization";
+    public static final String OP = "op";
     
     private final static BiFunction<HttpRequest, List<Rejection>, LogEntry> REJ = (request, rejections) ->             
         LogEntry.create(
@@ -118,8 +113,8 @@ public class HTTPListener {
                                 headerValueByName(X_CONTAINER, (String container) ->                            
                                     extractUri(uri ->
                                         extractMethod(method ->
-                                            parameter("op", (String operation) ->
-                                                callHandler(UUID.fromString(container), authorization, uri, method, operation)
+                                            parameter(OP, (String operation) ->
+                                                handler(UUID.fromString(container), authorization, uri, method, operation)
                                             )
                                         )
                                     )
@@ -133,21 +128,18 @@ public class HTTPListener {
         );
     }
     
-    private Route callHandler(UUID container, String authorization, Uri uri, HttpMethod method, String operation) {        
+    private Route handler(UUID container, String authorization, Uri uri, HttpMethod method, String operation) {        
         if (! authManager.isTokenValidFor(authorization, container)) {
             return complete(StatusCodes.FORBIDDEN);
         }
-
-//        LOGGER.debug("Http method is {}", method);
-        final Function<Request, Route> controller = mapping.get(method);
         
-        if (Objects.isNull(controller)) {
-            return complete(StatusCodes.METHOD_NOT_ALLOWED);
-        }
-        
-        return controller.apply(new Request(
-            container, StringUtils.substringAfter(uri.getPathString(), APP_NAME + "/" + VERSION), operation
-        ));
+        return mapping
+            .getOrDefault(method, (Request request) -> complete(StatusCodes.METHOD_NOT_ALLOWED))
+            .apply(new Request(container, getPathString(uri) , operation));
+    }
+    
+    public static String getPathString(Uri uri) {
+        return StringUtils.substringAfter(uri.getPathString(), APP_NAME + "/" + VERSION);
     }
     
     @Data
@@ -156,28 +148,6 @@ public class HTTPListener {
         final UUID container;
         final String path;
         final String operation;
-    }
-    
-    static public class Filter implements BiFunction<HttpRequest, HttpResponse, LogEntry> {        
-        private final ActorSelection eventHandler;
-
-        @Inject
-        public Filter(ActorSystem system) {
-            this.eventHandler = system.actorSelection("/user/" + EventHandler.ACTOR);
-        }
-
-        @Override
-        public LogEntry apply(HttpRequest request, HttpResponse response) {
-            final Request req = new Request(UUID.randomUUID(), "/booo", "operation"); //build this like in callHandler method above !!?
-            final Event event = new Event(req, response.status());
-            
-            eventHandler.tell(event, ActorRef.noSender());
-            
-            return LogEntry.create(
-                request.method().name() + ":" + response.status().intValue() +  " " + request.getUri().getPathString(), 
-                InfoLevel() //was 3
-            );
-        }        
     }
         
 }

@@ -20,6 +20,7 @@ import akka.stream.ActorMaterializer;
 import it.at.restfs.event.EventRepository;
 import it.at.restfs.event.ShortTimeInMemory;
 import it.at.restfs.http.DeleteController;
+import it.at.restfs.http.Filter;
 import it.at.restfs.http.GetController;
 import it.at.restfs.http.HTTPListener;
 import it.at.restfs.http.HTTPListener.Request;
@@ -73,6 +74,10 @@ public class AkkaModule implements Module {
         binder
             .bind(EventRepository.class)
             .to(ShortTimeInMemory.class)
+            .in(Singleton.class);
+
+        binder
+            .bind(Filter.class)
             .in(Singleton.class);
         
         binder

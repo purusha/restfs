@@ -13,4 +13,9 @@ public class Event {
     private final Request request;
     private final StatusCode responseCode;
     
+    @Override
+    public String toString() {
+        return String.format("response [%s] request [%s]", responseCode, request);
+    }
+    
 }
