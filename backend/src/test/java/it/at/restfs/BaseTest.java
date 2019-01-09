@@ -43,4 +43,14 @@ public class BaseTest extends Stage {
         }
     }
     
+    protected void matchEverywhere(String match, String result) {        
+        if(! StringUtils.contains(result, match)){
+            
+            System.err.println("match: " + match);
+            System.err.println("result: " + result);
+            
+            throw new RuntimeException("Not the same !!?");
+        }        
+    }
+    
 }

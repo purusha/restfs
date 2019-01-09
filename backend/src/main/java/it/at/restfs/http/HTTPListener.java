@@ -102,7 +102,7 @@ public class HTTPListener {
                 pathPrefix(segment(APP_NAME), () ->
                     pathPrefix(segment(VERSION), () ->
                         headerValueByName("Accept", (String accept) -> {
-    
+                            
                             if (! StringUtils.equals(accept, "application/json")) {
                                 return complete(StatusCodes.BAD_REQUEST, "add header \"Accept: application/json\"");
                             }

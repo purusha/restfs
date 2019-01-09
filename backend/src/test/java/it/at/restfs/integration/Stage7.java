@@ -10,6 +10,7 @@ import org.junit.Test;
 import com.google.common.collect.Iterables;
 import it.at.restfs.BaseTest;
 import it.at.restfs.Operation;
+import it.at.restfs.Stage;
 import it.at.restfs.http.HTTPListener;
 import okhttp3.ResponseBody;
 
@@ -41,32 +42,32 @@ public class Stage7 extends BaseTest {
         );        
     }
     
-    //XXX please me it with HttpClient instead of this !!?
+    //XXX please make it with HttpClient instead of this !!?
     private void appenGzipContent() throws IOException, InterruptedException {
-        final List<String> curl = new ArrayList<String>();
+        final List<String> curlParams = new ArrayList<String>();
         
-        curl.add("/usr/bin/curl");    
-        curl.add("-v");
-        curl.add("-s");
-        curl.add("--trace-ascii");
-        curl.add("http_trace.log");
-        curl.add("--data-binary");
-        curl.add("@file.gz");
-        curl.add("-H");
-        curl.add("Accept: application/json");
-        curl.add("-H");
-        curl.add("Authorization: 42");
-        curl.add("-H");
-        curl.add("X-Container:" + getContainer().toString());
-        curl.add("-H");
-        curl.add("Content-Encoding: gzip");
-        curl.add("-X");
-        curl.add("POST");
-        curl.add(String.format(
+        curlParams.add("/usr/bin/curl");    
+        curlParams.add("-v");
+        curlParams.add("-s");
+        curlParams.add("--trace-ascii");
+        curlParams.add("http_trace.log");
+        curlParams.add("--data-binary");
+        curlParams.add("@file.gz");
+        curlParams.add("-H");
+        curlParams.add("Accept: application/json");
+        curlParams.add("-H");
+        curlParams.add("Authorization: " + Stage._42);
+        curlParams.add("-H");
+        curlParams.add("X-Container: " + getContainer().toString());
+        curlParams.add("-H");
+        curlParams.add("Content-Encoding: gzip");
+        curlParams.add("-X");
+        curlParams.add("POST");
+        curlParams.add(String.format(
             "http://%s:%d/%s/%s/file?op=APPEND", HTTPListener.HOST, HTTPListener.PORT, HTTPListener.APP_NAME, HTTPListener.VERSION                    
         ));        
         
-        final ProcessBuilder pb = new ProcessBuilder(curl);
+        final ProcessBuilder pb = new ProcessBuilder(curlParams);
         pb.directory(new File("test-gzipped/"));
         pb.redirectErrorStream(true);
         

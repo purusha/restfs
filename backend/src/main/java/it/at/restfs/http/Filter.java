@@ -25,16 +25,8 @@ public class Filter implements BiFunction<HttpRequest, HttpResponse, LogEntry> {
 
     @Override
     public LogEntry apply(HttpRequest request, HttpResponse response) {
-        
-        //test cases for NPE
-        
-        //catch all case when this stmt throw NPE
         final String containerId = request.getHeader(HTTPListener.X_CONTAINER).get().value();
-        
-        //catch all case when this stmt throw NPE
         final String path = HTTPListener.getPathString(request.getUri());
-        
-        //catch all case when this stmt throw NPE
         final String operation = request.getUri().query().get(HTTPListener.OP).get();
         
         final Request req = new Request(UUID.fromString(containerId), path, operation);            

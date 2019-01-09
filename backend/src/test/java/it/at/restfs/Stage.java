@@ -34,6 +34,8 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public abstract class Stage {
   
+    public static final String _42 = "42"; //XXX 42 is not a really auth value header !!?
+    
     private final OSFeatures features;
     private final RestFs service;
 
@@ -83,9 +85,8 @@ public abstract class Stage {
     @SneakyThrows(value = {IllegalAccessException.class, InvocationTargetException.class, IOException.class})
     private ResponseBody remoteCall(ExecutionContext context, ExecutionCommand cmd) {
         System.out.println("$> " + cmd);
-                
-        //XXX 42 is not a really auth value header !!?
-        final Object[] callParams = cmd.callParams("42", context.getContainer());
+                        
+        final Object[] callParams = cmd.callParams(_42, context.getContainer());
 //        System.out.println(Arrays.toString(callParams));
                 
         @SuppressWarnings("unchecked")

@@ -20,13 +20,12 @@ public class ShortTimeInMemory implements EventRepository {
     public ShortTimeInMemory() {
 
         cache = Caffeine.newBuilder()
-            .maximumSize(100) //by container ?
-            .expireAfterWrite(30, TimeUnit.SECONDS)
+            .maximumSize(1_000) //number of entries
+            .expireAfterWrite(30, TimeUnit.SECONDS) //short in memory was here
             .writer(new CacheWriter<UUID, List<Event>>() {
 
                 @Override
                 public void write(UUID key, List<Event> value) {
-                    LOGGER.debug("write {} => {}", key, value);
                 }
 
                 @Override
@@ -39,15 +38,13 @@ public class ShortTimeInMemory implements EventRepository {
                          
                          1) write statistical info for each container (use yaml file ???)
                          2) write webhook info to be sent remotely 
+                         3) write last N call available 
                          
-                     */
-                    
+                    */                    
                 }
                 
             })
             .build();
-        
-        cache.cleanUp();
         
     }
 
