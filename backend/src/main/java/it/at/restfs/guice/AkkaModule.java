@@ -26,6 +26,8 @@ import it.at.restfs.http.HTTPListener;
 import it.at.restfs.http.HTTPListener.Request;
 import it.at.restfs.http.PostController;
 import it.at.restfs.http.PutController;
+import it.at.restfs.storage.ContainerRepository;
+import it.at.restfs.storage.FileSystemContainerRepository;
 import it.at.restfs.storage.FileSystemStorage;
 import it.at.restfs.storage.ResouceNotFoundException;
 import it.at.restfs.storage.Storage;
@@ -70,7 +72,12 @@ public class AkkaModule implements Module {
             .bind(Storage.class)
             .to(FileSystemStorage.class)
             .in(Singleton.class);
-            
+
+        binder
+            .bind(ContainerRepository.class)
+            .to(FileSystemContainerRepository.class)
+            .in(Singleton.class);
+        
         binder
             .bind(EventRepository.class)
             .to(ShortTimeInMemory.class)

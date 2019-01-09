@@ -9,15 +9,31 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.RemovalCause;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import akka.actor.ActorRef;
+import akka.actor.ActorSelection;
+import akka.actor.ActorSystem;
+import it.at.restfs.actor.EventHandler;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ShortTimeInMemory implements EventRepository {
     
+    /*
+
+        mantiene un buffer delle ultime N operazioni su un container,
+        raggruppandole per questo ... in modo tale che quando l'attore
+        che scrive le riceve scrive una sola volta il file yaml !!
+ 
+     */
+    
     private final Cache<UUID, List<Event>> cache;
+    
+    private final ActorSelection eventHandler;
 
     @Inject
-    public ShortTimeInMemory() {
+    public ShortTimeInMemory(ActorSystem system) {
+        
+        eventHandler = system.actorSelection("/user/" + EventHandler.ACTOR);
 
         cache = Caffeine.newBuilder()
             .maximumSize(1_000) //number of entries
@@ -31,16 +47,8 @@ public class ShortTimeInMemory implements EventRepository {
                 @Override
                 public void delete(UUID key, List<Event> value, RemovalCause cause) {
                     LOGGER.debug("delete {} => {} with {}", key, value, cause);
-                    
-                    /*
-
-                         use this information for:
-                         
-                         1) write statistical info for each container (use yaml file ???)
-                         2) write webhook info to be sent remotely 
-                         3) write last N call available 
-                         
-                    */                    
+                                        
+                    eventHandler.tell(new ContainerEvents(key, value), ActorRef.noSender());
                 }
                 
             })
