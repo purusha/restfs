@@ -1,5 +1,8 @@
 package it.at.restfs.actor;
 
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import com.google.inject.Inject;
 import akka.actor.ActorRef;
 import it.at.restfs.event.ContainerEvents;
@@ -14,12 +17,13 @@ import scala.concurrent.duration.FiniteDuration;
 
 @Slf4j
 public class EventHandlerActor extends GuiceAbstractActor {
-    public static final String ACTOR = "EventHandler";
     
+    public static final String ACTOR = "EventHandler";
+    private final static String CLEAN_UP = "clean-up";
+    private final static Function<Event, Integer> EVENT_TO_HTTP_STATUS = (Event event) -> event.getResponseCode().intValue();
+
     private final EventRepository eRepo;    
     private final ContainerRepository cRepo;
-    
-    private final static String CLEAN_UP = "machine-status";
 
     @Inject
     public EventHandlerActor(EventRepository eRepo, ContainerRepository cRepo) {
@@ -57,9 +61,31 @@ public class EventHandlerActor extends GuiceAbstractActor {
                     
                */    
 
-                final Container container = cRepo.load(c.getContainer());
-                
+                final Container container = cRepo.load(c.getContainer());                
                 LOGGER.info("load container {} for {}", container, c);
+                                
+                final Map<Integer, Integer> groupByStatusCode = c.getEvents().stream()
+                    .collect(Collectors.groupingBy(
+                        EVENT_TO_HTTP_STATUS
+                    ))
+                    .entrySet().stream()
+                        .collect(Collectors.toMap(
+                            Map.Entry::getKey, entry -> entry.getValue().size()
+                        ));
+                
+                final Map<Integer, Integer> statistics = container.getStatistics();
+                LOGGER.info("BEFORE statistics {}", statistics);
+                
+                groupByStatusCode.entrySet().forEach(entry -> {                    
+                    int sum = statistics.getOrDefault(entry.getKey(), 0).intValue() + entry.getValue().intValue();
+                    
+                    statistics.put(entry.getKey(), sum);
+                });
+                
+                container.setStatistics(statistics);
+                LOGGER.info("AFTER statistics {}", statistics);
+                
+                cRepo.save(container);
                 
             })
             .matchAny(this::unhandled)

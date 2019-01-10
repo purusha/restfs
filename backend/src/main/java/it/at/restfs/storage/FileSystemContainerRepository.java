@@ -23,7 +23,13 @@ public class FileSystemContainerRepository implements ContainerRepository {
     }
     
     public static File build(UUID container) {
-        return new File(FileSystemStorage.ROOT + "c" + container + ".yaml");
+        return new File(FileSystemStorage.ROOT + "C-" + container + ".yaml");
+    }
+
+    @SneakyThrows
+    @Override
+    public void save(Container container) {
+        mapper.writeValue(build(container.getId()), container);
     }
 
 }

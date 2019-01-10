@@ -6,4 +6,6 @@ public interface ContainerRepository {
 
     Container load(UUID container);
 
+    void save(Container container);
+
 }
