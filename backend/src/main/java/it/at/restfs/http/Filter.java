@@ -27,12 +27,15 @@ public class Filter implements BiFunction<HttpRequest, HttpResponse, LogEntry> {
     public LogEntry apply(HttpRequest request, HttpResponse response) {
         final String containerId = request.getHeader(HTTPListener.X_CONTAINER).get().value();
         final String path = HTTPListener.getPathString(request.getUri());
-        final String operation = request.getUri().query().get(HTTPListener.OP).get();
-        
-        final Request req = new Request(UUID.fromString(containerId), path, operation);            
-        final Event event = new Event(req, response.status());
-        
-        eventHandler.tell(event, ActorRef.noSender());
+
+        //XXX don't create event if /stats endpoint is called ... please try another way to do the same stuff
+        request.getUri().query().get(HTTPListener.OP)
+            .ifPresent(operation -> {         
+                final Request req = new Request(UUID.fromString(containerId), path, operation);            
+                final Event event = new Event(req, response.status());
+                
+                eventHandler.tell(event, ActorRef.noSender());            
+            });
         
         return LogEntry.create(
             request.method().name() + ":" + response.status().intValue() +  " " + request.getUri().getPathString(), 

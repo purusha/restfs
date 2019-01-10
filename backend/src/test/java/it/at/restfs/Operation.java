@@ -5,4 +5,6 @@ public enum Operation {
     MOVE, RENAME,                                       //PUT
     MKDIRS, CREATE, APPEND,                             //POST
     DELETE,                                             //DELETE
+    
+    STATS,
 }    

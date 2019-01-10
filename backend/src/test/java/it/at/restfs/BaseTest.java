@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 public class BaseTest extends Stage {
 
@@ -51,6 +52,11 @@ public class BaseTest extends Stage {
             
             throw new RuntimeException("Not the same !!?");
         }        
+    }
+    
+    @SneakyThrows
+    protected void wait(int seconds) {
+        Thread.sleep(seconds * 1000);
     }
     
 }

@@ -9,6 +9,8 @@ import static akka.http.javadsl.server.Directives.headerValueByName;
 import static akka.http.javadsl.server.Directives.logRequestResult;
 import static akka.http.javadsl.server.Directives.parameter;
 import static akka.http.javadsl.server.Directives.pathPrefix;
+import static akka.http.javadsl.server.Directives.route;
+import static akka.http.javadsl.server.Directives.get;
 import static akka.http.javadsl.server.PathMatchers.segment;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,7 @@ import akka.actor.ActorSystem;
 import akka.http.javadsl.ConnectHttp;
 import akka.http.javadsl.Http;
 import akka.http.javadsl.ServerBinding;
+import akka.http.javadsl.marshallers.jackson.Jackson;
 import akka.http.javadsl.model.HttpMethod;
 import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.StatusCodes;
@@ -33,6 +36,7 @@ import akka.http.javadsl.server.Rejection;
 import akka.http.javadsl.server.Route;
 import akka.http.javadsl.server.directives.LogEntry;
 import akka.stream.ActorMaterializer;
+import it.at.restfs.storage.ContainerRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -63,6 +67,7 @@ public class HTTPListener {
     private final AuthorizationManager authManager;     
     private final ExceptionHandler handler;
     private final Filter filter;
+    private final ContainerRepository cRepo;
     
     @Inject
     public HTTPListener(
@@ -72,12 +77,14 @@ public class HTTPListener {
         Map<HttpMethod, Function<Request, Route>> mapping,
         AuthorizationManager authManager,
         ExceptionHandler handler,
-        Filter filter
+        Filter filter,
+        ContainerRepository cRepo
     ) {
         this.mapping = mapping;
         this.authManager = authManager;
         this.handler = handler;
         this.filter = filter;
+        this.cRepo = cRepo;
         
         LOGGER.info("\n");
         LOGGER.info("Expose following endpoint");
@@ -108,13 +115,22 @@ public class HTTPListener {
                             }
                         
                             return headerValueByName(AUTHORIZATION, (String authorization) ->
-                                headerValueByName(X_CONTAINER, (String container) ->                            
-                                    extractUri(uri ->
-                                        extractMethod(method ->
-                                            parameter(OP, (String operation) ->
-                                                handler(UUID.fromString(container), authorization, uri, method, operation)
+                                headerValueByName(X_CONTAINER, (String container) ->    
+                                    route(
+                                
+                                        extractUri(uri ->
+                                            extractMethod(method ->
+                                                parameter(OP, (String operation) ->
+                                                    handler(UUID.fromString(container), authorization, uri, method, operation)
+                                                )
+                                            )
+                                        ),
+                                        get(() ->
+                                            pathPrefix(segment("stats"), () ->
+                                                stats(UUID.fromString(container), authorization)
                                             )
                                         )
+                                    
                                     )
                                 )
                             );
@@ -123,6 +139,18 @@ public class HTTPListener {
                     )
                 )
             )
+        );
+    }
+
+    private Route stats(UUID container, String authorization) {        
+        if (! authManager.isTokenValidFor(authorization, container)) {
+            return complete(StatusCodes.FORBIDDEN);
+        }
+        
+        return complete(
+            StatusCodes.OK, 
+            cRepo.load(container).getStatistics(), 
+            Jackson.<Map<Integer, Integer>>marshaller()
         );
     }
     

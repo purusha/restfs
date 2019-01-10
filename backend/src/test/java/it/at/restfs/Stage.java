@@ -185,16 +185,20 @@ public abstract class Stage {
         }        
     }
     
+    protected ExecutionCommand buildStatsCommand() {
+        return new StatsExecutionCommand();
+    }
+    
     protected ExecutionCommand buildCommand(String data, Operation op) {
-        return new ExecutionCommand(data, op, null);
+        return new SimpleExecutionCommand(data, op, null);
     }    
 
     protected ExecutionCommand buildCommand(String data, Operation op, Map<String, String> query) {       
-        return new ExecutionCommand(data, op, query);
+        return new SimpleExecutionCommand(data, op, query);
     }    
 
     protected ExecutionCommand buildCommand(String data, Operation op, String body) {                                
-        return new ExecutionCommand(data, op, body);
+        return new SimpleExecutionCommand(data, op, body);
     }    
         
     protected Map<String, String> queryBuilder(String key, String value) {
@@ -225,15 +229,25 @@ public abstract class Stage {
         private final boolean printResponse;                
     }
 
-    @Getter
-    public static class ExecutionCommand {
+    public static interface ExecutionCommand {
+        
+        Operation getOperation();
+        
+        Object[] callParams(String authorization, UUID container);
+        
+    }
+    
+    public static class SimpleExecutionCommand implements ExecutionCommand {
+        
+        @Getter
         private final Operation operation;
+        
         private final String resouce;          
         private final Map<String, String> query;
         private final String body;
         
         @SuppressWarnings("unchecked")
-        private ExecutionCommand(String targetResouce, Operation operation, Object o) {
+        private SimpleExecutionCommand(String targetResouce, Operation operation, Object o) {
             this.resouce = targetResouce;
             this.operation = operation;
             
@@ -251,7 +265,8 @@ public abstract class Stage {
         }
         
         //XXX this implementation is coupled to RestFs methods signature
-        private Object[] callParams(String authorization, UUID container) {
+        @Override
+        public Object[] callParams(String authorization, UUID container) {
             final List<Object> result = Lists.newArrayList();
             
             result.add(resouce);
@@ -273,6 +288,30 @@ public abstract class Stage {
         public String toString() {
             return "call " + operation + " on " + resouce + " with query=" + query + " and body=" + body;
         }
+    }
+        
+    public static class StatsExecutionCommand implements ExecutionCommand {
+
+        @Override
+        public Operation getOperation() {
+            return Operation.STATS;
+        }
+
+        //XXX this implementation is coupled to RestFs methods signature
+        @Override
+        public Object[] callParams(String authorization, UUID container) {
+            final List<Object> result = Lists.newArrayList();
+
+            result.add(authorization);
+            result.add(container);
+            
+            return result.toArray(new Object[result.size()]);
+        }
+
+        @Override
+        public String toString() {
+            return "call STATS";
+        }        
     }
 
     @Getter
