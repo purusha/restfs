@@ -10,7 +10,7 @@ import akka.actor.ActorSystem;
 import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.HttpResponse;
 import akka.http.javadsl.server.directives.LogEntry;
-import it.at.restfs.actor.EventHandler;
+import it.at.restfs.actor.EventHandlerActor;
 import it.at.restfs.event.Event;
 import it.at.restfs.http.HTTPListener.Request;
 
@@ -20,7 +20,7 @@ public class Filter implements BiFunction<HttpRequest, HttpResponse, LogEntry> {
 
     @Inject
     public Filter(ActorSystem system) {
-        this.eventHandler = system.actorSelection("/user/" + EventHandler.ACTOR);
+        this.eventHandler = system.actorSelection("/user/" + EventHandlerActor.ACTOR);
     }
 
     @Override

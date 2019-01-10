@@ -12,7 +12,7 @@ import com.google.inject.Inject;
 import akka.actor.ActorRef;
 import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
-import it.at.restfs.actor.EventHandler;
+import it.at.restfs.actor.EventHandlerActor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -33,11 +33,11 @@ public class ShortTimeInMemory implements EventRepository {
     @Inject
     public ShortTimeInMemory(ActorSystem system) {
         
-        eventHandler = system.actorSelection("/user/" + EventHandler.ACTOR);
+        eventHandler = system.actorSelection("/user/" + EventHandlerActor.ACTOR);
 
         cache = Caffeine.newBuilder()
-            .maximumSize(1_00) //number of entries
-            .expireAfterWrite(5, TimeUnit.SECONDS) //short in memory was here
+            .maximumSize(100) //number of entries
+            .expireAfterWrite(expireData(), expireUnit()) //short in memory was here
             .writer(new CacheWriter<UUID, List<Event>>() {
 
                 @Override
@@ -63,10 +63,19 @@ public class ShortTimeInMemory implements EventRepository {
             .add(e);
     }
 
-    //XXX call this every X seconds !!? from Actor
     @Override
     public void cleanUp() {
         cache.cleanUp();
+    }
+    
+    //XXX extract in configuration
+    public static int expireData() {
+        return 5;
+    }
+    
+    //XXX extract in configuration
+    public static TimeUnit expireUnit() {
+        return TimeUnit.SECONDS;
     }
 
 }

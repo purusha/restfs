@@ -1,31 +1,49 @@
 package it.at.restfs.actor;
 
 import com.google.inject.Inject;
+import akka.actor.ActorRef;
 import it.at.restfs.event.ContainerEvents;
 import it.at.restfs.event.Event;
 import it.at.restfs.event.EventRepository;
+import it.at.restfs.event.ShortTimeInMemory;
 import it.at.restfs.guice.GuiceAbstractActor;
 import it.at.restfs.storage.Container;
 import it.at.restfs.storage.ContainerRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import scala.concurrent.duration.FiniteDuration;
 
 @Slf4j
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
-public class EventHandler extends GuiceAbstractActor {
+public class EventHandlerActor extends GuiceAbstractActor {
     public static final String ACTOR = "EventHandler";
     
-    private final EventRepository eRepo;
-    
+    private final EventRepository eRepo;    
     private final ContainerRepository cRepo;
+    
+    private final static String CLEAN_UP = "machine-status";
+
+    @Inject
+    public EventHandlerActor(EventRepository eRepo, ContainerRepository cRepo) {
+        this.eRepo = eRepo;
+        this.cRepo = cRepo;
+        
+        final FiniteDuration apply = FiniteDuration.apply(
+            ShortTimeInMemory.expireData() * 2, ShortTimeInMemory.expireUnit()
+        );
+        
+        getContext().system().scheduler().schedule(
+            apply, apply, getSelf(), CLEAN_UP, getContext().system().dispatcher(), ActorRef.noSender()
+        );
+    }
+    
     
     @Override
     public Receive createReceive() {
         return receiveBuilder()
+            .matchEquals(CLEAN_UP, m -> {
+                eRepo.cleanUp();
+            })
             .match(Event.class, e -> {
-                
                 eRepo.save(e);
-                
             })
             .match(ContainerEvents.class, c -> {
                 

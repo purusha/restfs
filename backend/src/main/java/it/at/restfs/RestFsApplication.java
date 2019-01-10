@@ -5,7 +5,7 @@ import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
-import it.at.restfs.actor.EventHandler;
+import it.at.restfs.actor.EventHandlerActor;
 import it.at.restfs.actor.MachineStatusInfoActor;
 import it.at.restfs.guice.GuiceActorUtils;
 import it.at.restfs.guice.GuiceExtension;
@@ -35,7 +35,7 @@ public class RestFsApplication {
         
         //start actors
         system.actorOf(build(MachineStatusInfoActor.class));  
-        system.actorOf(build(EventHandler.class), EventHandler.ACTOR);  
+        system.actorOf(build(EventHandlerActor.class), EventHandlerActor.ACTOR);  
         
         //start http endpoint
         injector.getInstance(HTTPListener.class);            
