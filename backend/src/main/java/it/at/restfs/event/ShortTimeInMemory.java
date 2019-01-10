@@ -36,8 +36,8 @@ public class ShortTimeInMemory implements EventRepository {
         eventHandler = system.actorSelection("/user/" + EventHandler.ACTOR);
 
         cache = Caffeine.newBuilder()
-            .maximumSize(1_000) //number of entries
-            .expireAfterWrite(30, TimeUnit.SECONDS) //short in memory was here
+            .maximumSize(1_00) //number of entries
+            .expireAfterWrite(5, TimeUnit.SECONDS) //short in memory was here
             .writer(new CacheWriter<UUID, List<Event>>() {
 
                 @Override
@@ -46,7 +46,7 @@ public class ShortTimeInMemory implements EventRepository {
 
                 @Override
                 public void delete(UUID key, List<Event> value, RemovalCause cause) {
-                    LOGGER.debug("delete {} => {} with {}", key, value, cause);
+                    LOGGER.debug("delete {} {} entry because => {}", key, value.size(), cause);
                                         
                     eventHandler.tell(new ContainerEvents(key, value), ActorRef.noSender());
                 }

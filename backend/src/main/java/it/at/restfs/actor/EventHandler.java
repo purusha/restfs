@@ -8,7 +8,9 @@ import it.at.restfs.guice.GuiceAbstractActor;
 import it.at.restfs.storage.Container;
 import it.at.restfs.storage.ContainerRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class EventHandler extends GuiceAbstractActor {
     public static final String ACTOR = "EventHandler";
@@ -38,6 +40,8 @@ public class EventHandler extends GuiceAbstractActor {
                */    
 
                 final Container container = cRepo.load(c.getContainer());
+                
+                LOGGER.info("load container {} for {}", container, c);
                 
             })
             .matchAny(this::unhandled)

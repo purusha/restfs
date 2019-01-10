@@ -2,10 +2,12 @@ package it.at.restfs;
 
 import static java.nio.charset.Charset.defaultCharset;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -18,9 +20,11 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.RandomStringGenerator;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import it.at.restfs.http.HTTPListener;
+import it.at.restfs.storage.FileSystemContainerRepository;
 import it.at.restfs.storage.FileSystemStorage;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,6 +38,8 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public abstract class Stage {
   
+    private static final org.apache.commons.text.RandomStringGenerator TEXT_BUILDER = new RandomStringGenerator.Builder().withinRange('a', 'z').build();
+    
     public static final String _42 = "42"; //XXX 42 is not a really auth value header !!?
     
     private final OSFeatures features;
@@ -126,8 +132,22 @@ public abstract class Stage {
     }
     
     //XXX this code know's which is the real implementation ... is stupid
+    @SneakyThrows
     protected void createContainer(UUID container) {
         getContainer(container).mkdir();
+        
+        final URL cTemplate = getClass().getClassLoader().getResource("c-template.yaml");
+        final String template = IOUtils.toString(cTemplate, StandardCharsets.UTF_8);
+        
+        IOUtils.write(
+            StringUtils.replaceEach(
+                template, 
+                new String[]{"${name}", "${id}"}, 
+                new String[]{TEXT_BUILDER.generate(12), container.toString()}
+            ),
+            new FileOutputStream(FileSystemContainerRepository.build(container)), 
+            StandardCharsets.UTF_8
+        );
     }
 
     //XXX this code know's which is the real implementation ... is stupid

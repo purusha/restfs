@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class ContainerEvents {
 
-    private final UUID container;
+    private final UUID container; //XXX data duplication ... just exist inside each event
     private final List<Event> events;
     
 }
