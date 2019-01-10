@@ -13,6 +13,10 @@ public class Container {
     private UUID id;
     
     //HttpStatusCode => NumberOf
-    private Map<Integer, Integer> statistics = new HashMap<>(); 
+    private Map<Integer, Integer> statistics = new HashMap<>();
+    
+    private boolean statsEnabled = false;
+    
+    private boolean webHookEnabled = false;
     
 }

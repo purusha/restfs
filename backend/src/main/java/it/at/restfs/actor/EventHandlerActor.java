@@ -63,30 +63,37 @@ public class EventHandlerActor extends GuiceAbstractActor {
 
                 final Container container = cRepo.load(c.getContainer());                
                 LOGGER.info("load container {} for {}", container, c);
-                                
-                final Map<Integer, Integer> groupByStatusCode = c.getEvents().stream()
-                    .collect(Collectors.groupingBy(
-                        EVENT_TO_HTTP_STATUS
-                    ))
-                    .entrySet().stream()
-                        .collect(Collectors.toMap(
-                            Map.Entry::getKey, entry -> entry.getValue().size()
-                        ));
                 
-                final Map<Integer, Integer> statistics = container.getStatistics();
-                LOGGER.info("BEFORE statistics {}", statistics);
-                
-                groupByStatusCode.entrySet().forEach(entry -> {                    
-                    int sum = statistics.getOrDefault(entry.getKey(), 0).intValue() + entry.getValue().intValue();
+                if (container.isStatsEnabled()) {
+
+                    final Map<Integer, Integer> groupByStatusCode = c.getEvents().stream()
+                        .collect(Collectors.groupingBy(
+                            EVENT_TO_HTTP_STATUS
+                        ))
+                        .entrySet().stream()
+                            .collect(Collectors.toMap(
+                                Map.Entry::getKey, entry -> entry.getValue().size()
+                            ));
                     
-                    statistics.put(entry.getKey(), sum);
-                });
+                    final Map<Integer, Integer> statistics = container.getStatistics();
+                    LOGGER.info("BEFORE statistics {}", statistics);
+                    
+                    groupByStatusCode.entrySet().forEach(entry -> {                    
+                        int sum = statistics.getOrDefault(entry.getKey(), 0).intValue() + entry.getValue().intValue();
+                        
+                        statistics.put(entry.getKey(), sum);
+                    });
+                    
+                    container.setStatistics(statistics);
+                    LOGGER.info("AFTER statistics {}", statistics);
                 
-                container.setStatistics(statistics);
-                LOGGER.info("AFTER statistics {}", statistics);
+                    cRepo.save(container);
+                }
                 
-                cRepo.save(container);
-                
+                if (container.isWebHookEnabled()) {
+                    
+                }
+                                                
             })
             .matchAny(this::unhandled)
             .build();
