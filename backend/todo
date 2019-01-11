@@ -60,4 +60,28 @@
     
     https://docs.beefree.io/connect-your-own-file-storage/
     
-        
+    -------------------------------
+    
+    when response is an error ... return always a json like:
+    
+    {
+    	"logref": "3674a907-9c2a-478f-a6b6-47cdfd3e11fb",
+    	"path": "/dir1/test/xxx/file.txt",
+    	"containerId": "3674a907-9c2a-478f-a6b6-47cdfd3e11fb",
+    	"message": "booo ... aaòsijdfbasdfa sdf sajdfh asjd fasjdh fjash dfsjdfgsdjf g"
+    }
+    
+    -------------------------------    
+    
+	nei json di risposta per ogni campo di tipo data,
+	in questo momento viene formattato secondo uno standard scritto all'interno della classe
+	relativa all'entity
+	
+	e se il client preferisse un dato tipo:
+	
+		> UNIX time with milliseconds
+		> UNIX time without milliseconds
+		> una formattazione diversa 
+	    
+    -------------------------------
+    
