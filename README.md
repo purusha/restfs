@@ -22,3 +22,5 @@ Management operation on container:
  - last N call (N configurable)
  - webhook (configurable for flush data on expired time or number of events)
 
+This is project is under develop ... see todo file to discover new functionality
+[todo file](./backend/todo)
