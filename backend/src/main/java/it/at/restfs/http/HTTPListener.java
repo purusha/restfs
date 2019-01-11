@@ -142,6 +142,7 @@ public class HTTPListener {
         );
     }
 
+    //XXX this method should be moved into a Controller ?
     private Route stats(UUID container, String authorization) {        
         if (! authManager.isTokenValidFor(authorization, container)) {
             return complete(StatusCodes.FORBIDDEN);
@@ -150,7 +151,7 @@ public class HTTPListener {
         return complete(
             StatusCodes.OK, 
             cRepo.load(container).getStatistics(), 
-            Jackson.<Map<Integer, Integer>>marshaller()
+            Jackson.<Map<Integer, Long>>marshaller()
         );
     }
     
@@ -164,6 +165,7 @@ public class HTTPListener {
             .apply(new Request(container, getPathString(uri) , operation));
     }
     
+    //XXX this method should be moved into a new Class ?
     public static String getPathString(Uri uri) {
         return StringUtils.substringAfter(uri.getPathString(), APP_NAME + "/" + VERSION);
     }

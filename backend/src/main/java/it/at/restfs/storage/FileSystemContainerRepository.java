@@ -22,6 +22,7 @@ public class FileSystemContainerRepository implements ContainerRepository {
         return mapper.readValue(build(container), Container.class);
     }
     
+    //XXX exposed only for test 
     public static File build(UUID container) {
         return new File(FileSystemStorage.ROOT + "C-" + container + ".yaml");
     }

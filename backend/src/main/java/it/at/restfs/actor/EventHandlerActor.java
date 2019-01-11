@@ -65,28 +65,26 @@ public class EventHandlerActor extends GuiceAbstractActor {
                 LOGGER.info("load container {} for {}", container, c);
                 
                 if (container.isStatsEnabled()) {
+                    
+                    final Map<Integer, Long> statistics = container.getStatistics();
+                    LOGGER.info("BEFORE statistics {}", statistics);
 
-                    final Map<Integer, Integer> groupByStatusCode = c.getEvents().stream()
+                    c.getEvents().stream()
                         .collect(Collectors.groupingBy(
                             EVENT_TO_HTTP_STATUS
                         ))
                         .entrySet().stream()
                             .collect(Collectors.toMap(
                                 Map.Entry::getKey, entry -> entry.getValue().size()
-                            ));
+                            ))
+                            .entrySet()
+                            .forEach(entry -> {                    
+                                final int sum = statistics.getOrDefault(entry.getKey(), 0L).intValue() + entry.getValue().intValue();
+                                
+                                statistics.put(entry.getKey(), new Long(sum));
+                            });
                     
-                    final Map<Integer, Integer> statistics = container.getStatistics();
-                    LOGGER.info("BEFORE statistics {}", statistics);
-                    
-                    groupByStatusCode.entrySet().forEach(entry -> {                    
-                        int sum = statistics.getOrDefault(entry.getKey(), 0).intValue() + entry.getValue().intValue();
-                        
-                        statistics.put(entry.getKey(), sum);
-                    });
-                    
-                    container.setStatistics(statistics);
                     LOGGER.info("AFTER statistics {}", statistics);
-                
                     cRepo.save(container);
                 }
                 

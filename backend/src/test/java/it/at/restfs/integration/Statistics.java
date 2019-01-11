@@ -33,7 +33,7 @@ public class Statistics extends BaseTest {
             buildStatsCommand()
         );
         
-        System.out.println(Iterables.get(r1, 0).string());
+        expected("{}", Iterables.get(r1, 0).string());
 
         runCommands(
             ctx,
@@ -54,7 +54,7 @@ public class Statistics extends BaseTest {
             buildStatsCommand()
         );
         
-        System.out.println(Iterables.get(r2, 0).string());
+        expected("{\"200\":13}", Iterables.get(r2, 0).string());
         
     }
     
