@@ -9,6 +9,10 @@ public class PatternBuilder {
     private static final String DT = ":\"[0-9]{4}-[0-9]{2}-[0-9]{2}@[0-9]{2}:[0-9]{2}:[0-9]{2}\"";    
     private static final String J_S = "\\{";    
     private static final String J_E = "\\}";
+    
+    public static String json() {
+        return J_S + ".*" + J_E;
+    }
 
     public static String file(String name) {        
         return file(name, 0l);

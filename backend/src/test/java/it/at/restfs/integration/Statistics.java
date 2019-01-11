@@ -6,6 +6,7 @@ import com.google.common.collect.Iterables;
 import it.at.restfs.BaseTest;
 import it.at.restfs.Operation;
 import okhttp3.ResponseBody;
+import static it.at.restfs.PatternBuilder.*;
 
 public class Statistics extends BaseTest {
 
@@ -15,7 +16,6 @@ public class Statistics extends BaseTest {
         final ExecutionContext ctx = ExecutionContext.builder()
             .container(getContainer())
             .stopOnError(true)
-//            .printResponse(true)
             .build();
         
         runCommands(
@@ -33,7 +33,7 @@ public class Statistics extends BaseTest {
             buildStatsCommand()
         );
         
-        expected("{}", Iterables.get(r1, 0).string());
+        match(json(), Iterables.get(r1, 0).string());        
 
         runCommands(
             ctx,

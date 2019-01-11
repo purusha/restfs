@@ -7,10 +7,19 @@
 	-------------------------------
 	
     potrebbe essere utile fornire un API che fornisca   
-        solo parzialmente il contenuto di un file ... (OPEN op) 
+    
+        > solo parzialmente il contenuto di un file ... (OPEN op) 
         ( https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests )
         impostando per esempio un Accept-Ranges: bytes o Accept-Ranges: lines
-        ed accettando questo header in aggiunta (ed opzionale) e fornire una risposta adeguata        
+        ed accettando questo header in aggiunta (ed opzionale) e fornire una risposta adeguata
+        
+        > solo parzialmente il contenuto di una folder ... (OPEN liststatus)
+        ( https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests )
+        impostando per esempio un Accept-Ranges: bytes o Accept-Ranges: lines
+        ed accettando questo header in aggiunta (ed opzionale) e fornire una risposta adeguata
+        
+        > un modo per filtrare i contenuti di una folder in base a dei criteri:
+        	tipo di risorsa, nome di risorsa, data di accesso/creazione ... ecc. ecc.
         
     ----------------------
             
