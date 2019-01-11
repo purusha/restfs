@@ -117,16 +117,16 @@ public class HTTPListener {
                             return headerValueByName(AUTHORIZATION, (String authorization) ->
                                 headerValueByName(X_CONTAINER, (String container) ->    
                                     route(
-                                
-                                        extractUri(uri ->
-                                            extractMethod(method ->
-                                                parameter(OP, (String operation) ->
+                                        
+                                        parameter(OP, (String operation) ->
+                                            extractUri(uri ->
+                                                extractMethod(method ->                                                
                                                     handler(UUID.fromString(container), authorization, uri, method, operation)
                                                 )
                                             )
                                         ),
-                                        get(() ->
-                                            pathPrefix(segment("stats"), () ->
+                                        pathPrefix(segment("stats"), () ->
+                                            get(() ->                                            
                                                 stats(UUID.fromString(container), authorization)
                                             )
                                         )

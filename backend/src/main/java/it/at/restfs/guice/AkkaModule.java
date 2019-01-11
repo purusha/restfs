@@ -93,12 +93,12 @@ public class AkkaModule implements Module {
                 
                 ExceptionHandler.newBuilder()
                     .match(ResouceNotFoundException.class, x -> {
-                        LOGGER.error("handling exception: ", x);
+                        LOGGER.error("handling exception: {}", x.getMessage());
                         
                         return complete(StatusCodes.NOT_FOUND, x.getMessage());
                     })
                     .match(FileAlreadyExistsException.class, x -> {
-                        LOGGER.error("handling exception: ", x);
+                        LOGGER.error("handling exception: {}", x.getMessage());
                         
                         return complete(StatusCodes.CONFLICT, x.getMessage());
                     })

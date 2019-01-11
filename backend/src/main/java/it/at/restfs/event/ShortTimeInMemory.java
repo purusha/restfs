@@ -46,7 +46,7 @@ public class ShortTimeInMemory implements EventRepository {
 
                 @Override
                 public void delete(UUID key, List<Event> value, RemovalCause cause) {
-                    LOGGER.debug("delete {} {} entry because => {}", key, value.size(), cause);
+                    LOGGER.debug("delete {} entry on {} with because => {}", value.size(), key, cause);
                                         
                     eventHandler.tell(new ContainerEvents(key, value), ActorRef.noSender());
                 }
@@ -70,7 +70,7 @@ public class ShortTimeInMemory implements EventRepository {
     
     //XXX extract in configuration
     public static int expireData() {
-        return 5;
+        return 3;
     }
     
     //XXX extract in configuration
