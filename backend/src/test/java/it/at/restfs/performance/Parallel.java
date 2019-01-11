@@ -1,4 +1,4 @@
-package it.at.restfs;
+package it.at.restfs.performance;
 
 import java.util.Set;
 import org.junit.Assert;
@@ -7,8 +7,9 @@ import org.junit.experimental.ParallelComputer;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.reflections.Reflections;
+import it.at.restfs.BaseTest;
 
-public class TestClassParallel {
+public class Parallel {
     
     private final Reflections reflections = new Reflections("it.at.restfs.integration");
     
