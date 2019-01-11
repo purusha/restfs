@@ -15,10 +15,7 @@ public class Parallel {
     
     @Test
     public void test() {
-
-        Set<Class<? extends BaseTest>> allClasses = reflections.getSubTypesOf(BaseTest.class);
-        System.out.println(allClasses);
-        
+        final Set<Class<? extends BaseTest>> allClasses = reflections.getSubTypesOf(BaseTest.class);
         final Class<?>[] array = new Class<?>[allClasses.size()]; 
         
         //run
@@ -28,10 +25,6 @@ public class Parallel {
         
         Assert.assertEquals(0, realRun.getFailureCount());        
     }
-    
-//    public static <T> T[] createArray(Class<T> type, int size){
-//        return (T[])Array.newInstance(type, size);
-//    }    
     
     private Result realRun(Class<?>[] cls) {
         
