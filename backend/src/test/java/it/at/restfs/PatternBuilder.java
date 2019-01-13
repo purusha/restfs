@@ -1,6 +1,7 @@
 package it.at.restfs;
 
 import java.util.Arrays;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import it.at.restfs.storage.AssetType;
 
@@ -19,13 +20,15 @@ public class PatternBuilder {
     }
     
     public static String file(String name, long length) {
+        final String quotedName = Pattern.quote(name);
+        
         return 
             J_S + 
             "\"created\"" + DT + "," +
             "\"lastAccess\"" + DT + "," +
             "\"length\":" + length + "," + 
             "\"modified\"" + DT + "," +
-            "\"name\":\"" + name + "\"," +
+            "\"name\":\"" + quotedName + "\"," +
             "\"type\":\"" + AssetType.FILE + "\"" + 
             J_E;                
     }
@@ -33,7 +36,8 @@ public class PatternBuilder {
     public static String folder(String name, String... children) {
         final String childrenValue = Arrays.stream(children).collect(Collectors.joining(", "));
         final Long length = Arrays.stream(children).count();
-        
+        final String quotedName = Pattern.quote(name);
+                
         return 
             J_S + 
             "\"children\":\\[" + childrenValue + "\\]," + 
@@ -41,7 +45,7 @@ public class PatternBuilder {
             "\"lastAccess\"" + DT + "," + 
             "\"length\":" + length + "," + 
             "\"modified\"" + DT + "," + 
-            "\"name\":\"" + name + "\"," + 
+            "\"name\":\"" + quotedName + "\"," + 
             "\"type\":\"" + AssetType.FOLDER + "\"" + 
             J_E;
     }

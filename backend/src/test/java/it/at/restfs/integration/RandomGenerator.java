@@ -72,7 +72,7 @@ public class RandomGenerator extends BaseTest {
         final List<String> folders = createFolders(ctx, 120);
         wait(1);
         
-        final List<String> files = createFile(ctx, 250, folders);
+        final List<String> files = createFiles(ctx, 250, folders);
         wait(1);
         
         get(ctx, folders, Operation.LISTSTATUS);
@@ -114,7 +114,7 @@ public class RandomGenerator extends BaseTest {
         return result;
     }
     
-    private List<String> createFile(ExecutionContext ctx, int numberOf, List<String> folder) {
+    private List<String> createFiles(ExecutionContext ctx, int numberOf, List<String> folder) {
         final ExecutionCommand[] command = new ExecutionCommand[numberOf];
         final List<String> result = Lists.newArrayList();
         final RandomStringGenerator gen = builder.withinRange('a', 'z').build();

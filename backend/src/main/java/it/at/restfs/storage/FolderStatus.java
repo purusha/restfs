@@ -13,8 +13,7 @@ import lombok.ToString;
 public class FolderStatus extends FileStatus {
     
     private List<FileStatus> children;
-  
-    
+      
     public void setChildren(List<FileStatus> children) {
         this.children = children;
         

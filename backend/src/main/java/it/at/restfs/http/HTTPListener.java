@@ -39,6 +39,7 @@ import akka.stream.ActorMaterializer;
 import it.at.restfs.storage.ContainerRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -166,8 +167,12 @@ public class HTTPListener {
     }
     
     //XXX this method should be moved into a new Class ?
+    @SneakyThrows
     public static String getPathString(Uri uri) {
-        return StringUtils.substringAfter(uri.getPathString(), APP_NAME + "/" + VERSION);
+        final String substringAfter = StringUtils.substringAfter(uri.getPathString(), APP_NAME + "/" + VERSION);
+        final String decode = java.net.URLDecoder.decode(substringAfter, "UTF-8");
+        
+        return decode;
     }
     
     @Data
