@@ -15,8 +15,6 @@
         
         > solo parzialmente il contenuto di una folder ... (OPEN liststatus)
         ( https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests )
-        impostando per esempio un Accept-Ranges: bytes o Accept-Ranges: lines
-        ed accettando questo header in aggiunta (ed opzionale) e fornire una risposta adeguata
         
         > un modo per filtrare i contenuti di una folder in base a dei criteri:
         	tipo di risorsa, nome di risorsa, data di accesso/creazione ... ecc. ecc.
@@ -73,15 +71,15 @@
     
     -------------------------------    
     
-	nei json di risposta per ogni campo di tipo data,
-	in questo momento viene formattato secondo uno standard scritto all'interno della classe
+	nei json di risposta ogni campo di tipo data,
+	viene formattato secondo uno standard scritto all'interno della classe
 	relativa all'entity
 	
 	e se il client preferisse un dato tipo:
 	
 		> UNIX time with milliseconds
 		> UNIX time without milliseconds
-		> una formattazione diversa 
+		> una formattazione diversa da quella impostata nell'entity !!? 
 	    
     -------------------------------
     
