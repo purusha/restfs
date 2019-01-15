@@ -10,6 +10,7 @@ import it.at.restfs.actor.MachineStatusInfoActor;
 import it.at.restfs.guice.GuiceActorUtils;
 import it.at.restfs.guice.GuiceExtension;
 import it.at.restfs.guice.GuiceExtensionImpl;
+import it.at.restfs.http.AdminHTTPListener;
 import it.at.restfs.http.HTTPListener;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,7 +39,8 @@ public class RestFsApplication {
         system.actorOf(build(EventHandlerActor.class), EventHandlerActor.ACTOR);  
         
         //start http endpoint
-        injector.getInstance(HTTPListener.class);            
+        injector.getInstance(AdminHTTPListener.class);
+        injector.getInstance(HTTPListener.class);
         
         LOGGER.info("-------------------------------------------------");
         LOGGER.info("   >    RestFS STARTED                           ");

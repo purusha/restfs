@@ -83,3 +83,15 @@
 	    
     -------------------------------
     
+    support for https://en.wikipedia.org/wiki/HTTP_persistent_connection
+    
+    support for https://doc.akka.io/docs/akka-http/current/common/xml-support.html
+    
+    -------------------------------
+    
+    create md file:
+    
+    > https://jbt.github.io/markdown-editor/
+    > https://beautifier.io/
+    > https://help.github.com/articles/basic-writing-and-formatting-syntax/
+    > 
