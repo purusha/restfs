@@ -15,7 +15,7 @@ Operation on container:
  - move file in any existing path
  - move folderX in any existing folder
  - append text on existing file (text or gzip)
- - retrieve file
+ - retrieve file content
 
 Management operation on container:
  - stats
