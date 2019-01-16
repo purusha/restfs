@@ -7,10 +7,10 @@ Operation on container:
 
  - create folder (any path)
 
-	POST /dir/dir1/dir2?**op=MKDIRS**
-    Authorization: XXX-YYY-ZZZ
-    Accept: application/json
-    X-Container: UUU-OOO-PPP-KKK-LLL-HGF
+	POST /dir/dir1/dir2?**op=MKDIRS**  
+    Authorization: XXX-YYY-ZZZ  
+    Accept: application/json  
+    X-Container: UUU-OOO-PPP-KKK-LLL-HGF  
     ```json
     {
 
@@ -19,10 +19,10 @@ Operation on container:
 
  - create file (any path)
 
-	POST /dir/user42?**op=CREATE**
-    Authorization: XXX-YYY-ZZZ
-    Accept: application/json
-    X-Container: UUU-OOO-PPP-KKK-LLL-HGF
+	POST /dir/user42?**op=CREATE**  
+    Authorization: XXX-YYY-ZZZ  
+    Accept: application/json  
+    X-Container: UUU-OOO-PPP-KKK-LLL-HGF  
     ```json
     {
 
@@ -31,10 +31,10 @@ Operation on container:
 
  - get file attributes
 
-	GET /dir/user42?**op=GETSTATUS**
-    Authorization: XXX-YYY-ZZZ
-    Accept: application/json
-    X-Container: UUU-OOO-PPP-KKK-LLL-HGF
+	GET /dir/user42?**op=GETSTATUS**  
+    Authorization: XXX-YYY-ZZZ  
+    Accept: application/json  
+    X-Container: UUU-OOO-PPP-KKK-LLL-HGF  
     ```json
     {
 
@@ -43,10 +43,10 @@ Operation on container:
 
  - get folder attributes
 
-	GET /dir/dir1?**op=LISTSTATUS**
-    Authorization: XXX-YYY-ZZZ
-    Accept: application/json
-    X-Container: UUU-OOO-PPP-KKK-LLL-HGF
+	GET /dir/dir1?**op=LISTSTATUS**  
+    Authorization: XXX-YYY-ZZZ  
+    Accept: application/json  
+    X-Container: UUU-OOO-PPP-KKK-LLL-HGF  
     ```json
     {
 
