@@ -7,51 +7,60 @@ Operation on container:
 
  - create folder (any path)
 
+	Request:  
 	POST /dir/dir1/dir2?**op=MKDIRS**  
-    Authorization: XXX-YYY-ZZZ  
-    Accept: application/json  
-    X-Container: UUU-OOO-PPP-KKK-LLL-HGF  
-    ```json
+	Authorization: XXX-YYY-ZZZ  
+	Accept: application/json  
+	X-Container: UUU-OOO-PPP-KKK-LLL-HGF  
+	  
+	Response:  
+	```json
     {
-
     }
-    ```
+	```
 
- - create file (any path)
+ - create file (folder must exist)
 
+	Request:  
 	POST /dir/user42?**op=CREATE**  
-    Authorization: XXX-YYY-ZZZ  
-    Accept: application/json  
-    X-Container: UUU-OOO-PPP-KKK-LLL-HGF  
-    ```json
+	Authorization: XXX-YYY-ZZZ  
+	Accept: application/json  
+	X-Container: UUU-OOO-PPP-KKK-LLL-HGF  
+	  
+	Response:  
+	```json
     {
-
     }
-    ```
+	```
 
  - get file attributes
 
+	Request:  
 	GET /dir/user42?**op=GETSTATUS**  
-    Authorization: XXX-YYY-ZZZ  
-    Accept: application/json  
-    X-Container: UUU-OOO-PPP-KKK-LLL-HGF  
-    ```json
+	Authorization: XXX-YYY-ZZZ  
+	Accept: application/json  
+	X-Container: UUU-OOO-PPP-KKK-LLL-HGF  
+	  
+	Response:  
+	```json
     {
 
     }
-    ```
+	```
 
  - get folder attributes
 
+	Request:  
 	GET /dir/dir1?**op=LISTSTATUS**  
-    Authorization: XXX-YYY-ZZZ  
-    Accept: application/json  
-    X-Container: UUU-OOO-PPP-KKK-LLL-HGF  
-    ```json
-    {
-
-    }
-    ```
+	Authorization: XXX-YYY-ZZZ  
+	Accept: application/json  
+	X-Container: UUU-OOO-PPP-KKK-LLL-HGF  
+	  
+	Response:  
+	```json
+	{
+	}
+	```
 
  - rename file
 

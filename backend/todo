@@ -92,6 +92,12 @@
     
     -------------------------------
     
+    la delete di una folder NON vuota dovrebbe generare un errore ... 
+    
+    passare un parametro force nel caso in cui l'operazione deve essere eseguita in ogni caso
+    
+    -------------------------------
+    
     create md file:
     
     > https://jbt.github.io/markdown-editor/
