@@ -18,5 +18,18 @@ public class Stage5 extends BaseTest {
             buildCommand("dir/dir2/dir3", Operation.MOVE, queryBuilder("target", "dir"))
         );       
     }
+
+    @Test
+    public void simpleCaseWithTargetStartsWithSlash() {      
+        runCommands(
+            ExecutionContext.builder()
+                .container(getContainer())
+                .stopOnError(true)
+                .build(),
+            buildCommand("dir/dir2/dir3/dir4/dir5", Operation.MKDIRS),               
+            buildCommand("dir/dir2/dir3/dir4", Operation.MOVE, queryBuilder("target", "/dir/dir2")),
+            buildCommand("dir/dir2/dir3", Operation.MOVE, queryBuilder("target", "/dir"))
+        );       
+    }
     
 }

@@ -72,7 +72,12 @@
     	"message": "booo ... aaòsijdfbasdfa sdf sajdfh asjd fasjdh fjash dfsjdfgsdjf g"
     }
     
-    -------------------------------    
+    -------------------------------
+    
+    l'api di crezione di un file potrebbe (in modo opzionale) prendere già il contenuto del body
+    ed aggiungerlo al file (in modo tale da NON dover sempre fare 2 chiamate per eseguire la stessa operazione) 
+    
+    -------------------------------            
     
 	nei json di risposta ogni campo di tipo data,
 	viene formattato secondo uno standard scritto all'interno della classe
@@ -88,7 +93,11 @@
     
     support for https://en.wikipedia.org/wiki/HTTP_persistent_connection
     
-    support for https://doc.akka.io/docs/akka-http/current/common/xml-support.html
+    support for 
+    	
+    	> https://doc.akka.io/docs/akka-http/current/common/xml-support.html
+    	> yaml ?
+    	> another ?
     
     -------------------------------
     

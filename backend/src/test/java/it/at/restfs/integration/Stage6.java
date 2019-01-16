@@ -54,7 +54,7 @@ public class Stage6 extends BaseTest {
     }    
     
     @Test
-    public void moreAppendWithDifferenteCarriageReturn() throws Exception {              
+    public void moreAppendWithDifferentCarriageReturn() throws Exception {              
         final ResponseBody open = Iterables.getLast(
             runCommands(
                 ExecutionContext.builder()
