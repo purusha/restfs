@@ -1,6 +1,9 @@
 package it.at.restfs.integration;
 
 import static it.at.restfs.PatternBuilder.file;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import org.junit.Test;
 import com.google.common.collect.Iterables;
@@ -10,6 +13,7 @@ import okhttp3.ResponseBody;
 
 public class Stage6 extends BaseTest {  
     
+    private static final String ALL_FALL = "All fall gala hall this\\is/a%test\t_~!@#$%^&*()dude";
     private static final String TEXT = "my body";
   
     @Test
@@ -32,6 +36,48 @@ public class Stage6 extends BaseTest {
             "{\"content\":[\"" + TEXT + "\"],\"path\":\"/file\"}", Iterables.get(commands, 2).string()
         );        
     }    
+    
+    @Test
+    public void urlEncodedContent() throws Exception {      
+        final String encoded = URLEncoder.encode(ALL_FALL, StandardCharsets.UTF_8.name());
+
+        final List<ResponseBody> commands = runCommands(
+            ExecutionContext.builder()
+                .container(getContainer())
+                .stopOnError(true)
+                .build(),
+            buildCommand("file", Operation.CREATE),
+            buildCommand("file", Operation.APPEND, encoded),
+            buildCommand("file", Operation.OPEN)
+        );                
+
+        final String openResponse = Iterables.get(commands, 2).string();        
+        
+        expected(
+            "{\"content\":[\"" + encoded + "\"],\"path\":\"/file\"}", openResponse
+        );                
+    }
+    
+    @Test
+    public void base64Content() throws Exception {      
+        final String encoded = Base64.getEncoder().encodeToString(ALL_FALL.getBytes());
+
+        final List<ResponseBody> commands = runCommands(
+            ExecutionContext.builder()
+                .container(getContainer())
+                .stopOnError(true)
+                .build(),
+            buildCommand("file", Operation.CREATE),
+            buildCommand("file", Operation.APPEND, encoded),
+            buildCommand("file", Operation.OPEN)
+        );                
+
+        final String openResponse = Iterables.get(commands, 2).string();        
+        
+        expected(
+            "{\"content\":[\"" + encoded + "\"],\"path\":\"/file\"}", openResponse
+        );                
+    }
 
     @Test
     public void htmlContent() throws Exception {              
