@@ -5,6 +5,12 @@
     https://doc.akka.io/docs/akka/2.5/general/configuration.html#configuring-multiple-actorsystem
 
     ----------------------
+    
+    how to build && running from git clone !!?
+    
+    how to run tests ?
+    
+    ----------------------    
 	
     potrebbe essere utile fornire un API che fornisca   
     
@@ -90,8 +96,6 @@
 		> una formattazione diversa da quella impostata nell'entity !!? 
 	    
     -------------------------------
-    
-    support for https://en.wikipedia.org/wiki/HTTP_persistent_connection
     
     support for 
     	

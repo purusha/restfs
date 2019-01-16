@@ -67,7 +67,6 @@ public class EventHandlerActor extends GuiceAbstractActor {
                 if (container.isStatsEnabled()) {
                     
                     final Map<Integer, Long> statistics = container.getStatistics();
-                    LOGGER.info("BEFORE statistics {}", statistics);
 
                     c.getEvents().stream()
                         .collect(Collectors.groupingBy(
@@ -77,14 +76,13 @@ public class EventHandlerActor extends GuiceAbstractActor {
                             .collect(Collectors.toMap(
                                 Map.Entry::getKey, entry -> entry.getValue().size()
                             ))
-                            .entrySet()
+                            .entrySet().stream()
                             .forEach(entry -> {                    
                                 final int sum = statistics.getOrDefault(entry.getKey(), 0L).intValue() + entry.getValue().intValue();
                                 
                                 statistics.put(entry.getKey(), new Long(sum));
                             });
                     
-                    LOGGER.info("AFTER statistics {}", statistics);
                     cRepo.save(container);
                 }
                 
