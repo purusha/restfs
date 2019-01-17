@@ -6,6 +6,11 @@
 
     ----------------------
     
+    oltre all'header X-containerId, dovrebbe essere possibile identificare più
+    utenti legati alla stessa app android (x esempio)
+    
+    ----------------------    
+    
     how to build && running from git clone !!?
     
     how to run tests ?
@@ -25,8 +30,9 @@
         > un modo per filtrare i contenuti di una folder in base a dei criteri:
         	tipo di risorsa, nome di risorsa, data di accesso/creazione ... ecc. ecc.
 
-
-	> un modo per distruggere un file o una folder quando passa un determinato tempo
+        > un modo per distruggere un file o una folder quando passa un determinato tempo
+        
+        > un API per cercare del testo all'interno di un file o dif una folder
         
     ----------------------
             
