@@ -20,7 +20,7 @@ public class EventHandlerActor extends GuiceAbstractActor {
     
     public static final String ACTOR = "EventHandler";
     private final static String CLEAN_UP = "clean-up";
-    private final static Function<Event, Integer> EVENT_TO_HTTP_STATUS = (Event event) -> event.getResponseCode().intValue();
+    private final static Function<Event, Integer> EVENT_TO_HTTP_STATUS = (Event event) -> event.getResponseCode();
 
     private final EventRepository eRepo;    
     private final ContainerRepository cRepo;
@@ -31,7 +31,7 @@ public class EventHandlerActor extends GuiceAbstractActor {
         this.cRepo = cRepo;
         
         final FiniteDuration apply = FiniteDuration.apply(
-            ShortTimeInMemory.expireData() * 2, ShortTimeInMemory.expireUnit()
+            ShortTimeInMemory.expireData() + 1, ShortTimeInMemory.expireUnit()
         );
         
         getContext().system().scheduler().schedule(
@@ -65,7 +65,6 @@ public class EventHandlerActor extends GuiceAbstractActor {
                 LOGGER.info("load container {} for {}", container, c);
                 
                 if (container.isStatsEnabled()) {
-                    
                     final Map<Integer, Long> statistics = container.getStatistics();
 
                     c.getEvents().stream()
@@ -87,8 +86,10 @@ public class EventHandlerActor extends GuiceAbstractActor {
                 }
                 
                 if (container.isWebHookEnabled()) {
-                    
+                    cRepo.saveWebhook(c.getContainer(), c.getEvents());
                 }
+                
+                cRepo.saveCalls(c.getContainer(), c.getEvents());
                                                 
             })
             .matchAny(this::unhandled)

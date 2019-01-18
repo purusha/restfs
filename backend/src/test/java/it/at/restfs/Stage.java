@@ -145,7 +145,7 @@ public abstract class Stage {
                 new String[]{"${name}", "${id}"}, 
                 new String[]{TEXT_BUILDER.generate(12), container.toString()}
             ),
-            new FileOutputStream(FileSystemContainerRepository.build(container)), 
+            new FileOutputStream(FileSystemContainerRepository.buildContainer(container)), 
             StandardCharsets.UTF_8
         );
     }

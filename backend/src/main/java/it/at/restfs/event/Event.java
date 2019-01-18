@@ -1,7 +1,6 @@
 package it.at.restfs.event;
 
 import com.google.inject.Inject;
-import akka.http.javadsl.model.StatusCode;
 import it.at.restfs.http.HTTPListener.Request;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 public class Event {
 
     private final Request request;
-    private final StatusCode responseCode;
+    private final Integer responseCode;
     
     @Override
     public String toString() {

@@ -7,14 +7,20 @@ import java.util.stream.IntStream;
 import org.apache.commons.text.RandomStringGenerator;
 import org.apache.commons.text.RandomStringGenerator.Builder;
 import org.junit.Test;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import it.at.restfs.BaseTest;
 import it.at.restfs.Operation;
+import okhttp3.ResponseBody;
 
 public class RandomGenerator extends BaseTest {
     
     private final Random r = new Random();
     private final Builder builder = new RandomStringGenerator.Builder();
+    
+    /*
+        XXX into this class there are all equals methods for Performance stress test in parallel fashion !!? 
+     */
     
     @Test
     public void a() throws Throwable {
@@ -63,25 +69,30 @@ public class RandomGenerator extends BaseTest {
                  
      */
     
-    private void pipe() {
+    private void pipe() throws Throwable {
         final ExecutionContext ctx = ExecutionContext.builder()
             .container(getContainer())
             .stopOnError(true)
             .build();
         
         final List<String> folders = createFolders(ctx, 120);
-        wait(1);
+        wait(3);
         
         final List<String> files = createFiles(ctx, 250, folders);
-        wait(1);
+        wait(3);
         
         get(ctx, folders, Operation.LISTSTATUS);
-        wait(1);
+        wait(3);
         
         get(ctx, files, Operation.GETSTATUS);
-        wait(1);
+        wait(10);
         
-//        wait(5);
+        final List<ResponseBody> r1 = runCommands(ctx, buildStatsCommand());                
+        
+        int expected = (folders.size() * 2) + (files.size() * 2); //don't count /stats call
+        
+        expected("{\"200\":" + expected + "}", Iterables.get(r1, 0).string());
+        
     }
     
     private void get(ExecutionContext ctx, List<String> resource, Operation op) {

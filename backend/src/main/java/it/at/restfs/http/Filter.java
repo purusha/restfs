@@ -31,7 +31,7 @@ public class Filter implements BiFunction<HttpRequest, HttpResponse, LogEntry> {
         //XXX if /stats endpoint is called ... OP param is not resolved
         final String operation = request.getUri().query().get(HTTPListener.OP).orElse(null);
         final Request req = new Request(UUID.fromString(containerId), path, operation);            
-        final Event event = new Event(req, response.status());
+        final Event event = new Event(req, response.status().intValue());
         
         eventHandler.tell(event, ActorRef.noSender());            
         
