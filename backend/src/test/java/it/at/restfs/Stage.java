@@ -24,6 +24,7 @@ import org.apache.commons.text.RandomStringGenerator;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import it.at.restfs.http.HTTPListener;
+import it.at.restfs.http.PathResolver;
 import it.at.restfs.storage.FileSystemContainerRepository;
 import it.at.restfs.storage.FileSystemStorage;
 import lombok.Builder;
@@ -49,7 +50,7 @@ public abstract class Stage {
         service = new Retrofit.Builder()
             .addConverterFactory(ScalarsConverterFactory.create())
             .baseUrl(String.format(
-                "http://%s:%d/%s/%s/", HTTPListener.HOST, HTTPListener.PORT, HTTPListener.APP_NAME, HTTPListener.VERSION                    
+                "http://%s:%d/%s/%s/", HTTPListener.HOST, HTTPListener.PORT, PathResolver.APP_NAME, PathResolver.VERSION                    
             ))
             .build()
             .create(RestFs.class);

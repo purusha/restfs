@@ -12,6 +12,9 @@ import static akka.http.javadsl.server.Directives.parameter;
 import static akka.http.javadsl.server.Directives.pathPrefix;
 import static akka.http.javadsl.server.Directives.route;
 import static akka.http.javadsl.server.PathMatchers.segment;
+import static it.at.restfs.http.PathResolver.APP_NAME;
+import static it.at.restfs.http.PathResolver.VERSION;
+import static it.at.restfs.http.PathResolver.getPathString;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -42,7 +45,6 @@ import akka.stream.ActorMaterializer;
 import it.at.restfs.storage.ContainerRepository;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -50,8 +52,6 @@ import lombok.extern.slf4j.Slf4j;
 public class HTTPListener {
         
     //XXX HTTP binding ... please use conf file for this
-    public static final String APP_NAME = "restfs";
-    public static final String VERSION = "v1";
     public static final String HOST = "localhost";
     public static final int PORT = 8081;    
     public static final String X_CONTAINER = "X-Container";
@@ -168,16 +168,7 @@ public class HTTPListener {
         return mapping
             .getOrDefault(method, (Request request) -> complete(StatusCodes.METHOD_NOT_ALLOWED))
             .apply(new Request(container, getPathString(uri) , operation));
-    }
-    
-    //XXX this method should be moved into a new Class ?
-    @SneakyThrows
-    public static String getPathString(Uri uri) {
-        final String substringAfter = StringUtils.substringAfter(uri.getPathString(), APP_NAME + "/" + VERSION);
-        final String decode = java.net.URLDecoder.decode(substringAfter, "UTF-8");
-        
-        return decode;
-    }
+    }   
     
     @Getter 
     @Setter

@@ -51,7 +51,7 @@ public class WebHookSenderActor extends GuiceAbstractActor {
 
     private void makeRequest(Path p) {
         final HttpRequest request = HttpRequest
-            .POST("http://requestbin.fullcontact.com/1bott5m1")
+            .POST("http://requestbin.fullcontact.com/1bott5m1") //XXX container config
             .withEntity(ContentTypes.parse("text/vnd.yaml"), p);
         
         http

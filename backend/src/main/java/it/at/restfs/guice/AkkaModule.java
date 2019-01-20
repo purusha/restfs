@@ -22,8 +22,8 @@ import it.at.restfs.event.ShortTimeInMemory;
 import it.at.restfs.http.DeleteController;
 import it.at.restfs.http.Filter;
 import it.at.restfs.http.GetController;
-import it.at.restfs.http.HTTPListener;
 import it.at.restfs.http.HTTPListener.Request;
+import it.at.restfs.http.PathResolver;
 import it.at.restfs.http.PostController;
 import it.at.restfs.http.PutController;
 import it.at.restfs.storage.ContainerRepository;
@@ -39,7 +39,7 @@ public class AkkaModule implements Module {
     @Override
     public void configure(Binder binder) {
 
-        final ActorSystem actorSystem = ActorSystem.create(HTTPListener.APP_NAME, ConfigFactory.load());
+        final ActorSystem actorSystem = ActorSystem.create(PathResolver.APP_NAME, ConfigFactory.load());
         
         binder
             .bind(ActorSystem.class)

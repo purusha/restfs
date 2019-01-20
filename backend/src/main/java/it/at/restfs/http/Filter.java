@@ -14,6 +14,8 @@ import it.at.restfs.actor.EventHandlerActor;
 import it.at.restfs.event.Event;
 import it.at.restfs.http.HTTPListener.Request;
 
+import static it.at.restfs.http.PathResolver.getPathString;
+
 public class Filter implements BiFunction<HttpRequest, HttpResponse, LogEntry> {
     
     private final ActorSelection eventHandler;
@@ -26,7 +28,7 @@ public class Filter implements BiFunction<HttpRequest, HttpResponse, LogEntry> {
     @Override
     public LogEntry apply(HttpRequest request, HttpResponse response) {
         final String containerId = request.getHeader(HTTPListener.X_CONTAINER).get().value();
-        final String path = HTTPListener.getPathString(request.getUri());
+        final String path = getPathString(request.getUri());
 
         //XXX if /stats endpoint is called ... OP param is not resolved
         final String operation = request.getUri().query().get(HTTPListener.OP).orElse(null);

@@ -16,12 +16,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import it.at.restfs.http.HTTPListener;
+import it.at.restfs.http.PathResolver;
 import lombok.SneakyThrows;
 
 public class FileSystemStorage implements Storage {
     
-    public static final String ROOT = "/tmp/" + HTTPListener.APP_NAME + "/";
+    public static final String ROOT = "/tmp/" + PathResolver.APP_NAME + "/";
     
     /*
 
