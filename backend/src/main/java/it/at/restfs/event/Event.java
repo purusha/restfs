@@ -1,16 +1,24 @@
 package it.at.restfs.event;
 
-import com.google.inject.Inject;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import it.at.restfs.http.HTTPListener.Request;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class Event {
 
     private final Request request;
     private final Integer responseCode;
+    
+    @JsonCreator
+    public Event(
+        @JsonProperty("request") Request request, 
+        @JsonProperty("responseCode") Integer responseCode
+    ) {
+        this.request = request;
+        this.responseCode = responseCode;
+    }
     
     @Override
     public String toString() {

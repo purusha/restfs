@@ -38,8 +38,7 @@ public class EventHandlerActor extends GuiceAbstractActor {
             apply, apply, getSelf(), CLEAN_UP, getContext().system().dispatcher(), ActorRef.noSender()
         );
     }
-    
-    
+        
     @Override
     public Receive createReceive() {
         return receiveBuilder()
@@ -53,13 +52,13 @@ public class EventHandlerActor extends GuiceAbstractActor {
                 
                 /*
     
-                    use this information for:
+                    use this information to:
                     
                     1) write statistical info for each container (use yaml file ???)
                     2) write webhook info to be sent remotely 
                     3) write last N call available 
                     
-               */    
+                */    
 
                 final Container container = cRepo.load(c.getContainer());                
                 LOGGER.info("load container {} for {}", container, c);
@@ -77,9 +76,9 @@ public class EventHandlerActor extends GuiceAbstractActor {
                             ))
                             .entrySet().stream()
                             .forEach(entry -> {                    
-                                final int sum = statistics.getOrDefault(entry.getKey(), 0L).intValue() + entry.getValue().intValue();
+                                final Long sum = statistics.getOrDefault(entry.getKey(), 0L).longValue() + entry.getValue().longValue();
                                 
-                                statistics.put(entry.getKey(), new Long(sum));
+                                statistics.put(entry.getKey(), sum);
                             });
                     
                     cRepo.save(container);

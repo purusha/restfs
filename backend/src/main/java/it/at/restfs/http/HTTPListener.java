@@ -4,13 +4,13 @@ import static akka.event.Logging.InfoLevel;
 import static akka.http.javadsl.server.Directives.complete;
 import static akka.http.javadsl.server.Directives.extractMethod;
 import static akka.http.javadsl.server.Directives.extractUri;
+import static akka.http.javadsl.server.Directives.get;
 import static akka.http.javadsl.server.Directives.handleExceptions;
 import static akka.http.javadsl.server.Directives.headerValueByName;
 import static akka.http.javadsl.server.Directives.logRequestResult;
 import static akka.http.javadsl.server.Directives.parameter;
 import static akka.http.javadsl.server.Directives.pathPrefix;
 import static akka.http.javadsl.server.Directives.route;
-import static akka.http.javadsl.server.Directives.get;
 import static akka.http.javadsl.server.PathMatchers.segment;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +21,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import akka.actor.ActorSystem;
@@ -38,8 +40,8 @@ import akka.http.javadsl.server.Route;
 import akka.http.javadsl.server.directives.LogEntry;
 import akka.stream.ActorMaterializer;
 import it.at.restfs.storage.ContainerRepository;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -177,12 +179,23 @@ public class HTTPListener {
         return decode;
     }
     
-    @Data
-    @RequiredArgsConstructor    
+    @Getter 
+    @Setter
     static public class Request {
-        final UUID container;
-        final String path;
-        final String operation;
+        private final UUID container;
+        private final String path;
+        private final String operation;
+        
+        @JsonCreator
+        public Request(
+            @JsonProperty("container") UUID container, 
+            @JsonProperty("path") String path, 
+            @JsonProperty("operation") String operation
+        ) {
+            this.container = container;
+            this.path = path;
+            this.operation = operation;
+        }
     }
         
 }

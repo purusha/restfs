@@ -7,6 +7,7 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import it.at.restfs.actor.EventHandlerActor;
 import it.at.restfs.actor.MachineStatusInfoActor;
+import it.at.restfs.actor.WebHookSenderActor;
 import it.at.restfs.guice.GuiceActorUtils;
 import it.at.restfs.guice.GuiceExtension;
 import it.at.restfs.guice.GuiceExtensionImpl;
@@ -36,7 +37,8 @@ public class RestFsApplication {
         
         //start actors
         system.actorOf(build(MachineStatusInfoActor.class));  
-        system.actorOf(build(EventHandlerActor.class), EventHandlerActor.ACTOR);  
+        system.actorOf(build(EventHandlerActor.class), EventHandlerActor.ACTOR);
+        system.actorOf(build(WebHookSenderActor.class), WebHookSenderActor.ACTOR);
         
         //start http endpoint
         injector.getInstance(AdminHTTPListener.class);
