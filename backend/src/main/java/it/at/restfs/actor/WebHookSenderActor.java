@@ -1,12 +1,17 @@
 package it.at.restfs.actor;
 
 import java.nio.file.Path;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 import com.google.inject.Inject;
 import akka.actor.ActorRef;
+import akka.actor.ActorSelection;
+import akka.actor.ActorSystem;
 import akka.http.javadsl.Http;
 import akka.http.javadsl.model.ContentTypes;
 import akka.http.javadsl.model.HttpRequest;
+import akka.http.javadsl.model.HttpResponse;
+import akka.pattern.PatternsCS;
 import it.at.restfs.guice.GuiceAbstractActor;
 import it.at.restfs.storage.ContainerRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -21,11 +26,13 @@ public class WebHookSenderActor extends GuiceAbstractActor {
     
     private final ContainerRepository cRepo;
     private final Http http;
+    private final ActorSelection cleanUp;
     
     @Inject
-    public WebHookSenderActor(Http http, ContainerRepository cRepo) {        
+    public WebHookSenderActor(Http http, ContainerRepository cRepo, ActorSystem system) {        
         this.http = http;
         this.cRepo = cRepo;
+        this.cleanUp = system.actorSelection("/user/" + CleanupActor.ACTOR);
         
         getContext().system().scheduler().schedule(
             SCHEDULE, SCHEDULE, getSelf(), UP, getContext().system().dispatcher(), ActorRef.noSender()
@@ -51,27 +58,22 @@ public class WebHookSenderActor extends GuiceAbstractActor {
 
     private void makeRequest(Path p) {
         final HttpRequest request = HttpRequest
-            .POST("http://requestbin.fullcontact.com/1bott5m1") //XXX container config
+            .POST("http://requestbin.fullcontact.com/11ddnnp1") //XXX container config
             .withEntity(ContentTypes.parse("text/vnd.yaml"), p);
-        
-        http
-            .singleRequest(request)        
-            .thenAccept(httpResp -> {
-                LOGGER.info("status {}", httpResp.status());
+
+        //XXX what happen when singleRequest throw and exception !!?
+        final CompletionStage<Path> stage = http
+            .singleRequest(request)
+            .thenApply((HttpResponse r) -> {       
+                LOGGER.info("status {}", r.status());
                 
-                /*
-                    
-                    actor handler will do this step:
-                    
-                        if send is OK remove files
-                        
-                        else retry for 3 times...
-                        
-                        if not ... remove files
-                
-                 */                
-                
+                return p;
             });
+        
+        PatternsCS
+            .pipe(stage, getContext().dispatcher())
+            .to(cleanUp);            
+        
     }
 
 }

@@ -78,7 +78,7 @@ public class FileSystemContainerRepository implements ContainerRepository {
     private static File buildWebHook(UUID container) {
         new File(FileSystemStorage.ROOT + WEBHOOK_PREFIX + container).mkdir(); //XXX create this when container is created !!?
         
-        return new File(FileSystemStorage.ROOT + WEBHOOK_PREFIX + container + "/" + System.currentTimeMillis());
+        return buildBaseWebHook(container).resolve(String.valueOf(System.currentTimeMillis())).toFile();        
     }
 
     @SneakyThrows
@@ -134,21 +134,22 @@ public class FileSystemContainerRepository implements ContainerRepository {
     @SneakyThrows
     @Override    
     public List<Path> getWebhook(UUID container) {
-        if (!Files.exists(buildBaseWebHook(container))) {
+        final Path rootWebHook = buildBaseWebHook(container);
+        
+        if (!Files.exists(rootWebHook)) {
             return Lists.newArrayList();
         }
         
         return Files
-            .list(buildBaseWebHook(container))
+            .list(rootWebHook)
             .filter(Files::isRegularFile)
             .collect(Collectors.toList());
-    }
+    }    
     
-    
-    @SneakyThrows
-    @Override
-    public void deleteWebhook(UUID container) {
-        Files.delete(buildBaseWebHook(container));
-    }
-    
+//    @SneakyThrows
+//    @Override
+//    public void deleteWebhook(UUID container) {
+//        Files.delete(buildBaseWebHook(container));
+//    }
+        
 }

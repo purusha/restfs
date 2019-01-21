@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.commons.text.RandomStringGenerator;
 import org.apache.commons.text.RandomStringGenerator.Builder;
+import org.junit.Ignore;
 import org.junit.Test;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -13,6 +14,7 @@ import it.at.restfs.BaseTest;
 import it.at.restfs.Operation;
 import okhttp3.ResponseBody;
 
+@Ignore
 public class RandomGenerator extends BaseTest {
     
     private final Random r = new Random();

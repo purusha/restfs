@@ -20,6 +20,6 @@ public interface ContainerRepository {
 //    List<Event> getWebhook(UUID container);
     List<Path> getWebhook(UUID container);
     
-    void deleteWebhook(UUID container);
+//    void deleteWebhook(UUID container);
 
 }

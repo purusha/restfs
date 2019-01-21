@@ -5,6 +5,7 @@ import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
+import it.at.restfs.actor.CleanupActor;
 import it.at.restfs.actor.EventHandlerActor;
 import it.at.restfs.actor.MachineStatusInfoActor;
 import it.at.restfs.actor.WebHookSenderActor;
@@ -36,9 +37,10 @@ public class RestFsApplication {
         guiceExtension.setInjector(injector);
         
         //start actors
-        system.actorOf(build(MachineStatusInfoActor.class));  
+        system.actorOf(build(CleanupActor.class), CleanupActor.ACTOR);         
         system.actorOf(build(EventHandlerActor.class), EventHandlerActor.ACTOR);
         system.actorOf(build(WebHookSenderActor.class), WebHookSenderActor.ACTOR);
+        system.actorOf(build(MachineStatusInfoActor.class));
         
         //start http endpoint
         injector.getInstance(AdminHTTPListener.class);
