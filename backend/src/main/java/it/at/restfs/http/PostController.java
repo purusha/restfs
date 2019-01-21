@@ -6,6 +6,7 @@ import static akka.http.javadsl.server.Directives.extractRequestEntity;
 import java.util.concurrent.ExecutionException;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import akka.dispatch.MessageDispatcher;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.Route;
 import akka.stream.ActorMaterializer;
@@ -25,8 +26,9 @@ public class PostController extends BaseController {
     private final ActorMaterializer materializer;
 
     @Inject
-    public PostController(Storage storage, ActorMaterializer materializer) {
-        super(storage);
+    public PostController(Storage storage, ActorMaterializer materializer, MessageDispatcher dispatcher) {
+        super(storage, dispatcher);
+        
         this.materializer = materializer;
     }
     

@@ -3,6 +3,7 @@ package it.at.restfs.http;
 import static akka.http.javadsl.server.Directives.complete;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import akka.dispatch.MessageDispatcher;
 import akka.http.javadsl.marshallers.jackson.Jackson;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.Route;
@@ -16,8 +17,8 @@ import it.at.restfs.storage.Storage;
 public class GetController extends BaseController {
             
     @Inject
-    public GetController(Storage storage) {
-        super(storage);
+    public GetController(Storage storage, MessageDispatcher dispatcher) {
+        super(storage, dispatcher);
     }
 
     //operation = OPEN (this is download)

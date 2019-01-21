@@ -1,26 +1,30 @@
 package it.at.restfs.http;
 
-import static akka.http.javadsl.server.Directives.complete;
+import static akka.http.javadsl.server.Directives.completeOKWithFuture;
 import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import com.google.inject.Inject;
+import akka.dispatch.MessageDispatcher;
 import akka.http.javadsl.marshallers.jackson.Jackson;
-import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.Route;
 import it.at.restfs.http.HTTPListener.Request;
-import it.at.restfs.storage.FileStatus;
-import it.at.restfs.storage.FolderStatus;
 import it.at.restfs.storage.Storage;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
-
 @Getter
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
 public abstract class BaseController implements Function<Request, Route> {
         
     private final Storage storage;
+    private final MessageDispatcher dispatcher;
+    
+    @Inject
+    public BaseController(Storage storage, MessageDispatcher dispatcher) {
+        this.storage = storage;
+        this.dispatcher = dispatcher;
+    }    
     
     @SneakyThrows(Throwable.class)
     @Override
@@ -35,17 +39,25 @@ public abstract class BaseController implements Function<Request, Route> {
             throw e.getCause();
         }
     }    
-    
+        
     protected Route getFileStatus(Request t) {
-        final FileStatus result = getStorage().getStatus(t.getContainer(), t.getPath());
-        
-        return complete(StatusCodes.OK, result, Jackson.<FileStatus>marshaller());
+        return withFuture(() -> {
+            return getStorage().getStatus(t.getContainer(), t.getPath());
+        });        
     }
     
-    protected Route getDirectoryStatus(Request t) {
-        final FolderStatus result = getStorage().listStatus(t.getContainer(), t.getPath());
-        
-        return complete(StatusCodes.OK, result, Jackson.<FolderStatus>marshaller());
+    protected Route getDirectoryStatus(Request t) {        
+        return withFuture(() -> {
+            return getStorage().listStatus(t.getContainer(), t.getPath());
+        });        
     }
-    
+
+    //see https://doc.akka.io/docs/akka-http/current/handling-blocking-operations-in-akka-http-routes.html
+    private <T> Route withFuture(Supplier<T> supplier) {
+        return completeOKWithFuture(
+            CompletableFuture.supplyAsync(supplier, dispatcher),
+            Jackson.<T>marshaller()
+        );        
+    }
+        
 }

@@ -2,6 +2,7 @@ package it.at.restfs.guice;
 
 import static akka.http.javadsl.server.Directives.complete;
 import java.nio.file.FileAlreadyExistsException;
+import java.util.concurrent.CompletionException;
 import java.util.function.Function;
 import com.google.inject.Binder;
 import com.google.inject.Module;
@@ -10,6 +11,7 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.MapBinder;
 import com.typesafe.config.ConfigFactory;
 import akka.actor.ActorSystem;
+import akka.dispatch.MessageDispatcher;
 import akka.http.javadsl.Http;
 import akka.http.javadsl.model.HttpMethod;
 import akka.http.javadsl.model.HttpMethods;
@@ -48,6 +50,10 @@ public class AkkaModule implements Module {
 //        binder
 //            .bind(Cluster.class)
 //            .toInstance(Cluster.get(actorSystem));
+        
+        binder
+            .bind(MessageDispatcher.class)
+            .toInstance(actorSystem.dispatchers().lookup("my-blocking-dispatcher"));
     
         binder
             .bind(ActorMaterializer.class)
@@ -90,8 +96,35 @@ public class AkkaModule implements Module {
         binder
             .bind(ExceptionHandler.class)
             .toInstance(
+                    
+                /*
+
+                    da quando uso la direttiva completeOKWithFuture negli endpoint http
+                    se ricevo un errore ... tutte le exception sono wrappate da una CompletionException
+                    
+                    questo mi obbliga a estendere un il normale ExceptionHandler
+                    andando a guardare (solo nel caso di CompletionException) la causa vera !!?
+                    
+                 */
                 
                 ExceptionHandler.newBuilder()
+                    .match(CompletionException.class, x -> { //see https://github.com/akka/akka-http/issues/1267
+                        
+                        if (x.getCause() instanceof ResouceNotFoundException) {
+                            LOGGER.error("handling exception: {}", x.getMessage());
+                            
+                            return complete(StatusCodes.NOT_FOUND, x.getMessage());
+                        }
+
+                        if (x.getCause() instanceof FileAlreadyExistsException) {
+                            LOGGER.error("handling exception: {}", x.getMessage());
+                            
+                            return complete(StatusCodes.CONFLICT, x.getMessage());
+                        }
+                        
+                        return complete(StatusCodes.INTERNAL_SERVER_ERROR);
+                        
+                    })
                     .match(ResouceNotFoundException.class, x -> {
                         LOGGER.error("handling exception: {}", x.getMessage());
                         

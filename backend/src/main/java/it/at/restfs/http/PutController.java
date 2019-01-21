@@ -5,6 +5,7 @@ import static akka.http.javadsl.server.Directives.parameter;
 import org.apache.commons.lang3.StringUtils;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import akka.dispatch.MessageDispatcher;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.Route;
 import it.at.restfs.http.HTTPListener.Request;
@@ -16,8 +17,8 @@ import it.at.restfs.storage.Storage;
 public class PutController extends BaseController {
 
     @Inject
-    public PutController(Storage storage) {
-        super(storage);
+    public PutController(Storage storage, MessageDispatcher dispatcher) {
+        super(storage, dispatcher);
     }
 
     //operation = RENAME

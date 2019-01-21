@@ -2,6 +2,7 @@ package it.at.restfs.http;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import akka.dispatch.MessageDispatcher;
 import akka.http.javadsl.server.Route;
 import it.at.restfs.http.HTTPListener.Request;
 import it.at.restfs.storage.AbsolutePath;
@@ -12,20 +13,20 @@ import it.at.restfs.storage.Storage;
 public class DeleteController extends BaseController {
 
     @Inject
-    public DeleteController(Storage storage) {
-        super(storage);
+    public DeleteController(Storage storage, MessageDispatcher dispatcher) {
+        super(storage, dispatcher);
     }
 
     //operation = DELETE
-    public Route delete(Request t) {        
+    public Route delete(Request t) {
         final AssetType typeOf = getStorage().typeOf(t.getContainer(), AbsolutePath.of(t.getPath()));        
         
         final Route status = AssetType.FILE == typeOf ?
             getFileStatus(t) :
             getDirectoryStatus(t);
-
+                
         getStorage().delete(t.getContainer(), t.getPath());
         
-        return status;
+        return status;                                    
     }
 }
