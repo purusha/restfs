@@ -61,7 +61,7 @@ public class WebHookSenderActor extends GuiceAbstractActor {
             .POST("http://requestbin.fullcontact.com/11ddnnp1") //XXX container config
             .withEntity(ContentTypes.parse("text/vnd.yaml"), p);
 
-        //XXX what happen when singleRequest throw and exception !!?
+        //XXX no retry if from remote service receive an error 
         final CompletionStage<Path> stage = http
             .singleRequest(request)
             .thenApply((HttpResponse r) -> {       
