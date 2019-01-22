@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -98,12 +99,13 @@ public class FileSystemContainerRepository implements ContainerRepository {
     public List<UUID> findAll() {
         final Path source = Paths.get(FileSystemStorage.ROOT); //reuse me please !!?
         
-        return Files
-            .list(source)
-            .filter(Files::isDirectory)
-            .filter(folder -> ! StringUtils.startsWith(folder.toFile().getName(), WEBHOOK_PREFIX))
-            .map(folder -> UUID.fromString(folder.toFile().getName()))
-            .collect(Collectors.toList());
+        try(Stream<Path> stream = Files.list(source)) {
+            return stream
+                .filter(Files::isDirectory)
+                .filter(folder -> ! StringUtils.startsWith(folder.toFile().getName(), WEBHOOK_PREFIX))
+                .map(folder -> UUID.fromString(folder.toFile().getName()))
+                .collect(Collectors.toList());                
+        }
     }
 
 //    @SuppressWarnings("unchecked")
@@ -136,14 +138,15 @@ public class FileSystemContainerRepository implements ContainerRepository {
     public List<Path> getWebhook(UUID container) {
         final Path rootWebHook = buildBaseWebHook(container);
         
-        if (!Files.exists(rootWebHook)) {
+        if (! Files.exists(rootWebHook)) {
             return Lists.newArrayList();
         }
         
-        return Files
-            .list(rootWebHook)
-            .filter(Files::isRegularFile)
-            .collect(Collectors.toList());
+        try(Stream<Path> stream = Files.list(rootWebHook)) {
+            return stream
+                .filter(Files::isRegularFile)
+                .collect(Collectors.toList());                
+        }
     }    
     
 //    @SneakyThrows

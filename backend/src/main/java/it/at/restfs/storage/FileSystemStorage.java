@@ -10,10 +10,12 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import it.at.restfs.http.PathResolver;
@@ -40,9 +42,8 @@ public class FileSystemStorage implements Storage {
         final FolderStatus result = new FolderStatus();
         build(realPath, realPath.toFile(), result);   
         
-        result.setChildren(        
-            Files
-                .list(realPath)
+        try(Stream<Path> stream = Files.list(realPath)) {
+            final List<FileStatus> collect = stream
                 .filter(Files::isRegularFile)
                 .map(p -> {
                     try {
@@ -55,8 +56,10 @@ public class FileSystemStorage implements Storage {
                     }
                 })
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList())            
-        );
+                .collect(Collectors.toList());   
+            
+            result.setChildren(collect);
+        }
         
         return result;
     }
@@ -116,10 +119,12 @@ public class FileSystemStorage implements Storage {
     public void delete(UUID container, String path) {
         final Path realPath = resolve(container, path, false);
         
-        Files.walk(realPath)
-          .sorted(Comparator.reverseOrder())
-          .map(Path::toFile)
-          .forEach(File::delete);
+        try(Stream<Path> stream = Files.walk(realPath)) {
+            stream
+                .sorted(Comparator.reverseOrder())
+                .map(Path::toFile)
+                .forEach(File::delete);            
+        }        
     }
     
     @Override
