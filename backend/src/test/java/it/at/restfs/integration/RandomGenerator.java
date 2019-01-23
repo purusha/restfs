@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.commons.text.RandomStringGenerator;
 import org.apache.commons.text.RandomStringGenerator.Builder;
-import org.junit.Ignore;
 import org.junit.Test;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -14,10 +13,14 @@ import it.at.restfs.BaseTest;
 import it.at.restfs.Operation;
 import okhttp3.ResponseBody;
 
-@Ignore
+//@Ignore
 public class RandomGenerator extends BaseTest {
     
-    private final Random r = new Random();
+    private static final Random RANDOM = new Random();
+    private static final String CONTENT = "All fall gala hall this\\is/a%test\t_~!@#$%^&*()dude";
+    private static final String CR = "\n";
+    
+    private final Random r = RANDOM;
     private final Builder builder = new RandomStringGenerator.Builder();
     
     /*
@@ -59,8 +62,8 @@ public class RandomGenerator extends BaseTest {
             1) create N folder
             2) create N * N file in created folder
             3) liststatus per ogni folder
-            4) getstatus per on file
-            5) append, append, append on first file created
+            4) getstatus per ogni file
+            5) append, append, append on some file
             6) download first file
             7) delete all files
             8) delete all folder
@@ -78,26 +81,77 @@ public class RandomGenerator extends BaseTest {
             .build();
         
         final List<String> folders = createFolders(ctx, 120);
-        wait(3);
         
+        wait(3);        
         final List<String> files = createFiles(ctx, 250, folders);
+        
+        wait(3);        
+        getStatus(ctx, folders, Operation.LISTSTATUS);
+        
+        wait(3);        
+        getStatus(ctx, files, Operation.GETSTATUS);
+        
         wait(3);
+        final List<String> filesWithContent = append(ctx, files);
         
-        get(ctx, folders, Operation.LISTSTATUS);
         wait(3);
+        open(ctx, filesWithContent);
         
-        get(ctx, files, Operation.GETSTATUS);
-        wait(10);
-        
+        wait(10);        
         final List<ResponseBody> r1 = runCommands(ctx, buildStatsCommand());                
         
-        int expected = (folders.size() * 2) + (files.size() * 2); //don't count /stats call
+        int expected = (folders.size() * 2) + (files.size() * 2) + (filesWithContent.size() * 2); //don't count /stats call
         
         expected("{\"200\":" + expected + "}", Iterables.get(r1, 0).string());
         
     }
     
-    private void get(ExecutionContext ctx, List<String> resource, Operation op) {
+    private void open(ExecutionContext ctx, List<String> files) {
+        final ExecutionCommand[] command = new ExecutionCommand[files.size()];
+        
+        for (int i = 0; i < files.size(); i++) {
+            command[i] = buildCommand(files.get(i), Operation.OPEN);
+        }     
+        
+        runCommands(ctx, command);
+        
+        //dont' call expected(...) ?        
+    }
+
+    private List<String> append(ExecutionContext ctx, List<String> files) {
+        final RandomStringGenerator gen = builder.withinRange('a', 'z').build();
+        final List<String> filesWithContent = Lists.newArrayList();        
+        final List<ExecutionCommand> command = Lists.newArrayList();
+        
+        for (int i = 0; i < files.size(); i++) {
+            if (RANDOM.nextInt(10) >= 6) {
+                final String e = files.get(i);
+                
+                filesWithContent.add(e);
+                
+                if (RANDOM.nextBoolean()) {
+                    command.add(
+                        buildCommand(e, Operation.APPEND, CONTENT)
+                    );                
+                } else {
+                    command.add(
+                        buildCommand(e, Operation.APPEND, CONTENT + CR + CONTENT + CR + gen.generate(42))
+                    );                                    
+                }
+            }
+        }
+        
+        runCommands(
+            ctx, 
+            command.toArray(
+                new ExecutionCommand[command.size()]
+            )
+        );
+        
+        return filesWithContent;
+    }
+
+    private void getStatus(ExecutionContext ctx, List<String> resource, Operation op) {
         final int numberOf = resource.size();
         final ExecutionCommand[] command = new ExecutionCommand[numberOf];
         

@@ -11,11 +11,24 @@ import okhttp3.ResponseBody;
 
 public class Stage2 extends BaseTest {
     
+    /*
+
+        Migliorare:
+
+        in tutti i test in cui l'ExecutionContext è istanziato con l'opzione printResponse
+        
+        NON si possono eseguire i match(...) sulle risposte perchè la risorsa wrappata
+        
+         viene consumata !!?
+
+     */
+    
     @Test
     public void simpleCase() throws Exception {
         final List<ResponseBody> commands = runCommands(
             ExecutionContext.builder()
                 .container(getContainer())
+//                .printResponse(true)
                 .stopOnError(true)
                 .build(), 
             buildCommand("file", Operation.CREATE),
