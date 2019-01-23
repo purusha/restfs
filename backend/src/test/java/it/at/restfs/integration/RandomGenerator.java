@@ -13,7 +13,6 @@ import it.at.restfs.BaseTest;
 import it.at.restfs.Operation;
 import okhttp3.ResponseBody;
 
-//@Ignore
 public class RandomGenerator extends BaseTest {
     
     private static final Random RANDOM = new Random();
@@ -102,8 +101,7 @@ public class RandomGenerator extends BaseTest {
         
         int expected = (folders.size() * 2) + (files.size() * 2) + (filesWithContent.size() * 2); //don't count /stats call
         
-        expected("{\"200\":" + expected + "}", Iterables.get(r1, 0).string());
-        
+        expected("{\"200\":" + expected + "}", Iterables.get(r1, 0).string());        
     }
     
     private void open(ExecutionContext ctx, List<String> files) {

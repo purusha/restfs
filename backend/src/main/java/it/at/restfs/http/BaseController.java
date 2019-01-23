@@ -40,20 +40,8 @@ public abstract class BaseController implements Function<Request, Route> {
         }
     }    
         
-    protected Route getFileStatus(Request t) {
-        return withFuture(() -> {
-            return getStorage().getStatus(t.getContainer(), t.getPath());
-        });        
-    }
-    
-    protected Route getDirectoryStatus(Request t) {        
-        return withFuture(() -> {
-            return getStorage().listStatus(t.getContainer(), t.getPath());
-        });        
-    }
-
     //see https://doc.akka.io/docs/akka-http/current/handling-blocking-operations-in-akka-http-routes.html
-    private <T> Route withFuture(Supplier<T> supplier) {
+    protected <T> Route withFuture(Supplier<T> supplier) {
         return completeOKWithFuture(
             CompletableFuture.supplyAsync(supplier, dispatcher),
             Jackson.<T>marshaller()

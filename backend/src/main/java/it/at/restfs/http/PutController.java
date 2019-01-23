@@ -22,27 +22,29 @@ public class PutController extends BaseController {
     }
 
     //operation = RENAME
-    public Route rename(Request t) {
-        return parameter("target", target -> {            
-            if(StringUtils.indexOfAny(target, "\\/") == -1) { //XXX target non può essere un path
-                
-                final String result = getStorage().rename(t.getContainer(), t.getPath(), target);
-                final AssetType typeOf = getStorage().typeOf(t.getContainer(), AbsolutePath.of(result));
-                final Request req = new Request(t.getContainer(), result, t.getOperation());
-                
-                return AssetType.FILE == typeOf ?
-                    getFileStatus(req) :
-                    getDirectoryStatus(req);
-                                
-            } else {
+    public Route rename(Request t) {        
+        /*
+             rename file o folder
+         */
+        
+        return parameter("target", target -> {
+            if(StringUtils.indexOfAny(target, "\\/") >= 0) { //XXX target non può essere un path
                 return complete(StatusCodes.BAD_REQUEST, "target cannot be a directory");
             }
+            
+            return withFuture(() -> {
+                final String result = getStorage().rename(t.getContainer(), t.getPath(), target);
+                final AssetType typeOf = getStorage().typeOf(t.getContainer(), AbsolutePath.of(result));
+                
+                return AssetType.FILE == typeOf ? 
+                    getStorage().getStatus(t.getContainer(), result) :
+                    getStorage().listStatus(t.getContainer(), result);                    
+            });
         });
     }    
 
     //operation = MOVE
-    public Route move(Request t) {
-        
+    public Route move(Request t) {        
         /*
             support to move file/directory in another existing directory
         */
@@ -60,11 +62,12 @@ public class PutController extends BaseController {
             if (AssetType.FOLDER == currentType && ! StringUtils.startsWith(t.getPath(), targetPath.getPath())) {
                 return complete(StatusCodes.BAD_REQUEST, "target cannot start with currentPath");
             }
-          
-            final String result = getStorage().move(t.getContainer(), t.getPath(), targetPath);
-            final Request req = new Request(t.getContainer(), result, t.getOperation());
             
-            return getDirectoryStatus(req);            
+            return withFuture(() -> {
+                final String result = getStorage().move(t.getContainer(), t.getPath(), targetPath);
+
+                return getStorage().listStatus(t.getContainer(), result);
+            });
         });                
     }
     
