@@ -134,7 +134,13 @@ public class HTTPListener {
                                             get(() ->                                            
                                                 stats(UUID.fromString(container), authorization)
                                             )
+                                        ),
+                                        pathPrefix(segment("last"), () ->
+                                            get(() ->                                            
+                                                last(UUID.fromString(container), authorization)
+                                            )
                                         )
+                                        
                                     
                                     )
                                 )
@@ -148,6 +154,7 @@ public class HTTPListener {
     }
 
     //XXX this method should be moved into a Controller ?
+    //XXX and should be executed in a Future ?
     private Route stats(UUID container, String authorization) {        
         if (! authManager.isTokenValidFor(authorization, container)) {
             return complete(StatusCodes.FORBIDDEN);
@@ -157,6 +164,20 @@ public class HTTPListener {
             StatusCodes.OK, 
             cRepo.load(container).getStatistics(), 
             Jackson.<Map<Integer, Long>>marshaller()
+        );
+    }
+
+    //XXX this method should be moved into a Controller ?
+    //XXX and should be executed in a Future ?    
+    private Route last(UUID container, String authorization) {        
+        if (! authManager.isTokenValidFor(authorization, container)) {
+            return complete(StatusCodes.FORBIDDEN);
+        }
+        
+        return complete(
+            StatusCodes.OK, 
+            "@", 
+            Jackson.<String>marshaller()
         );
     }
     
