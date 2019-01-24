@@ -2,12 +2,10 @@ package it.at.restfs;
 
 import static java.nio.charset.Charset.defaultCharset;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -20,12 +18,11 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.RandomStringGenerator;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import it.at.restfs.http.AdminHTTPListener;
 import it.at.restfs.http.HTTPListener;
 import it.at.restfs.http.PathResolver;
-import it.at.restfs.storage.FileSystemContainerRepository;
 import it.at.restfs.storage.FileSystemStorage;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,12 +36,11 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public abstract class Stage {
   
-    private static final org.apache.commons.text.RandomStringGenerator TEXT_BUILDER = new RandomStringGenerator.Builder().withinRange('a', 'z').build();
-    
     public static final String _42 = "42"; //XXX 42 is not a really auth value header !!?
     
     private final OSFeatures features;
     private final RestFs service;
+    private final Admin admin;    
 
     protected Stage() {
         service = new Retrofit.Builder()
@@ -54,7 +50,14 @@ public abstract class Stage {
             ))
             .build()
             .create(RestFs.class);
-                
+        
+        admin = new Retrofit.Builder()
+            .baseUrl(String.format(
+                "http://%s:%d/%s/%s/", AdminHTTPListener.HOST, AdminHTTPListener.PORT, PathResolver.APP_NAME, PathResolver.VERSION                    
+            ))
+            .build()
+            .create(Admin.class);
+                            
         features = OSFeatures.build();
     }
     
@@ -132,23 +135,20 @@ public abstract class Stage {
         }        
     }
     
-    //XXX this code know's which is the real implementation ... is stupid
     @SneakyThrows
     protected void createContainer(UUID container) {
-        getContainer(container).mkdir();
+        final Call<ResponseBody> create = admin.create(AdminHTTPListener.CONTAINERS, container);
+        final Response<ResponseBody> execute = create.execute();
         
-        final URL cTemplate = getClass().getClassLoader().getResource("c-template.yaml");
-        final String template = IOUtils.toString(cTemplate, StandardCharsets.UTF_8);
-        
-        IOUtils.write(
-            StringUtils.replaceEach(
-                template, 
-                new String[]{"${name}", "${id}"}, 
-                new String[]{TEXT_BUILDER.generate(12), container.toString()}
-            ),
-            new FileOutputStream(FileSystemContainerRepository.buildContainer(container)), 
-            StandardCharsets.UTF_8
-        );
+        if (execute.isSuccessful()) {
+            //close the stream before return !!?
+            execute.body().close();   
+            System.out.println(execute.body().string());
+        } else {
+            //close the stream before return !!?
+            execute.errorBody().close();
+            System.err.println(execute.errorBody().string());
+        }             
     }
 
     //XXX this code know's which is the real implementation ... is stupid

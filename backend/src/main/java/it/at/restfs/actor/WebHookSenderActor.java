@@ -6,7 +6,6 @@ import java.util.concurrent.TimeUnit;
 import com.google.inject.Inject;
 import akka.actor.ActorRef;
 import akka.actor.ActorSelection;
-import akka.actor.ActorSystem;
 import akka.http.javadsl.Http;
 import akka.http.javadsl.model.ContentTypes;
 import akka.http.javadsl.model.HttpRequest;
@@ -29,10 +28,10 @@ public class WebHookSenderActor extends GuiceAbstractActor {
     private final ActorSelection cleanUp;
     
     @Inject
-    public WebHookSenderActor(Http http, ContainerRepository cRepo, ActorSystem system) {        
+    public WebHookSenderActor(Http http, ContainerRepository cRepo) {        
         this.http = http;
         this.cRepo = cRepo;
-        this.cleanUp = system.actorSelection("/user/" + CleanupActor.ACTOR);
+        this.cleanUp = getContext().system().actorSelection("/user/" + CleanupActor.ACTOR);
         
         getContext().system().scheduler().schedule(
             SCHEDULE, SCHEDULE, getSelf(), UP, getContext().system().dispatcher(), ActorRef.noSender()

@@ -42,9 +42,9 @@ public class RestFsApplication {
         system.actorOf(build(WebHookSenderActor.class), WebHookSenderActor.ACTOR);
         system.actorOf(build(MachineStatusInfoActor.class));
         
-        //start http endpoint
-        injector.getInstance(AdminHTTPListener.class);
-        injector.getInstance(HTTPListener.class);
+        //start http endpoint        
+        injector.getInstance(AdminHTTPListener.class);        
+        injector.getInstance(HTTPListener.class);        
         
         LOGGER.info("-------------------------------------------------");
         LOGGER.info("   >    RestFS STARTED                           ");

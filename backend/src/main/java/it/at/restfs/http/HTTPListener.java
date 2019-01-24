@@ -42,6 +42,7 @@ import akka.http.javadsl.server.Rejection;
 import akka.http.javadsl.server.Route;
 import akka.http.javadsl.server.directives.LogEntry;
 import akka.stream.ActorMaterializer;
+import it.at.restfs.event.Event;
 import it.at.restfs.storage.ContainerRepository;
 import lombok.Getter;
 import lombok.Setter;
@@ -140,8 +141,7 @@ public class HTTPListener {
                                                 last(UUID.fromString(container), authorization)
                                             )
                                         )
-                                        
-                                    
+                                                                            
                                     )
                                 )
                             );
@@ -176,8 +176,8 @@ public class HTTPListener {
         
         return complete(
             StatusCodes.OK, 
-            "@", 
-            Jackson.<String>marshaller()
+            cRepo.getCalls(container), 
+            Jackson.<List<Event>>marshaller()
         );
     }
     

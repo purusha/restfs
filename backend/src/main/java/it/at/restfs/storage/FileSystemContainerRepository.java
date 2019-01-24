@@ -1,9 +1,6 @@
 package it.at.restfs.storage;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,6 +9,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.collect.Lists;
@@ -65,7 +63,7 @@ public class FileSystemContainerRepository implements ContainerRepository {
         //append
         mapper.writeValue(buildLastCalls(container), events);
         
-        //optimize file content removing lines from the top
+        //XXX optimize file content removing lines from the top
         //until lines count should be XXX (from container config)
                 
     }
@@ -88,10 +86,10 @@ public class FileSystemContainerRepository implements ContainerRepository {
     }
     
     @SneakyThrows
-    private static PrintWriter buildLastCalls(UUID container) {
-        final File file = new File(FileSystemStorage.ROOT + LAST_CALL_PREFIX + container);
+    private static File buildLastCalls(UUID container) {
+        return new File(FileSystemStorage.ROOT + LAST_CALL_PREFIX + container);
         
-        return new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+//        return new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
     }
 
     @SneakyThrows
@@ -147,6 +145,18 @@ public class FileSystemContainerRepository implements ContainerRepository {
                 .filter(Files::isRegularFile)
                 .collect(Collectors.toList());                
         }
+    }
+
+    @SneakyThrows
+    @Override
+    public List<Event> getCalls(UUID container) {
+        final File lastCalls = buildLastCalls(container);
+        
+        if (! lastCalls.exists()) {
+            return Lists.newArrayList();            
+        }
+        
+        return mapper.<List<Event>>readValue(lastCalls, new TypeReference<List<Event>>() { });
     }    
     
 //    @SneakyThrows

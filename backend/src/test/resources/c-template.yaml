@@ -1,6 +1,0 @@
-# Details of a container
----
-name: ${name}
-id: ${id}
-statsEnabled: true
-webHookEnabled: true

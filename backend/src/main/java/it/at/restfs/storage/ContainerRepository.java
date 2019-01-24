@@ -14,6 +14,8 @@ public interface ContainerRepository {
     void saveWebhook(UUID container, List<Event> events);
 
     void saveCalls(UUID container, List<Event> events);
+    
+    List<Event> getCalls(UUID container);
 
     List<UUID> findAll();
 
