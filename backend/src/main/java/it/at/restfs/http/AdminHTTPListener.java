@@ -49,7 +49,7 @@ import lombok.extern.slf4j.Slf4j;
 @Singleton
 public class AdminHTTPListener {
     
-    private static final org.apache.commons.text.RandomStringGenerator TEXT_BUILDER = new RandomStringGenerator.Builder().withinRange('a', 'z').build();
+    private static final RandomStringGenerator GENERATOR = new RandomStringGenerator.Builder().withinRange('a', 'z').build();
     
     public static final String CONTAINERS = "containers";
         
@@ -143,6 +143,7 @@ public class AdminHTTPListener {
                                         )
                                     )
                                 );
+                                
                             })
                         )
                     )                    
@@ -153,7 +154,7 @@ public class AdminHTTPListener {
     }
 
     private Route createContainer(Map<String, String> map) {
-        final String name = map.getOrDefault("name", TEXT_BUILDER.generate(12));
+        final String name = map.getOrDefault("name", GENERATOR.generate(12));
         final UUID id = UUID.fromString(map.getOrDefault("id", UUID.randomUUID().toString()));
         final Boolean statsEnabled = Boolean.valueOf(map.getOrDefault("statsEnabled", Boolean.TRUE.toString()));
         final Boolean webHookEnabled = Boolean.valueOf(map.getOrDefault("webHookEnabled", Boolean.TRUE.toString()));
