@@ -15,7 +15,7 @@ import it.at.restfs.http.HTTPListener;
 import it.at.restfs.http.PathResolver;
 import okhttp3.ResponseBody;
 
-public class Stage7 extends BaseTest {  
+public class GzipRequestContent extends BaseTest {  
     
     private static final String TEXT = "my body"; //XXX make it random please
   

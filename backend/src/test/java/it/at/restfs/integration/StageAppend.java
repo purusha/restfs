@@ -11,7 +11,7 @@ import it.at.restfs.BaseTest;
 import it.at.restfs.Operation;
 import okhttp3.ResponseBody;
 
-public class Stage6 extends BaseTest {  
+public class StageAppend extends BaseTest {  
     
     private static final String ALL_FALL = "All fall gala hall this\\is/a%test\t_~!@#$%^&*()dude";
     private static final String TEXT = "my body";

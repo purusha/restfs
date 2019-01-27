@@ -9,7 +9,7 @@ import okhttp3.ResponseBody;
 
 import static it.at.restfs.PatternBuilder.*;
 
-public class Stage8 extends BaseTest {  
+public class CreateFileAndFolderWithStrangeCharacter extends BaseTest {  
     
     /*
         crea folder e file con nomi contenenti caratteri speciali
