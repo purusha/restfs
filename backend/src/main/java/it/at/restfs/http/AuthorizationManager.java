@@ -1,7 +1,9 @@
 package it.at.restfs.http;
 
+import java.util.Objects;
 import java.util.UUID;
 import com.google.inject.Inject;
+import it.at.restfs.storage.ContainerRepository;
 import it.at.restfs.storage.Storage;
 import lombok.RequiredArgsConstructor;
 
@@ -9,16 +11,15 @@ import lombok.RequiredArgsConstructor;
 public class AuthorizationManager {
     
     private final Storage storage;
+    private final ContainerRepository cRepo;
 
 
     public boolean isTokenValidFor(String authorization, UUID container) {
         
-        boolean exist = storage.exist(container);
-        if (! exist) {
+        if (! storage.exist(container) || Objects.isNull(cRepo.load(container))) {
             return false;
         }
-        
-        
+                
         /*
             
             TODO:

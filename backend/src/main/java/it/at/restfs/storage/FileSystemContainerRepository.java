@@ -68,30 +68,6 @@ public class FileSystemContainerRepository implements ContainerRepository {
                 
     }
 
-    //XXX exposed only for test 
-    public static File buildContainer(UUID container) {
-        return new File(FileSystemStorage.ROOT + CONTAINER_PREFIX + container + ".yaml");
-    }
- 
-    @SneakyThrows
-    private static File buildWebHook(UUID container) {
-        new File(FileSystemStorage.ROOT + WEBHOOK_PREFIX + container).mkdir(); //XXX create this when container is created !!?
-        
-        return buildBaseWebHook(container).resolve(String.valueOf(System.currentTimeMillis())).toFile();        
-    }
-
-    @SneakyThrows
-    private static Path buildBaseWebHook(UUID container) {
-        return Paths.get(FileSystemStorage.ROOT + WEBHOOK_PREFIX + container);
-    }
-    
-    @SneakyThrows
-    private static File buildLastCalls(UUID container) {
-        return new File(FileSystemStorage.ROOT + LAST_CALL_PREFIX + container);
-        
-//        return new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
-    }
-
     @SneakyThrows
     @Override
     public List<UUID> findAll() {
@@ -164,5 +140,27 @@ public class FileSystemContainerRepository implements ContainerRepository {
 //    public void deleteWebhook(UUID container) {
 //        Files.delete(buildBaseWebHook(container));
 //    }
+
+    private static File buildContainer(UUID container) {
+        return new File(FileSystemStorage.ROOT + CONTAINER_PREFIX + container + ".yaml");
+    }
+ 
+    @SneakyThrows
+    private static File buildWebHook(UUID container) {
+        new File(FileSystemStorage.ROOT + WEBHOOK_PREFIX + container).mkdir(); //XXX create this when container is created !!?
         
+        return buildBaseWebHook(container).resolve(String.valueOf(System.currentTimeMillis())).toFile();        
+    }
+
+    @SneakyThrows
+    private static Path buildBaseWebHook(UUID container) {
+        return Paths.get(FileSystemStorage.ROOT + WEBHOOK_PREFIX + container);
+    }
+    
+    @SneakyThrows
+    private static File buildLastCalls(UUID container) {
+        return new File(FileSystemStorage.ROOT + LAST_CALL_PREFIX + container);
+        
+//        return new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+    }    
 }
