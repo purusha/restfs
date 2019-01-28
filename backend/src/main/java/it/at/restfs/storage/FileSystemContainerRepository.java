@@ -44,6 +44,15 @@ public class FileSystemContainerRepository implements ContainerRepository {
         return mapper.readValue(buildContainer(container), Container.class);
     }
     
+    @Override
+    public boolean exist(UUID container) {
+        try{
+            return buildContainer(container).exists();
+        } catch (Exception e) {
+            return false;
+        }
+    }        
+    
     @SneakyThrows
     @Override
     public void save(Container container) {
@@ -162,5 +171,6 @@ public class FileSystemContainerRepository implements ContainerRepository {
         return new File(FileSystemStorage.ROOT + LAST_CALL_PREFIX + container);
         
 //        return new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
-    }    
+    }
+
 }

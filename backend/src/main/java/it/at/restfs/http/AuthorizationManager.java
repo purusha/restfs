@@ -1,6 +1,5 @@
 package it.at.restfs.http;
 
-import java.util.Objects;
 import java.util.UUID;
 import com.google.inject.Inject;
 import it.at.restfs.storage.ContainerRepository;
@@ -16,7 +15,7 @@ public class AuthorizationManager {
 
     public boolean isTokenValidFor(String authorization, UUID container) {
         
-        if (! storage.exist(container) || Objects.isNull(cRepo.load(container))) {
+        if ( !storage.exist(container) || !cRepo.exist(container) ) {
             return false;
         }
                 
