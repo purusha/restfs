@@ -16,6 +16,14 @@ Operation on container:
 	_Response:_  
 	```json
     {
+        "children":[
+        ],
+        "created":"2019-01-29@17:05:54",
+        "lastAccess":"2019-01-29@17:05:54",
+        "length":0,
+        "modified":"2019-01-29@17:05:54",
+        "name":"dir",
+        "type":"FOLDER"
     }
 	```
 
@@ -30,6 +38,12 @@ Operation on container:
 	_Response:_  
 	```json
     {
+        "created":"2019-01-29@17:05:54",
+        "lastAccess":"2019-01-29@17:05:54",
+        "length":0,
+        "modified":"2019-01-29@17:05:54",
+        "name":"file",
+        "type":"FILE"
     }
 	```
 
@@ -44,6 +58,12 @@ Operation on container:
 	_Response:_  
 	```json
     {
+        "created":"2019-01-29@17:05:54",
+        "lastAccess":"2019-01-29@17:05:54",
+        "length":0,
+        "modified":"2019-01-29@17:05:54",
+        "name":"file",
+        "type":"FILE"
     }
 	```
 
@@ -57,8 +77,16 @@ Operation on container:
 	  
 	_Response:_  
 	```json
-	{
-	}
+    {
+        "children":[
+        ],
+        "created":"2019-01-29@17:05:54",
+        "lastAccess":"2019-01-29@17:05:54",
+        "length":0,
+        "modified":"2019-01-29@17:05:54",
+        "name":"dir",
+        "type":"FOLDER"
+    }
 	```
 
  - rename file
