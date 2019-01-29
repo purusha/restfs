@@ -6,17 +6,42 @@
 
 	<style media="screen" type="text/css">
 	
+		a, u {
+		    text-decoration: none;
+		}	
+		
+		ul {
+		  	list-style-type: none;
+		}		
+		
+		li {
+		  	margin: 10px 0;
+		}	
+		
+		body {
+			padding: 50px;
+		}	
 	
 	</style>            
 </head> 
 <body>
 
+	<p>
+		<a href="#"><b>create</b></a>
+	</p>
+	
+	<p>
+		available containers
+		<ul>
 
-    {{#each containers}}    
-    	<p>
-    		<a href="{{baseUri}}containers/{{this}}">{{this}}</a>
-		</p>    	        
-	{{/each}}
+		    {{#each containers}}    
+		    	<li>
+		    		<a href="{{baseUri}}containers/{{this}}">{{this}}</a>
+				</li>    	        
+			{{/each}}
+		
+		</ul>
+	</p>
 	
 
 </body>

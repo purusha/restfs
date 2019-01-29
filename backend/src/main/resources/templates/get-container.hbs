@@ -6,6 +6,13 @@
 
 	<style media="screen" type="text/css">
 	
+		a, u {
+		    text-decoration: none;
+		}
+		
+		body {
+			padding: 50px;
+		}			
 	
 	</style>            
 </head> 
@@ -13,7 +20,25 @@
 
 	<a href="{{baseUri}}containers">&lArr;</a>
 
-	<p>{{this}}</p>	
+	<p>
+		<b>id</b>: {{this.container.id}}
+	</p>
+			
+	<p>
+		<b>name</b>: {{this.container.name}}
+	</p>
+		
+	<p>
+		<b>stats</b>: {{this.container.statsEnabled}}
+	</p>
+		
+	<p>
+		<b>webHook</b>: {{this.container.webHookEnabled}}
+	</p>
+		
+	<p>
+		<b>actual statistics</b>: <pre><code>{{json this.container.statistics}}</code></pre>
+	</p>
 
 </body>
 </html>

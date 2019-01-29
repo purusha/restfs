@@ -276,7 +276,7 @@ public class AdminHTTPListener {
             });
             
             //XXX Recompile mode
-            //return handlebars().compile(name); 
+//            return handlebars().compile(name); 
         }
         
         /*
