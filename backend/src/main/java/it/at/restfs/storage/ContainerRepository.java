@@ -7,6 +7,8 @@ import it.at.restfs.event.Event;
 
 public interface ContainerRepository {
 
+    boolean exist(UUID container);
+    
     Container load(UUID container);
 
     void save(Container container);
