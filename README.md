@@ -22,7 +22,7 @@ Operation on container:
         "lastAccess":"2019-01-29@17:05:54",
         "length":0,
         "modified":"2019-01-29@17:05:54",
-        "name":"dir",
+        "name":"dir2",
         "type":"FOLDER"
     }
 	```
@@ -42,7 +42,7 @@ Operation on container:
         "lastAccess":"2019-01-29@17:05:54",
         "length":0,
         "modified":"2019-01-29@17:05:54",
-        "name":"file",
+        "name":"user42",
         "type":"FILE"
     }
 	```
@@ -62,7 +62,7 @@ Operation on container:
         "lastAccess":"2019-01-29@17:05:54",
         "length":0,
         "modified":"2019-01-29@17:05:54",
-        "name":"file",
+        "name":"user42",
         "type":"FILE"
     }
 	```
@@ -84,7 +84,7 @@ Operation on container:
         "lastAccess":"2019-01-29@17:05:54",
         "length":0,
         "modified":"2019-01-29@17:05:54",
-        "name":"dir",
+        "name":"dir1",
         "type":"FOLDER"
     }
 	```
@@ -186,6 +186,12 @@ Operation on container:
 	_Response:_  
 	```json
     {
+        "created":"2019-01-29@17:05:54",
+        "lastAccess":"2019-01-29@17:05:54",
+        "length":108,
+        "modified":"2019-01-29@17:05:54",
+        "name":"user42",
+        "type":"FILE"
     }
 	```
 
@@ -200,6 +206,13 @@ Operation on container:
 	_Response:_  
 	```json
     {
+        "content":[
+            "first line",
+            "second line",
+            "afsidbfasbdflasbdfljasdf asdfuasd fuas ydfasd fasudfyvasdf",
+            "last line"
+        ],
+        "path":"/dir/file5"
     }
 	```
 

@@ -38,7 +38,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public abstract class Stage {
     
-    private static Config TEST_CONF = ConfigFactory.parseFile(new File(Stage.class.getResource("/test.conf").getPath()));
+    private static final Config TEST_CONF = ConfigFactory.parseFile(new File(Stage.class.getResource("/test.conf").getPath()));
     
     public static final String _42 = "42"; //XXX 42 is not a really auth value header !!?
     
@@ -100,10 +100,15 @@ public abstract class Stage {
         }
     }
     
+    /*
+        XXX break test dependency from lib: return our ResponseBody 
+     */
+    @SuppressWarnings("deprecation")
     protected List<ResponseBody> runCommands(ExecutionContext context, ExecutionCommand ... cmds) {
         return Arrays
             .stream(cmds)
             .map(cmd -> remoteCall(context, cmd))
+            .peek(body -> IOUtils.closeQuietly(body)) //close before return !!?
             .collect(Collectors.toList());
     }
 
@@ -112,7 +117,6 @@ public abstract class Stage {
         System.out.println("$> " + cmd);
                         
         final Object[] callParams = cmd.callParams(_42, context.getContainer());
-//        System.out.println(Arrays.toString(callParams));
                 
         @SuppressWarnings("unchecked")
         final Call<ResponseBody> result = (Call<ResponseBody>)Arrays.stream(RestFs.class.getMethods())
@@ -125,8 +129,6 @@ public abstract class Stage {
         final Response<ResponseBody> execute = result.execute();
                 
         if (execute.isSuccessful()) {
-            //close the stream before return !!?
-            execute.body().close();            
             
             if (context.isPrintResponse()) {          
                 System.out.println(execute.body().string() + "\n");
@@ -134,8 +136,6 @@ public abstract class Stage {
             
             return execute.body();           
         } else {
-            //close the stream before return !!?
-            execute.errorBody().close();
             
             if (context.isPrintResponse()) {          
                 System.err.println(execute.errorBody().string() + "\n");
