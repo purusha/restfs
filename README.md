@@ -1,9 +1,16 @@
 # restfs
-Restfs exposes your file system as a rest api. Is not a static file server, but instead lets you browse stats, and manipulate files through arbitrary paths.
+Restfs exposes your file system as a rest api. Is not a static file server, but instead lets you browse stats, and manipulate files through arbitrary paths.  
 
-Separation (each container have own ROOT folder) of container data, served by the same instance of the api.
+It is possible to manage multiple containers, each with its own "virtual" file system.  
+For this reason the X-Container header is mandatory in every single request.  
+Each container has its own method for authenticating requests; the available methods are:
 
-Operation on container:
+1. oAuth
+2. basic authentication
+3. generate token from master password
+4. no auth
+  
+Available operation on container:
 
  - create folder (any path)
 
@@ -215,7 +222,7 @@ Operation on container:
         "path":"/dir/file5"
     }
 	```
-
+  
 Management operation on container:
 
  - stats
@@ -247,7 +254,18 @@ Management operation on container:
 	```
  
  - webhook (configurable for flush data on expired time or number of events)
-
+ 
 This is project is under develop ... see todo file to discover new functionality
-[todo file](./backend/todo)
+[todo file](./backend/todo)  
+
+It is possible to build the project independently and run it on any machine; steps are:
+
+1. git clone https://github.com/purusha/restfs.git
+2. cd restfs/backend
+3. mvn install
+4. java -jar target/restfs-[VERSION].jar
+
+ 
+Restfs expose two ports:
+the first public http://localhost:8081 (to be used with an HTTP client); the second for administration purpose http://localhost:8086/containers (to be used with a browser) 
 
