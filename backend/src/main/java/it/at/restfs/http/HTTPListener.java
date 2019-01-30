@@ -53,8 +53,8 @@ import lombok.extern.slf4j.Slf4j;
 public class HTTPListener {
         
     //XXX HTTP binding ... please use conf file for this
-    public static final String HOST = "localhost";
-    public static final int PORT = 8081;    
+    private static final String HOST = "localhost";
+    private static final int PORT = 8081;    
     public static final String X_CONTAINER = "X-Container";
     public static final String AUTHORIZATION = "Authorization";
     public static final String OP = "op";

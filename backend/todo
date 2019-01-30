@@ -56,7 +56,7 @@
     
         1) http base auth (static mapping on container conf)
         2) oAuth
-        3) static authorization
+        3) generate temporary token from master username:password
         4) ???
         
     -------------------------------

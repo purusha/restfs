@@ -18,10 +18,12 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import it.at.restfs.http.AdminHTTPListener;
-import it.at.restfs.http.HTTPListener;
 import it.at.restfs.http.PathResolver;
 import it.at.restfs.storage.FileSystemStorage;
 import lombok.Builder;
@@ -35,25 +37,38 @@ import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public abstract class Stage {
-  
+    
+    private static Config TEST_CONF = ConfigFactory.parseFile(new File(Stage.class.getResource("/test.conf").getPath()));
+    
     public static final String _42 = "42"; //XXX 42 is not a really auth value header !!?
     
     private final OSFeatures features;
     private final RestFs service;
-    private final Admin admin;    
+    private final Admin admin;   
+    
+    @Getter
+    private final Pair<String, Integer> publicEndpoint;
+    
+    @Getter
+    private final Pair<String, Integer> adminEndpoint;
 
     protected Stage() {
+        
+        publicEndpoint = Pair.of(TEST_CONF.getString("http.public.host"), TEST_CONF.getInt("http.public.port"));
+        
+        adminEndpoint = Pair.of(TEST_CONF.getString("http.admin.host"), TEST_CONF.getInt("http.admin.port"));
+        
         service = new Retrofit.Builder()
             .addConverterFactory(ScalarsConverterFactory.create())
             .baseUrl(String.format(
-                "http://%s:%d/%s/%s/", HTTPListener.HOST, HTTPListener.PORT, PathResolver.APP_NAME, PathResolver.VERSION                    
+                "http://%s:%d/%s/%s/", publicEndpoint.getKey(), publicEndpoint.getValue(), PathResolver.APP_NAME, PathResolver.VERSION                    
             ))
             .build()
             .create(RestFs.class);
         
         admin = new Retrofit.Builder()
             .baseUrl(String.format(
-                "http://%s:%d/%s/%s/", AdminHTTPListener.HOST, AdminHTTPListener.PORT, PathResolver.APP_NAME, PathResolver.VERSION                    
+                "http://%s:%d/%s/%s/", adminEndpoint.getKey(), adminEndpoint.getValue(), PathResolver.APP_NAME, PathResolver.VERSION                    
             ))
             .build()
             .create(Admin.class);

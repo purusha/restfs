@@ -80,8 +80,8 @@ public class AdminHTTPListener {
     public static final String CONTAINERS = "containers";
         
     //XXX HTTP binding ... please use conf file for this
-    public static final String HOST = "localhost";
-    public static final int PORT = 8086;    
+    private static final String HOST = "localhost";
+    private static final int PORT = 8086;    
     
     private final static BiFunction<HttpRequest, List<Rejection>, LogEntry> REJ = (request, rejections) ->             
         LogEntry.create(
