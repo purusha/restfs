@@ -44,6 +44,7 @@ import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.typesafe.config.Config;
 import akka.actor.ActorSystem;
 import akka.http.javadsl.ConnectHttp;
 import akka.http.javadsl.Http;
@@ -79,9 +80,9 @@ public class AdminHTTPListener {
     
     public static final String CONTAINERS = "containers";
         
-    //XXX HTTP binding ... please use conf file for this
-    private static final String HOST = "localhost";
-    private static final int PORT = 8086;    
+//    //XXX HTTP binding ... please use conf file for this
+//    private static final String HOST = "localhost";
+//    private static final int PORT = 8086;    
     
     private final static BiFunction<HttpRequest, List<Rejection>, LogEntry> REJ = (request, rejections) ->             
         LogEntry.create(
@@ -105,6 +106,7 @@ public class AdminHTTPListener {
     
     @Inject
     public AdminHTTPListener(
+        Config config,
         Http http, 
         ActorSystem system, 
         ActorMaterializer materializer,
@@ -116,13 +118,16 @@ public class AdminHTTPListener {
         this.handler = handler;
         this.pageResolver = pageResolver;
         
+        final String host = config.getString("restfs.http.admin.interface");
+        final Integer port = config.getInt("restfs.http.admin.port");
+        
         LOGGER.info("\n");
         LOGGER.info("Expose following Admin endpoint");
-        LOGGER.info("http://" + HOST + ":" + PORT + "/" + APP_NAME + "/" + VERSION + "/...");
+        LOGGER.info("http://" + host + ":" + port + "/" + APP_NAME + "/" + VERSION + "/...");
         LOGGER.info("\n");
                 
         this.bindAndHandle = http.bindAndHandle(
-            createRoute().flow(system, materializer), ConnectHttp.toHost(HOST, PORT), materializer
+            createRoute().flow(system, materializer), ConnectHttp.toHost(host, port), materializer
         );
     }
 

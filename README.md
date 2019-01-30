@@ -258,7 +258,8 @@ Management operation on container:
 This is project is under develop ... see todo file to discover new functionality
 [todo file](./backend/todo)  
 
-It is possible to build the project independently and run it on any machine; steps are:
+It is possible to build the project independently and run it on any machine;  
+steps are:
 
 1. git clone https://github.com/purusha/restfs.git
 2. cd restfs/backend

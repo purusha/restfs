@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.typesafe.config.Config;
 import akka.actor.ActorSystem;
 import akka.http.javadsl.ConnectHttp;
 import akka.http.javadsl.Http;
@@ -52,9 +53,6 @@ import lombok.extern.slf4j.Slf4j;
 @Singleton
 public class HTTPListener {
         
-    //XXX HTTP binding ... please use conf file for this
-    private static final String HOST = "localhost";
-    private static final int PORT = 8081;    
     public static final String X_CONTAINER = "X-Container";
     public static final String AUTHORIZATION = "Authorization";
     public static final String OP = "op";
@@ -77,6 +75,7 @@ public class HTTPListener {
     
     @Inject
     public HTTPListener(
+        Config config,
         Http http, 
         ActorSystem system, 
         ActorMaterializer materializer,
@@ -92,13 +91,16 @@ public class HTTPListener {
         this.filter = filter;
         this.cRepo = cRepo;
         
+        final String host = config.getString("restfs.http.public.interface");
+        final Integer port = config.getInt("restfs.http.public.port");
+        
         LOGGER.info("\n");
         LOGGER.info("Expose following endpoint");
-        LOGGER.info("http://" + HOST + ":" + PORT + "/" + APP_NAME + "/" + VERSION + "/...");
+        LOGGER.info("http://" + host + ":" + port + "/" + APP_NAME + "/" + VERSION + "/...");
         LOGGER.info("\n");
                 
         this.bindAndHandle = http.bindAndHandle(
-            createRoute().flow(system, materializer), ConnectHttp.toHost(HOST, PORT), materializer
+            createRoute().flow(system, materializer), ConnectHttp.toHost(host, port), materializer
         );
     }
 

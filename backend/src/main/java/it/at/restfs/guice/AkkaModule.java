@@ -9,6 +9,7 @@ import com.google.inject.Module;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.MapBinder;
+import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import akka.actor.ActorSystem;
 import akka.dispatch.MessageDispatcher;
@@ -40,12 +41,18 @@ public class AkkaModule implements Module {
 
     @Override
     public void configure(Binder binder) {
+        
+        final Config config = ConfigFactory.load();
 
-        final ActorSystem actorSystem = ActorSystem.create(PathResolver.APP_NAME, ConfigFactory.load());
+        final ActorSystem actorSystem = ActorSystem.create(PathResolver.APP_NAME, config);
         
         binder
             .bind(ActorSystem.class)
             .toInstance(actorSystem);
+        
+        binder
+            .bind(Config.class)
+            .toInstance(config);
         
 //        binder
 //            .bind(Cluster.class)
