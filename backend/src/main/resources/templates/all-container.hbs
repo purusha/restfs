@@ -1,48 +1,62 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">    
+    <meta charset="utf-8">
     <title>RestFs</title>
 
 	<style media="screen" type="text/css">
-	
+
 		a, u {
 		    text-decoration: none;
-		}	
-		
+		}
+
 		ul {
 		  	list-style-type: none;
-		}		
-		
+		}
+
 		li {
 		  	margin: 10px 0;
-		}	
-		
+		}
+
 		body {
 			padding: 50px;
-		}	
-	
-	</style>            
-</head> 
+		}
+
+    form > div {
+      padding: 15px;
+    }
+
+	</style>
+</head>
 <body>
 
 	<p>
-		<a href="#"><b>create</b></a>
+        <form action="http://localhost:8086/restfs/v1/containers" method="post">
+            <div>
+                <label for="name">Name:</label>
+                <input autocomplete="false" type="text" name="name">
+            </div>
+            <div>
+                <label for="id">Uuid:</label>
+                <input autocomplete="false" type="text" name="id">
+            </div>
+            <div class="button">
+                <button type="submit">Create</button>
+            </div>
+        </form>
 	</p>
-	
+
 	<p>
 		available containers
 		<ul>
-
-		    {{#each containers}}    
-		    	<li>
-		    		<a href="{{baseUri}}containers/{{this}}">{{this}}</a>
-				</li>    	        
-			{{/each}}
-		
+	    {{#each containers}}
+	    	<li>
+	    		<a href="{{baseUri}}containers/{{this}}">{{this}}</a>
+			</li>
+		{{/each}}
 		</ul>
 	</p>
-	
+
 
 </body>
 </html>

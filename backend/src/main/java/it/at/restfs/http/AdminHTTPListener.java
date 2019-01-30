@@ -1,12 +1,12 @@
 package it.at.restfs.http;
 
 import static akka.event.Logging.InfoLevel;
+//import static akka.http.javadsl.server.Directives.redirect;
 import static akka.http.javadsl.server.Directives.complete;
 import static akka.http.javadsl.server.Directives.extractUri;
 import static akka.http.javadsl.server.Directives.formFieldMap;
 import static akka.http.javadsl.server.Directives.get;
 import static akka.http.javadsl.server.Directives.handleExceptions;
-import static akka.http.javadsl.server.Directives.headerValueByName;
 import static akka.http.javadsl.server.Directives.logRequestResult;
 import static akka.http.javadsl.server.Directives.pathEndOrSingleSlash;
 import static akka.http.javadsl.server.Directives.pathPrefix;
@@ -80,10 +80,6 @@ public class AdminHTTPListener {
     
     public static final String CONTAINERS = "containers";
         
-//    //XXX HTTP binding ... please use conf file for this
-//    private static final String HOST = "localhost";
-//    private static final int PORT = 8086;    
-    
     private final static BiFunction<HttpRequest, List<Rejection>, LogEntry> REJ = (request, rejections) ->             
         LogEntry.create(
             rejections
@@ -103,6 +99,8 @@ public class AdminHTTPListener {
     private final ExceptionHandler handler;
     private final ContainerRepository cRepo;
     private final PageResolver pageResolver;
+    private final String host;
+    private final Integer port;
     
     @Inject
     public AdminHTTPListener(
@@ -118,8 +116,8 @@ public class AdminHTTPListener {
         this.handler = handler;
         this.pageResolver = pageResolver;
         
-        final String host = config.getString("restfs.http.admin.interface");
-        final Integer port = config.getInt("restfs.http.admin.port");
+        host = config.getString("restfs.http.admin.interface");
+        port = config.getInt("restfs.http.admin.port");
         
         LOGGER.info("\n");
         LOGGER.info("Expose following Admin endpoint");
@@ -170,24 +168,15 @@ public class AdminHTTPListener {
                         
                         //api
                         pathPrefix(segment(APP_NAME), () ->
-                            pathPrefix(segment(VERSION), () ->                    
-                                headerValueByName("Accept", (String accept) -> {
-                                    
-                                    if (! StringUtils.equals(accept, "application/json")) {
-                                        return complete(StatusCodes.BAD_REQUEST, "add header \"Accept: application/json\"");
-                                    }
-                                
-    
-                                    return pathPrefix(segment(CONTAINERS), () ->
-                                        post(() ->
-                                            formFieldMap((Map<String, String> map) ->
-                                                createContainer(map)
-                                            )
+                            pathPrefix(segment(VERSION), () -> {                    
+                                return pathPrefix(segment(CONTAINERS), () ->
+                                    post(() ->
+                                        formFieldMap((Map<String, String> map) ->
+                                            createContainer(map)
                                         )
-                                    );
-                                    
-                                })
-                            )
+                                    )
+                                );
+                            })
                         )                    
                         
                     )
@@ -213,6 +202,7 @@ public class AdminHTTPListener {
         Paths.get(FileSystemStorage.ROOT + "/" + id).toFile().mkdir();
 
         return complete(StatusCodes.CREATED, container, Jackson.<Container>marshaller());
+//        return redirect(Uri.create("http://" + host + ":" + port + "/" + CONTAINERS), StatusCodes.PERMANENT_REDIRECT);
     }
         
 //    @Slf4j
@@ -345,8 +335,6 @@ public class AdminHTTPListener {
                 return str.subSequence(start, end);
             });  
             
-//            handlebars.registerHelper("color", new BlacklistColorGenerator());
-
             handlebars.registerHelper("sum", (o, options) -> {
                 final Integer a = Integer.valueOf(o.toString());
                 final Integer b = options.param(0);
