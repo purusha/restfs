@@ -1,8 +1,6 @@
 package it.at.restfs.http;
 
 import static akka.event.Logging.InfoLevel;
-//import static akka.http.javadsl.server.Directives.redirect;
-import static akka.http.javadsl.server.Directives.complete;
 import static akka.http.javadsl.server.Directives.extractUri;
 import static akka.http.javadsl.server.Directives.formFieldMap;
 import static akka.http.javadsl.server.Directives.get;
@@ -11,6 +9,7 @@ import static akka.http.javadsl.server.Directives.logRequestResult;
 import static akka.http.javadsl.server.Directives.pathEndOrSingleSlash;
 import static akka.http.javadsl.server.Directives.pathPrefix;
 import static akka.http.javadsl.server.Directives.post;
+import static akka.http.javadsl.server.Directives.redirect;
 import static akka.http.javadsl.server.Directives.route;
 import static akka.http.javadsl.server.PathMatchers.segment;
 import static akka.http.javadsl.server.PathMatchers.uuidSegment;
@@ -49,10 +48,10 @@ import akka.actor.ActorSystem;
 import akka.http.javadsl.ConnectHttp;
 import akka.http.javadsl.Http;
 import akka.http.javadsl.ServerBinding;
-import akka.http.javadsl.marshallers.jackson.Jackson;
 import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.HttpResponse;
 import akka.http.javadsl.model.StatusCodes;
+import akka.http.javadsl.model.Uri;
 import akka.http.javadsl.server.ExceptionHandler;
 import akka.http.javadsl.server.Rejection;
 import akka.http.javadsl.server.Route;
@@ -82,7 +81,7 @@ public class AdminHTTPListener {
         
     private final static BiFunction<HttpRequest, List<Rejection>, LogEntry> REJ = (request, rejections) ->             
         LogEntry.create(
-            rejections
+            "[ADMIN] " + rejections
                 .stream()
                 .map(Rejection::toString)
                 .collect(Collectors.joining(", ")),
@@ -186,10 +185,10 @@ public class AdminHTTPListener {
     }
 
     private Route createContainer(Map<String, String> map) {
-        final String name = map.getOrDefault("name", GENERATOR.generate(12));
-        final UUID id = UUID.fromString(map.getOrDefault("id", UUID.randomUUID().toString()));
-        final Boolean statsEnabled = Boolean.valueOf(map.getOrDefault("statsEnabled", Boolean.TRUE.toString()));
-        final Boolean webHookEnabled = Boolean.valueOf(map.getOrDefault("webHookEnabled", Boolean.TRUE.toString()));
+        final String name = getOrDefault(map.get("name"), GENERATOR.generate(12));
+        final UUID id = UUID.fromString(getOrDefault(map.get("id"), UUID.randomUUID().toString()));
+        final Boolean statsEnabled = Boolean.valueOf(getOrDefault(map.get("statsEnabled"), Boolean.FALSE.toString()));
+        final Boolean webHookEnabled = Boolean.valueOf(getOrDefault(map.get("webHookEnabled"), Boolean.FALSE.toString()));
 
         final Container container = new Container();
         container.setName(name);
@@ -201,10 +200,13 @@ public class AdminHTTPListener {
         cRepo.save(container);        
         Paths.get(FileSystemStorage.ROOT + "/" + id).toFile().mkdir();
 
-        return complete(StatusCodes.CREATED, container, Jackson.<Container>marshaller());
-//        return redirect(Uri.create("http://" + host + ":" + port + "/" + CONTAINERS), StatusCodes.PERMANENT_REDIRECT);
+        return redirect(Uri.create("http://" + host + ":" + port + "/" + CONTAINERS), StatusCodes.SEE_OTHER);
     }
         
+    private String getOrDefault(String value, String defaultValue) {
+        return StringUtils.isBlank(value) || "null".equals(value) ? defaultValue : value;
+    }
+
 //    @Slf4j
     @Singleton    
     @AllArgsConstructor(onConstructor = @__({ @Inject }))
@@ -247,8 +249,7 @@ public class AdminHTTPListener {
             data.put("baseUri", baseUri); //this is used as base path of all static files (img, css and js)            
 
             return Context.newContext(data);        
-        }        
-        
+        }                
     }
     
     @Singleton

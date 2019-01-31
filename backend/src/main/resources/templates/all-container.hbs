@@ -22,10 +22,15 @@
 			padding: 50px;
 		}
 
-    form > div {
-      padding: 15px;
-    }
+	    form {
+			background-color: lightgray;
+			padding: 50px;
+		}	    
 
+	    form > div {
+	      	padding: 15px;
+	    }
+	    
 	</style>
 </head>
 <body>
@@ -34,12 +39,22 @@
         <form action="http://localhost:8086/restfs/v1/containers" method="post">
             <div>
                 <label for="name">Name:</label>
-                <input autocomplete="false" type="text" name="name">
+                <input autocomplete="off" type="text" name="name">
             </div>
             <div>
                 <label for="id">Uuid:</label>
-                <input autocomplete="false" type="text" name="id">
+                <input autocomplete="off" type="text" name="id">
             </div>
+            <div>
+            	<label for="name">stats:</label>
+            	<input type="checkbox" name="statsEnabled" value="true" checked="checked">
+
+            </div>
+            <div>
+            	<label for="name">web hook:</label>
+            	<input type="checkbox" name="webHookEnabled" value="true" checked="checked">
+
+            </div
             <div class="button">
                 <button type="submit">Create</button>
             </div>
