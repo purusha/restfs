@@ -21,7 +21,15 @@ public class BaseTest extends Stage {
     
     @After
     public void tearDown() {
-        showDiff(container);                
+        
+        /*
+         * when run test calling remote service (on another machine)
+         * this step is not available, because internally use a local file system
+         * to find difference whith expected result
+         */
+        
+        showDiff(container);
+        
     }
     
     protected void expected(String expected, String result) {

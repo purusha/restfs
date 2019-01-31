@@ -152,16 +152,16 @@ public abstract class Stage {
     
     @SneakyThrows
     protected void createContainer(UUID container) {
-        final Call<ResponseBody> create = admin.create(AdminHTTPListener.CONTAINERS, container);
+        final Call<ResponseBody> create = admin.create(AdminHTTPListener.CONTAINERS, container, Boolean.TRUE, Boolean.TRUE);
         final Response<ResponseBody> execute = create.execute();
         
         if (execute.isSuccessful()) {
             //close the stream before return !!?
             execute.body().close();   
-//            System.out.println(execute.body().string());
         } else {
             //close the stream before return !!?
             execute.errorBody().close();
+            
             System.err.println(execute.errorBody().string());
         }             
     }

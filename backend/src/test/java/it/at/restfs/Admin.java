@@ -15,7 +15,9 @@ public interface Admin {
     @POST("{path}")
     Call<ResponseBody> create(
         @retrofit2.http.Path(value = "path") String path,
-        @Field("id") UUID containerId
+        @Field("id") UUID containerId,
+        @Field("statsEnabled") Boolean statsEnabled,
+        @Field("webHookEnabled") Boolean webHookEnabled
     );
     
 }

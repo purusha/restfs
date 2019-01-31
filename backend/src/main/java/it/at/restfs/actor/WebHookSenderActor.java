@@ -57,7 +57,7 @@ public class WebHookSenderActor extends GuiceAbstractActor {
 
     private void makeRequest(Path p) {
         final HttpRequest request = HttpRequest
-            .POST("http://requestbin.fullcontact.com/yumxfnyu") //XXX container config
+            .POST("http://requestbin.fullcontact.com/1bwd3cl1") //XXX container config
             .withEntity(ContentTypes.parse("text/vnd.yaml"), p);
 
         //XXX no retry if from remote service receive an error 
