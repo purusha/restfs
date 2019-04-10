@@ -7,3 +7,4 @@ bin/
 *.log
 *.iml
 log/
+node_modules/
