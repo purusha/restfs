@@ -10,8 +10,8 @@ import it.at.restfs.event.Event;
 import it.at.restfs.event.EventRepository;
 import it.at.restfs.event.ShortTimeInMemory;
 import it.at.restfs.guice.GuiceAbstractActor;
-import it.at.restfs.storage.Container;
 import it.at.restfs.storage.ContainerRepository;
+import it.at.restfs.storage.dto.Container;
 import lombok.extern.slf4j.Slf4j;
 import scala.concurrent.duration.FiniteDuration;
 

@@ -15,6 +15,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import it.at.restfs.event.Event;
+import it.at.restfs.storage.dto.Container;
 import lombok.SneakyThrows;
 
 public class FileSystemContainerRepository implements ContainerRepository {

@@ -1,4 +1,4 @@
-package it.at.restfs.storage;
+package it.at.restfs.storage.dto;
 
 public class ResouceNotFoundException extends RuntimeException {
     private static final long serialVersionUID = -8240191991632533057L;

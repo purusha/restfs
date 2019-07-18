@@ -1,7 +1,8 @@
-package it.at.restfs.storage;
+package it.at.restfs.storage.dto;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

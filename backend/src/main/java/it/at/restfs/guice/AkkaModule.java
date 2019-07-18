@@ -1,9 +1,11 @@
 package it.at.restfs.guice;
 
 import static akka.http.javadsl.server.Directives.complete;
+
 import java.nio.file.FileAlreadyExistsException;
 import java.util.concurrent.CompletionException;
 import java.util.function.Function;
+
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Singleton;
@@ -11,6 +13,7 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.MapBinder;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+
 import akka.actor.ActorSystem;
 import akka.dispatch.MessageDispatcher;
 import akka.http.javadsl.Http;
@@ -32,8 +35,8 @@ import it.at.restfs.http.PutController;
 import it.at.restfs.storage.ContainerRepository;
 import it.at.restfs.storage.FileSystemContainerRepository;
 import it.at.restfs.storage.FileSystemStorage;
-import it.at.restfs.storage.ResouceNotFoundException;
 import it.at.restfs.storage.Storage;
+import it.at.restfs.storage.dto.ResouceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -80,12 +83,22 @@ public class AkkaModule implements Module {
         mapBinder.addBinding(HttpMethods.POST).to(PostController.class);
         mapBinder.addBinding(HttpMethods.PUT).to(PutController.class);
         mapBinder.addBinding(HttpMethods.DELETE).to(DeleteController.class);
+
+        /*
+        for (Implementation implementation : Storage.Implementation.values()) {
+            binder
+	            .bind(Key.get(Storage.class, Names.named(implementation.key)))
+	            .to(implementation.implClazz);
+	            //.in(Singleton.class); //we can't do this because each implementation wrap it's own connection!!
+			
+		}
+        */
         
         binder
-            .bind(Storage.class)
-            .to(FileSystemStorage.class)
-            .in(Singleton.class);
-
+        	.bind(Storage.class)
+        	.to(FileSystemStorage.class)
+        	.in(Singleton.class);        
+        
         binder
             .bind(ContainerRepository.class)
             .to(FileSystemContainerRepository.class)

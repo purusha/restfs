@@ -1,30 +1,28 @@
 package it.at.restfs.http;
 
 import static akka.http.javadsl.server.Directives.completeOKWithFuture;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import com.google.inject.Inject;
+
 import akka.dispatch.MessageDispatcher;
 import akka.http.javadsl.marshallers.jackson.Jackson;
 import akka.http.javadsl.server.Route;
 import it.at.restfs.http.HTTPListener.Request;
 import it.at.restfs.storage.Storage;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
-@Getter
+@RequiredArgsConstructor
+@Getter(value = AccessLevel.PACKAGE)
 public abstract class BaseController implements Function<Request, Route> {
         
     private final Storage storage;
-    private final MessageDispatcher dispatcher;
-    
-    @Inject
-    public BaseController(Storage storage, MessageDispatcher dispatcher) {
-        this.storage = storage;
-        this.dispatcher = dispatcher;
-    }    
+    private final MessageDispatcher dispatcher;    
     
     @SneakyThrows(Throwable.class)
     @Override

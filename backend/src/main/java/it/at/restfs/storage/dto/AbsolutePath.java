@@ -1,4 +1,4 @@
-package it.at.restfs.storage;
+package it.at.restfs.storage.dto;
 
 import org.apache.commons.lang3.StringUtils;
 import lombok.Getter;

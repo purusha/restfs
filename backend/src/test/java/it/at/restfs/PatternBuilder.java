@@ -3,7 +3,8 @@ package it.at.restfs;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import it.at.restfs.storage.AssetType;
+
+import it.at.restfs.storage.dto.AssetType;
 
 public class PatternBuilder {
 

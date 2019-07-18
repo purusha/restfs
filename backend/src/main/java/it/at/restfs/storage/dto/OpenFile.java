@@ -1,4 +1,4 @@
-package it.at.restfs.storage;
+package it.at.restfs.storage.dto;
 
 import java.util.List;
 import lombok.Data;

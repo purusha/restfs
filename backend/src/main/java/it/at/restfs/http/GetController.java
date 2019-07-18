@@ -7,9 +7,9 @@ import akka.dispatch.MessageDispatcher;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.Route;
 import it.at.restfs.http.HTTPListener.Request;
-import it.at.restfs.storage.AbsolutePath;
-import it.at.restfs.storage.AssetType;
 import it.at.restfs.storage.Storage;
+import it.at.restfs.storage.dto.AbsolutePath;
+import it.at.restfs.storage.dto.AssetType;
 
 @Singleton
 public class GetController extends BaseController {

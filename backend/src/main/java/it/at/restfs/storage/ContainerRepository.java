@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
 import it.at.restfs.event.Event;
+import it.at.restfs.storage.dto.Container;
 
 public interface ContainerRepository {
 

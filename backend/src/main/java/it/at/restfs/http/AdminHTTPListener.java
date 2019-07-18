@@ -57,9 +57,9 @@ import akka.http.javadsl.server.Rejection;
 import akka.http.javadsl.server.Route;
 import akka.http.javadsl.server.directives.LogEntry;
 import akka.stream.ActorMaterializer;
-import it.at.restfs.storage.Container;
 import it.at.restfs.storage.ContainerRepository;
 import it.at.restfs.storage.FileSystemStorage;
+import it.at.restfs.storage.dto.Container;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

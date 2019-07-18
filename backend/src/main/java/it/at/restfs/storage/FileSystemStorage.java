@@ -19,10 +19,16 @@ import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import it.at.restfs.http.PathResolver;
+import it.at.restfs.storage.dto.AbsolutePath;
+import it.at.restfs.storage.dto.AssetType;
+import it.at.restfs.storage.dto.FileStatus;
+import it.at.restfs.storage.dto.FolderStatus;
+import it.at.restfs.storage.dto.OpenFile;
+import it.at.restfs.storage.dto.ResouceNotFoundException;
 import lombok.SneakyThrows;
 
 public class FileSystemStorage implements Storage {
-    
+	
     public static final String ROOT = "/tmp/" + PathResolver.APP_NAME + "/";
     
     /*

@@ -12,8 +12,8 @@ import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import akka.util.ByteString;
 import it.at.restfs.http.HTTPListener.Request;
-import it.at.restfs.storage.AssetType;
 import it.at.restfs.storage.Storage;
+import it.at.restfs.storage.dto.AssetType;
 import lombok.SneakyThrows;
 
 @Singleton
