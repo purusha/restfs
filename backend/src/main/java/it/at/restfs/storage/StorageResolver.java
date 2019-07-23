@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /*
  
-	  diverse implementazioni della it.at.restfs.storage.Storage possono andare su servizi diversi ... 
+	  le diverse implementazioni della it.at.restfs.storage.Storage possono andare su servizi diversi ... 
 	  
 	  ad ogni container è associata una di queste
 
@@ -32,7 +32,7 @@ public class StorageResolver {
 		this.containerRepository = containerRepository;
 	}
 		
-	public Storage exist(UUID uuidC) {
+	public Storage get(UUID uuidC) {
 		final Container container = containerRepository.load(uuidC);	
 		final Storage storage = injector.getInstance(Key.get(Storage.class, Names.named(Storage.Implementation.FS.key)));
 		

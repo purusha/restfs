@@ -2,24 +2,26 @@ package it.at.restfs.http;
 
 import static akka.http.javadsl.server.Directives.complete;
 import static akka.http.javadsl.server.Directives.parameter;
+
 import org.apache.commons.lang3.StringUtils;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import akka.dispatch.MessageDispatcher;
+
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.Route;
 import it.at.restfs.http.HTTPListener.Request;
-import it.at.restfs.storage.Storage;
 import it.at.restfs.storage.dto.AbsolutePath;
 import it.at.restfs.storage.dto.AssetType;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Delegate;
 
+@RequiredArgsConstructor(onConstructor = @__(@Inject))
 @Singleton
-public class PutController extends BaseController {
+public class PutController implements Controller {
 
-    @Inject
-    public PutController(Storage storage, MessageDispatcher dispatcher) {
-        super(storage, dispatcher);
-    }
+	@Delegate
+	private PerRequestContext x;            
 
     //operation = RENAME
     public Route rename(Request t) {        
@@ -32,13 +34,13 @@ public class PutController extends BaseController {
                 return complete(StatusCodes.BAD_REQUEST, "target cannot be a directory");
             }
             
-            return withFuture(() -> {
-                final String result = getStorage().rename(t.getContainer(), t.getPath(), target);
-                final AssetType typeOf = getStorage().typeOf(t.getContainer(), AbsolutePath.of(result));
+            return x.withFuture(() -> {
+                final String result = x.getStorage().rename(t.getContainer(), t.getPath(), target);
+                final AssetType typeOf = x.getStorage().typeOf(t.getContainer(), AbsolutePath.of(result));
                 
                 return AssetType.FILE == typeOf ? 
-                    getStorage().getStatus(t.getContainer(), result) :
-                    getStorage().listStatus(t.getContainer(), result);                    
+            		x.getStorage().getStatus(t.getContainer(), result) :
+        			x.getStorage().listStatus(t.getContainer(), result);                    
             });
         });
     }    
@@ -51,22 +53,22 @@ public class PutController extends BaseController {
         
         return parameter("target", target -> {
             final AbsolutePath targetPath = AbsolutePath.of(target);
-            final AssetType targetType = getStorage().typeOf(t.getContainer(), targetPath);
+            final AssetType targetType = x.getStorage().typeOf(t.getContainer(), targetPath);
             
             if(AssetType.FILE == targetType) {
                 return complete(StatusCodes.BAD_REQUEST, "target must be a directory");
             }
             
-            final AssetType currentType = getStorage().typeOf(t.getContainer(), AbsolutePath.of(t.getPath()));
+            final AssetType currentType = x.getStorage().typeOf(t.getContainer(), AbsolutePath.of(t.getPath()));
             
             if (AssetType.FOLDER == currentType && ! StringUtils.startsWith(t.getPath(), targetPath.getPath())) {
                 return complete(StatusCodes.BAD_REQUEST, "target cannot start with currentPath");
             }
             
-            return withFuture(() -> {
-                final String result = getStorage().move(t.getContainer(), t.getPath(), targetPath);
+            return x.withFuture(() -> {
+                final String result = x.getStorage().move(t.getContainer(), t.getPath(), targetPath);
 
-                return getStorage().listStatus(t.getContainer(), result);
+                return x.getStorage().listStatus(t.getContainer(), result);
             });
         });                
     }

@@ -2,32 +2,32 @@ package it.at.restfs.http;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import akka.dispatch.MessageDispatcher;
+
 import akka.http.javadsl.server.Route;
 import it.at.restfs.http.HTTPListener.Request;
-import it.at.restfs.storage.Storage;
 import it.at.restfs.storage.dto.AbsolutePath;
 import it.at.restfs.storage.dto.AssetType;
 import it.at.restfs.storage.dto.FileStatus;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Delegate;
 
+@RequiredArgsConstructor(onConstructor = @__(@Inject))
 @Singleton
-public class DeleteController extends BaseController {
+public class DeleteController implements Controller {
 
-    @Inject
-    public DeleteController(Storage storage, MessageDispatcher dispatcher) {
-        super(storage, dispatcher);
-    }
-
+	@Delegate
+	private PerRequestContext x;            
+	
     //operation = DELETE
     public Route delete(Request t) {
         return withFuture(() -> {
-            final AssetType typeOf = getStorage().typeOf(t.getContainer(), AbsolutePath.of(t.getPath()));        
+            final AssetType typeOf = x.getStorage().typeOf(t.getContainer(), AbsolutePath.of(t.getPath()));        
             
             final FileStatus result = AssetType.FILE == typeOf ? 
-                getStorage().getStatus(t.getContainer(), t.getPath()) :
-                getStorage().listStatus(t.getContainer(), t.getPath());
+                x.getStorage().getStatus(t.getContainer(), t.getPath()) :
+                x.getStorage().listStatus(t.getContainer(), t.getPath());
             
-            getStorage().delete(t.getContainer(), t.getPath());
+            x.getStorage().delete(t.getContainer(), t.getPath());
             
             return result;                    
         });

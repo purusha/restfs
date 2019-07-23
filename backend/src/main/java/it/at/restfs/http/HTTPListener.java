@@ -15,20 +15,28 @@ import static akka.http.javadsl.server.PathMatchers.segment;
 import static it.at.restfs.http.PathResolver.APP_NAME;
 import static it.at.restfs.http.PathResolver.VERSION;
 import static it.at.restfs.http.PathResolver.getPathString;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
+import org.reflections.ReflectionUtils;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Predicate;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.typesafe.config.Config;
+
 import akka.actor.ActorSystem;
 import akka.http.javadsl.ConnectHttp;
 import akka.http.javadsl.Http;
@@ -44,9 +52,11 @@ import akka.http.javadsl.server.Route;
 import akka.http.javadsl.server.directives.LogEntry;
 import akka.stream.ActorMaterializer;
 import it.at.restfs.event.Event;
+import it.at.restfs.http.PerRequestContext.Factory;
 import it.at.restfs.storage.ContainerRepository;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -67,11 +77,12 @@ public class HTTPListener {
         );
 
     private final CompletionStage<ServerBinding> bindAndHandle;
-    private final Map<HttpMethod, Function<Request, Route>> mapping;
+    private final Map<HttpMethod, Controller> mapping;
     private final AuthorizationManager authManager;     
     private final ExceptionHandler handler;
     private final Filter filter;
     private final ContainerRepository cRepo;
+	private final Factory factory;
     
     @Inject
     public HTTPListener(
@@ -79,17 +90,19 @@ public class HTTPListener {
         Http http, 
         ActorSystem system, 
         ActorMaterializer materializer,
-        Map<HttpMethod, Function<Request, Route>> mapping,
+        Map<HttpMethod, Controller> mapping,
         AuthorizationManager authManager,
         ExceptionHandler handler,
         Filter filter,
-        ContainerRepository cRepo
+        ContainerRepository cRepo,
+        PerRequestContext.Factory factory
     ) {
         this.mapping = mapping;
         this.authManager = authManager;
         this.handler = handler;
         this.filter = filter;
         this.cRepo = cRepo;
+		this.factory = factory;
         
         final String host = config.getString("restfs.http.public.interface");
         final Integer port = config.getInt("restfs.http.public.port");
@@ -182,16 +195,49 @@ public class HTTPListener {
             Jackson.<List<Event>>marshaller()
         );
     }
-    
+        
+	@SneakyThrows(Throwable.class)
     private Route handler(UUID container, String authorization, Uri uri, HttpMethod method, String operation) {        
         if (! authManager.isTokenValidFor(authorization, container)) {
             return complete(StatusCodes.FORBIDDEN);
         }
         
-        return mapping
-            .getOrDefault(method, (Request request) -> complete(StatusCodes.METHOD_NOT_ALLOWED))
-            .apply(new Request(container, getPathString(uri) , operation));
-    }   
+        final Controller controller = mapping.get(method);
+        
+        if (Objects.isNull(controller)) {
+        	complete(StatusCodes.METHOD_NOT_ALLOWED);
+        }
+        
+        final Request request = new Request(container, getPathString(uri) , operation);
+        
+        try {
+        	final Field field = resolveField(controller.getClass());        	        	        	
+        	field.set(controller, factory.create(request));
+        	
+            return (Route) controller.getClass().getDeclaredMethod(request.getOperation().toLowerCase(), Request.class).invoke(controller, request);
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException e) {
+            throw e;
+        } catch (InvocationTargetException e) { //XXX important ... because we use Reflection !!!?
+            throw e.getCause();
+        }
+    }
+
+	//XXX per queste cose ci sarebbe la pena di morte !!!?
+	@SuppressWarnings("unchecked")
+	private Field resolveField(Class<? extends Controller> class1) {
+		//final Field field = controller.getClass().getDeclaredField("x"); 
+		
+		final Field field = ReflectionUtils.getFields(class1, new Predicate<Field>() {
+			@Override
+			public boolean apply(Field field) {
+				return field.getType().equals(PerRequestContext.class);
+			}
+		}).iterator().next();
+		
+		field.setAccessible(true);
+		
+		return field;
+	}   
     
     @Getter 
     @Setter

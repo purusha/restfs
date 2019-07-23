@@ -4,13 +4,15 @@ import static akka.http.javadsl.server.Directives.complete;
 
 import java.nio.file.FileAlreadyExistsException;
 import java.util.concurrent.CompletionException;
-import java.util.function.Function;
 
 import com.google.inject.Binder;
+import com.google.inject.Key;
 import com.google.inject.Module;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.multibindings.MapBinder;
+import com.google.inject.name.Names;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -21,21 +23,21 @@ import akka.http.javadsl.model.HttpMethod;
 import akka.http.javadsl.model.HttpMethods;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.ExceptionHandler;
-import akka.http.javadsl.server.Route;
 import akka.stream.ActorMaterializer;
 import it.at.restfs.event.EventRepository;
 import it.at.restfs.event.ShortTimeInMemory;
+import it.at.restfs.http.Controller;
 import it.at.restfs.http.DeleteController;
 import it.at.restfs.http.Filter;
 import it.at.restfs.http.GetController;
-import it.at.restfs.http.HTTPListener.Request;
 import it.at.restfs.http.PathResolver;
+import it.at.restfs.http.PerRequestContext;
 import it.at.restfs.http.PostController;
 import it.at.restfs.http.PutController;
 import it.at.restfs.storage.ContainerRepository;
 import it.at.restfs.storage.FileSystemContainerRepository;
-import it.at.restfs.storage.FileSystemStorage;
 import it.at.restfs.storage.Storage;
+import it.at.restfs.storage.Storage.Implementation;
 import it.at.restfs.storage.dto.ResouceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -73,10 +75,10 @@ public class AkkaModule implements Module {
             .bind(Http.class)
             .toInstance(Http.get(actorSystem));
         
-        final MapBinder<HttpMethod, Function<Request, Route>> mapBinder = MapBinder.newMapBinder(
+        final MapBinder<HttpMethod, Controller> mapBinder = MapBinder.newMapBinder( 
             binder, 
             new TypeLiteral<HttpMethod>() {},
-            new TypeLiteral<Function<Request, Route>>() {}
+            new TypeLiteral<Controller>() {}
         );
         
         mapBinder.addBinding(HttpMethods.GET).to(GetController.class);
@@ -84,20 +86,20 @@ public class AkkaModule implements Module {
         mapBinder.addBinding(HttpMethods.PUT).to(PutController.class);
         mapBinder.addBinding(HttpMethods.DELETE).to(DeleteController.class);
 
-        /*
         for (Implementation implementation : Storage.Implementation.values()) {
             binder
 	            .bind(Key.get(Storage.class, Names.named(implementation.key)))
 	            .to(implementation.implClazz);
-	            //.in(Singleton.class); //we can't do this because each implementation wrap it's own connection!!
+            	//we can't do this because each implementation wrap it's own connection!!
+	            //.in(Singleton.class); 
 			
 		}
-        */
         
-        binder
-        	.bind(Storage.class)
-        	.to(FileSystemStorage.class)
-        	.in(Singleton.class);        
+        binder.install(
+    		new FactoryModuleBuilder()
+				.implement(PerRequestContext.class, PerRequestContext.class)				
+				.build(PerRequestContext.Factory.class)
+		);
         
         binder
             .bind(ContainerRepository.class)
@@ -160,5 +162,5 @@ public class AkkaModule implements Module {
             );
                 
     }
-
+        
 }
