@@ -37,14 +37,14 @@ public class GetController implements Controller {
     }
 
     //operation = GETSTATUS
-    protected Route getstatus(Request t) {
+    public Route getstatus(Request t) {
         return x.withFuture(() -> {
             return x.getStorage().getStatus(t.getContainer(), t.getPath());
         });        
     }
     
     //operation = LISTSTATUS
-    protected Route liststatus(Request t) {        
+    public Route liststatus(Request t) {        
         return x.withFuture(() -> {
             return x.getStorage().listStatus(t.getContainer(), t.getPath());
         });        

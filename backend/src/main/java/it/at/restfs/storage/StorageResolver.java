@@ -36,7 +36,7 @@ public class StorageResolver {
 		final Container container = containerRepository.load(uuidC);	
 		final Storage storage = injector.getInstance(Key.get(Storage.class, Names.named(Storage.Implementation.FS.key)));
 		
-		LOGGER.info("container {}/{} use {} as storage", container.getId(), container.getName(), storage.getClass().getSimpleName());
+		LOGGER.debug("container {}/{} use {} as storage", container.getId(), container.getName(), storage.getClass().getSimpleName());
 		
 		return storage;
 	}

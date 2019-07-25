@@ -26,6 +26,7 @@ import akka.http.javadsl.server.ExceptionHandler;
 import akka.stream.ActorMaterializer;
 import it.at.restfs.event.EventRepository;
 import it.at.restfs.event.ShortTimeInMemory;
+import it.at.restfs.http.AuthorizationManager;
 import it.at.restfs.http.Controller;
 import it.at.restfs.http.DeleteController;
 import it.at.restfs.http.Filter;
@@ -35,6 +36,7 @@ import it.at.restfs.http.PerRequestContext;
 import it.at.restfs.http.PostController;
 import it.at.restfs.http.PutController;
 import it.at.restfs.storage.ContainerRepository;
+import it.at.restfs.storage.ControllerRunner;
 import it.at.restfs.storage.FileSystemContainerRepository;
 import it.at.restfs.storage.Storage;
 import it.at.restfs.storage.Storage.Implementation;
@@ -100,6 +102,14 @@ public class AkkaModule implements Module {
 				.implement(PerRequestContext.class, PerRequestContext.class)				
 				.build(PerRequestContext.Factory.class)
 		);
+        
+        binder
+        	.bind(AuthorizationManager.class)
+        	.in(Singleton.class);
+        
+        binder
+        	.bind(ControllerRunner.class)
+        	.in(Singleton.class);
         
         binder
             .bind(ContainerRepository.class)
