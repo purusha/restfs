@@ -12,7 +12,7 @@ public interface Storage {
 	
 	public enum Implementation {
 		FS("fs", FileSystemStorage.class),
-		HFS("hdfs", HsfsStorage.class);
+		HFS("hdfs", HdfsStorage.class);
 		
 		public String key; 
 		public Class<? extends Storage> implClazz;

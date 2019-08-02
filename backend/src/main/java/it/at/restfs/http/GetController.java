@@ -3,7 +3,6 @@ package it.at.restfs.http;
 import static akka.http.javadsl.server.Directives.complete;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.Route;
@@ -14,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.Delegate;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
-@Singleton
 public class GetController implements Controller {
 	
 	@Delegate

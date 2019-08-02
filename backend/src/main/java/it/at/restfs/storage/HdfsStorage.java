@@ -8,7 +8,7 @@ import it.at.restfs.storage.dto.FileStatus;
 import it.at.restfs.storage.dto.FolderStatus;
 import it.at.restfs.storage.dto.OpenFile;
 
-public class HsfsStorage implements Storage {
+public class HdfsStorage implements Storage {
 
 	@Override
 	public boolean exist(UUID container) {

@@ -9,9 +9,7 @@ import com.google.inject.Binder;
 import com.google.inject.Key;
 import com.google.inject.Module;
 import com.google.inject.Singleton;
-import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
-import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Names;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -19,24 +17,17 @@ import com.typesafe.config.ConfigFactory;
 import akka.actor.ActorSystem;
 import akka.dispatch.MessageDispatcher;
 import akka.http.javadsl.Http;
-import akka.http.javadsl.model.HttpMethod;
-import akka.http.javadsl.model.HttpMethods;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.ExceptionHandler;
 import akka.stream.ActorMaterializer;
 import it.at.restfs.event.EventRepository;
 import it.at.restfs.event.ShortTimeInMemory;
 import it.at.restfs.http.AuthorizationManager;
-import it.at.restfs.http.Controller;
-import it.at.restfs.http.DeleteController;
+import it.at.restfs.http.ControllerRunner;
 import it.at.restfs.http.Filter;
-import it.at.restfs.http.GetController;
 import it.at.restfs.http.PathResolver;
 import it.at.restfs.http.PerRequestContext;
-import it.at.restfs.http.PostController;
-import it.at.restfs.http.PutController;
 import it.at.restfs.storage.ContainerRepository;
-import it.at.restfs.storage.ControllerRunner;
 import it.at.restfs.storage.FileSystemContainerRepository;
 import it.at.restfs.storage.Storage;
 import it.at.restfs.storage.Storage.Implementation;
@@ -77,17 +68,6 @@ public class AkkaModule implements Module {
             .bind(Http.class)
             .toInstance(Http.get(actorSystem));
         
-        final MapBinder<HttpMethod, Controller> mapBinder = MapBinder.newMapBinder( 
-            binder, 
-            new TypeLiteral<HttpMethod>() {},
-            new TypeLiteral<Controller>() {}
-        );
-        
-        mapBinder.addBinding(HttpMethods.GET).to(GetController.class);
-        mapBinder.addBinding(HttpMethods.POST).to(PostController.class);
-        mapBinder.addBinding(HttpMethods.PUT).to(PutController.class);
-        mapBinder.addBinding(HttpMethods.DELETE).to(DeleteController.class);
-
         for (Implementation implementation : Storage.Implementation.values()) {
             binder
 	            .bind(Key.get(Storage.class, Names.named(implementation.key)))

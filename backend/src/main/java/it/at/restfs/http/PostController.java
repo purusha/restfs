@@ -4,7 +4,6 @@ import static akka.http.javadsl.server.Directives.decodeRequest;
 import static akka.http.javadsl.server.Directives.extractRequestEntity;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import akka.http.javadsl.server.Route;
 import akka.stream.javadsl.Keep;
@@ -18,7 +17,6 @@ import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
-@Singleton
 public class PostController implements Controller {
     
 	@Delegate

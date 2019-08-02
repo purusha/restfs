@@ -1,7 +1,6 @@
 package it.at.restfs.http;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import akka.http.javadsl.server.Route;
 import it.at.restfs.http.HTTPListener.Request;
@@ -12,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.Delegate;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
-@Singleton
 public class DeleteController implements Controller {
 
 	@Delegate
