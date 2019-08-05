@@ -11,6 +11,7 @@ import akka.http.javadsl.model.ContentTypes;
 import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.HttpResponse;
 import akka.pattern.PatternsCS;
+import akka.stream.ActorMaterializer;
 import it.at.restfs.guice.GuiceAbstractActor;
 import it.at.restfs.storage.ContainerRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -23,12 +24,14 @@ public class WebHookSenderActor extends GuiceAbstractActor {
     private static final String UP = "clean-up";
     private static final FiniteDuration SCHEDULE = FiniteDuration.apply(1, TimeUnit.MINUTES);
     
+    private final ActorMaterializer materializer;
     private final ContainerRepository cRepo;
     private final Http http;
     private final ActorSelection cleanUp;
     
     @Inject
-    public WebHookSenderActor(Http http, ContainerRepository cRepo) {        
+    public WebHookSenderActor(ActorMaterializer materializer, Http http, ContainerRepository cRepo) {    
+    	this.materializer = materializer;
         this.http = http;
         this.cRepo = cRepo;
         this.cleanUp = getContext().system().actorSelection("/user/" + CleanupActor.ACTOR);
@@ -57,13 +60,15 @@ public class WebHookSenderActor extends GuiceAbstractActor {
 
     private void makeRequest(Path p) {
         final HttpRequest request = HttpRequest
-            .POST("http://requestbin.fullcontact.com/1bwd3cl1") //XXX container config
+            .POST("http://requestbin.net/r/166so941") //XXX container config
             .withEntity(ContentTypes.parse("text/vnd.yaml"), p);
 
         //XXX no retry if from remote service receive an error 
         final CompletionStage<Path> stage = http
             .singleRequest(request)
-            .thenApply((HttpResponse r) -> {       
+            .thenApply((HttpResponse r) -> {   
+            	r.discardEntityBytes(materializer); //because we don't need response !!?
+            	
                 LOGGER.info("status {}", r.status());
                 
                 return p;

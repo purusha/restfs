@@ -75,11 +75,11 @@ public class EventHandlerActor extends GuiceAbstractActor {
                                 Map.Entry::getKey, entry -> entry.getValue().size()
                             ))
                             .entrySet().stream()
-                            .forEach(entry -> {                    
-                                final Long sum = statistics.getOrDefault(entry.getKey(), 0L).longValue() + entry.getValue().longValue();
-                                
-                                statistics.put(entry.getKey(), sum);
-                            });
+	                            .forEach(entry -> {                    
+	                                final Long sum = statistics.getOrDefault(entry.getKey(), 0L).longValue() + entry.getValue().longValue();
+	                                
+	                                statistics.put(entry.getKey(), sum);
+	                            });
                     
                     cRepo.save(container);
                 }

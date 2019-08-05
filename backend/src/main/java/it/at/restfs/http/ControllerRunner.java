@@ -69,7 +69,7 @@ public class ControllerRunner {
 				.filter((input) -> ReflectionUtils.withParametersCount(1).apply(input) && input.getParameterTypes()[0].equals(Request.class))
 				.collect(Collectors.toList());		
 			
-			LOGGER.info("for {} found {} field and {} number of operation method", class1.getSimpleName(), field.getName(), operations.size());
+			LOGGER.info("for {} found {} field and {} operation method", class1.getSimpleName(), field.getName(), operations.size());
 			
 			return new RunningData(class1, field, operations);
 		}

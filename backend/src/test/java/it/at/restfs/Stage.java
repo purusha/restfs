@@ -227,7 +227,7 @@ public abstract class Stage {
     private ProcessBuilder diffCommand(Path p1, Path p2) {
         final List<String> diff = new ArrayList<String>();
         
-        diff.add("/usr/bin/diff");    
+        diff.add("/usr/bin/diff"); //XXX how to execute this on Win32 machine ?   
         diff.add(p1.toFile().getAbsolutePath());
         diff.add(p2.toFile().getAbsolutePath());
         
