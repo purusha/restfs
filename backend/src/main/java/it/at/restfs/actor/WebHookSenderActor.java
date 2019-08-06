@@ -47,11 +47,14 @@ public class WebHookSenderActor extends GuiceAbstractActor {
             .matchEquals(UP, m -> {
 
                 cRepo.findAll()
+                	.stream()
+                	.map(container -> cRepo.load(container))
+                	.filter(container -> container.isWebHookEnabled())                
                     .forEach(
-                        container -> cRepo.getWebhook(container).forEach(this::makeRequest)
+                        container -> cRepo.getWebhook(container.getId()).forEach(this::makeRequest)
                     ); 
                 
-                //XXX ri-schedule from here !!?
+                //XXX ri-schedule from here when all request are satisfied
                 
             })
             .matchAny(this::unhandled)
@@ -60,10 +63,10 @@ public class WebHookSenderActor extends GuiceAbstractActor {
 
     private void makeRequest(Path p) {
         final HttpRequest request = HttpRequest
-            .POST("http://requestbin.net/r/166so941") //XXX container config
+            .POST("http://requestbin.net/r/166so941") //XXX extract this from container config
             .withEntity(ContentTypes.parse("text/vnd.yaml"), p);
 
-        //XXX no retry if from remote service receive an error 
+        //XXX no retry if from remote service receive an error && no cleanUp for don't loss data
         final CompletionStage<Path> stage = http
             .singleRequest(request)
             .thenApply((HttpResponse r) -> {   
