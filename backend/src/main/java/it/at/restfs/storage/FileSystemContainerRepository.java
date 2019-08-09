@@ -23,14 +23,16 @@ public class FileSystemContainerRepository implements ContainerRepository {
     private static String CONTAINER_PREFIX = "C-";
     private static String WEBHOOK_PREFIX = "WH-";
     private static String LAST_CALL_PREFIX = "LC-";
-    
+        
     /*
+	
+	    TODO
+	    
+	    - try to use the same strategy when persist LC && WH: in the first case append on a file, in the second append a file in folder 
 
-        try to use the same strategy to persist LC && WH
-        
-        in the first case you append on a file, in the second you append a file in folder 
-        
-     */
+	    - this class does NOT work under win32 SO
+	
+	 */
     
     private final ObjectMapper mapper;
     
@@ -151,27 +153,25 @@ public class FileSystemContainerRepository implements ContainerRepository {
 //        Files.delete(buildBaseWebHook(container));
 //    }
 
-    private static File buildContainer(UUID container) {
+    private File buildContainer(UUID container) {
         return new File(FileSystemStorage.ROOT + CONTAINER_PREFIX + container + ".yaml");
     }
  
     @SneakyThrows
-    private static File buildWebHook(UUID container) {
+    private File buildWebHook(UUID container) {
         new File(FileSystemStorage.ROOT + WEBHOOK_PREFIX + container).mkdir(); //XXX create this when container is created !!?
         
         return buildBaseWebHook(container).resolve(String.valueOf(System.currentTimeMillis())).toFile();        
     }
 
     @SneakyThrows
-    private static Path buildBaseWebHook(UUID container) {
+    private Path buildBaseWebHook(UUID container) {
         return Paths.get(FileSystemStorage.ROOT + WEBHOOK_PREFIX + container);
     }
     
     @SneakyThrows
-    private static File buildLastCalls(UUID container) {
+    private File buildLastCalls(UUID container) {
         return new File(FileSystemStorage.ROOT + LAST_CALL_PREFIX + container);
-        
-//        return new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
     }
 
 }

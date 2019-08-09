@@ -1,13 +1,14 @@
 package it.at.restfs.storage.dto;
 
 import java.util.List;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Getter  
-@RequiredArgsConstructor 
+@NoArgsConstructor 
 @ToString 
 @EqualsAndHashCode(callSuper = true)
 public class FolderStatus extends FileStatus {

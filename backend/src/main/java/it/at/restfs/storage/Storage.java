@@ -21,12 +21,7 @@ public interface Storage {
 			this.key = k;
 			this.implClazz = i;
 		}
-	}
-	
-    
-    /*
-        hide real implementation that use local fs as a default storage                
-     */
+	}	
     
     boolean exist(UUID container);
 

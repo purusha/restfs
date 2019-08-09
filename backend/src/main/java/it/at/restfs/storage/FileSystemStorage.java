@@ -29,6 +29,8 @@ import lombok.SneakyThrows;
 
 public class FileSystemStorage implements Storage {
 	
+	//XXX get value from System Property
+	//XXX create on startup if not exist
     public static final String ROOT = "/tmp/" + PathResolver.APP_NAME + "/";
     
     /*
@@ -36,7 +38,7 @@ public class FileSystemStorage implements Storage {
         TODO
         
         - think about resolve method (try to write it better)
-        - 
+        - this class does NOT work under win32 SO
 
      */
 

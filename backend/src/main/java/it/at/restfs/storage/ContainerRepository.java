@@ -21,10 +21,8 @@ public interface ContainerRepository {
     List<Event> getCalls(UUID container);
 
     List<UUID> findAll();
+    //XXX expose: List<Container> findAll();
 
-//    List<Event> getWebhook(UUID container);
     List<Path> getWebhook(UUID container);
-    
-//    void deleteWebhook(UUID container);
 
 }

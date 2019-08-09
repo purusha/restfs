@@ -61,7 +61,7 @@ public class EventHandlerActor extends GuiceAbstractActor {
                 */    
 
                 final Container container = cRepo.load(c.getContainer());                
-                LOGGER.info("load container {} for {}", container, c);
+                LOGGER.debug("load container {}", container);
                 
                 if (container.isStatsEnabled()) {
                     final Map<Integer, Long> statistics = container.getStatistics();

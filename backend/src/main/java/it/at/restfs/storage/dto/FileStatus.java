@@ -1,17 +1,18 @@
 package it.at.restfs.storage.dto;
 
 import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 @Getter 
 @Setter 
-@RequiredArgsConstructor 
+@NoArgsConstructor 
 @ToString 
 @EqualsAndHashCode
 public class FileStatus {
