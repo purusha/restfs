@@ -3,7 +3,9 @@ package it.at.restfs.actor;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 import com.google.inject.Inject;
+
 import akka.actor.ActorRef;
 import it.at.restfs.event.ContainerEvents;
 import it.at.restfs.event.Event;
@@ -64,7 +66,7 @@ public class EventHandlerActor extends GuiceAbstractActor {
                 LOGGER.debug("load container {}", container);
                 
                 if (container.isStatsEnabled()) {
-                    final Map<Integer, Long> statistics = container.getStatistics();
+                    final Map<Integer, Long> statistics = cRepo.getStatistics(c.getContainer());
 
                     c.getEvents().stream()
                         .collect(Collectors.groupingBy(
@@ -81,7 +83,7 @@ public class EventHandlerActor extends GuiceAbstractActor {
 	                                statistics.put(entry.getKey(), sum);
 	                            });
                     
-                    cRepo.save(container);
+                    cRepo.saveStatistics(c.getContainer(), statistics);
                 }
                 
                 if (container.isWebHookEnabled()) {

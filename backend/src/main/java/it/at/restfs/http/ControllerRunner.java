@@ -102,7 +102,7 @@ public class ControllerRunner {
         
         return complete(
             StatusCodes.OK, 
-            cRepo.load(container).getStatistics(), 
+            cRepo.getStatistics(container),
             Jackson.<Map<Integer, Long>>marshaller()
         );
     }

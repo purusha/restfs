@@ -5,15 +5,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+
 import it.at.restfs.event.Event;
 import it.at.restfs.storage.dto.Container;
 import lombok.SneakyThrows;
@@ -23,6 +28,7 @@ public class FileSystemContainerRepository implements ContainerRepository {
     private static String CONTAINER_PREFIX = "C-";
     private static String WEBHOOK_PREFIX = "WH-";
     private static String LAST_CALL_PREFIX = "LC-";
+    private static String STATISTICS_PREFIX = "S-";
         
     /*
 	
@@ -164,14 +170,34 @@ public class FileSystemContainerRepository implements ContainerRepository {
         return buildBaseWebHook(container).resolve(String.valueOf(System.currentTimeMillis())).toFile();        
     }
 
-    @SneakyThrows
     private Path buildBaseWebHook(UUID container) {
         return Paths.get(FileSystemStorage.ROOT + WEBHOOK_PREFIX + container);
     }
     
-    @SneakyThrows
     private File buildLastCalls(UUID container) {
         return new File(FileSystemStorage.ROOT + LAST_CALL_PREFIX + container);
     }
+    
+    private File buildStatistics(UUID container) {
+        return new File(FileSystemStorage.ROOT + STATISTICS_PREFIX + container);
+    }
+    
+    @SneakyThrows
+	@Override
+	public void saveStatistics(UUID container, Map<Integer, Long> statistics) {
+		mapper.writeValue(buildStatistics(container), statistics);		
+	}
+
+    @SneakyThrows
+	@Override
+	public Map<Integer, Long> getStatistics(UUID container) {
+        final File lastCalls = buildStatistics(container);
+        
+        if (! lastCalls.exists()) {
+            return Maps.newHashMap();        
+        }
+        
+        return mapper.<Map<Integer, Long>>readValue(lastCalls, new TypeReference<Map<Integer, Long>>() { });
+	}
 
 }
