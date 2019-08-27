@@ -16,8 +16,10 @@ import lombok.extern.slf4j.Slf4j;
 	  
 	  ad ogni container è associata una di queste
 
-	  lo scopo di questa classe è di risolvere, per un determinato container l'implementazione da usare 
+	  lo scopo di questa classe è di risolvere l'implementazione da usare 
   
+	  e passando inoltre la config da passare per poter istanziare l'impl corretta
+	  
 */
 
 @Slf4j
@@ -35,8 +37,12 @@ public class StorageResolver {
 	public Storage get(UUID uuidC) {
 		final Container container = containerRepository.load(uuidC);
 		
-		//XXX get this from container instance
-		final Storage storage = injector.getInstance(Key.get(Storage.class, Names.named(Storage.Implementation.FS.key)));
+		//XXX get this from container instance and also it's configuration
+		final String containerImpl = Storage.Implementation.FS.key;
+		
+		//XXX resolve StorageProvider or Factory for pass custom container config
+		//XXX use http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/assistedinject/FactoryModuleBuilder.html
+		final Storage storage = injector.getInstance(Key.get(Storage.class, Names.named(containerImpl)));
 		
 		LOGGER.debug("container {}/{} use {} as storage", container.getId(), container.getName(), storage.getClass().getSimpleName());
 		

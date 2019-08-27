@@ -84,10 +84,10 @@ public class HTTPListener {
         final String host = config.getString("restfs.http.public.interface");
         final Integer port = config.getInt("restfs.http.public.port");
         
-        LOGGER.info("\n");
+        LOGGER.info("");
         LOGGER.info("Expose following endpoint");
         LOGGER.info("http://" + host + ":" + port + "/" + APP_NAME + "/" + VERSION + "/...");
-        LOGGER.info("\n");
+        LOGGER.info("");
                 
         this.bindAndHandle = http.bindAndHandle(
             createRoute().flow(system, materializer), ConnectHttp.toHost(host, port), materializer

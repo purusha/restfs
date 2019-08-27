@@ -67,3 +67,17 @@ class MacOsx implements OSFeatures {
     }
   
 }
+
+class Windows implements OSFeatures {
+
+	@Override
+	public List<String> ls() {
+		return null;
+	}
+
+	@Override
+	public List<String> catchOutputOf(Process process) throws IOException {
+		return null;
+	}
+
+}

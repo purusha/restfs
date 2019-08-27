@@ -48,7 +48,7 @@ public class WebHookSenderActor extends GuiceAbstractActor {
         return receiveBuilder()
             .matchEquals(UP, m -> {
 
-                cRepo.findAll()
+                cRepo.findAll()	
                 	.stream()
                 	.map(container -> cRepo.load(container))
                 	.filter(container -> container.isWebHookEnabled())                

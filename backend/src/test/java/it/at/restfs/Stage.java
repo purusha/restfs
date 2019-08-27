@@ -1,6 +1,7 @@
 package it.at.restfs;
 
 import static java.nio.charset.Charset.defaultCharset;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -15,17 +16,20 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+
 import it.at.restfs.http.AdminHTTPListener;
 import it.at.restfs.http.PathResolver;
-import it.at.restfs.storage.FileSystemStorage;
+import it.at.restfs.storage.RootFileSystem;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +55,9 @@ public abstract class Stage {
     
     @Getter
     private final Pair<String, Integer> adminEndpoint;
+    
+    //XXX use Inject please !!?
+    private final RootFileSystem rfs = new RootFileSystem();
 
     protected Stage() {
         
@@ -119,9 +126,9 @@ public abstract class Stage {
         final Object[] callParams = cmd.callParams(_42, context.getContainer());
                 
         @SuppressWarnings("unchecked")
-        final Call<ResponseBody> result = (Call<ResponseBody>)Arrays.stream(RestFs.class.getMethods())
+        final Call<ResponseBody> result = (Call<ResponseBody>) Arrays.stream(RestFs.class.getMethods())
             .filter(m -> StringUtils.equals(m.getName(), cmd.getOperation().toString().toLowerCase()))
-            .filter(method -> method.getParameterTypes().length == callParams.length)
+            .filter(m -> m.getParameterTypes().length == callParams.length)
             .findFirst()
             .get()
             .invoke(service, callParams);
@@ -168,9 +175,7 @@ public abstract class Stage {
 
     //XXX this code know's which is the real implementation ... is stupid
     private File getContainer(UUID container) {
-        final Path path = Paths.get(FileSystemStorage.ROOT + "/" + container);
-        
-        return path.toFile();
+        return rfs.containerPath(container, "").toFile();
     }
     
     @SneakyThrows(value = {IOException.class, InterruptedException.class, URISyntaxException.class})

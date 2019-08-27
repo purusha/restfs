@@ -18,9 +18,9 @@ import static it.at.restfs.http.Complete.textHtml;
 import static it.at.restfs.http.Complete.uriResolver;
 import static it.at.restfs.http.PathResolver.APP_NAME;
 import static it.at.restfs.http.PathResolver.VERSION;
+
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -30,9 +30,11 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.text.RandomStringGenerator;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jknack.handlebars.Context;
 import com.github.jknack.handlebars.Handlebars;
@@ -44,6 +46,7 @@ import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.typesafe.config.Config;
+
 import akka.actor.ActorSystem;
 import akka.http.javadsl.ConnectHttp;
 import akka.http.javadsl.Http;
@@ -58,7 +61,7 @@ import akka.http.javadsl.server.Route;
 import akka.http.javadsl.server.directives.LogEntry;
 import akka.stream.ActorMaterializer;
 import it.at.restfs.storage.ContainerRepository;
-import it.at.restfs.storage.FileSystemStorage;
+import it.at.restfs.storage.RootFileSystem;
 import it.at.restfs.storage.dto.Container;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -100,6 +103,7 @@ public class AdminHTTPListener {
     private final PageResolver pageResolver;
     private final String host;
     private final Integer port;
+	private final RootFileSystem rfs;
     
     @Inject
     public AdminHTTPListener(
@@ -109,19 +113,21 @@ public class AdminHTTPListener {
         ActorMaterializer materializer,
         ExceptionHandler handler,
         ContainerRepository cRepo,
-        PageResolver pageResolver
+        PageResolver pageResolver,
+        RootFileSystem rfs
     ) {
         this.cRepo = cRepo;
         this.handler = handler;
         this.pageResolver = pageResolver;
+		this.rfs = rfs;
         
         host = config.getString("restfs.http.admin.interface");
         port = config.getInt("restfs.http.admin.port");
         
-        LOGGER.info("\n");
+        LOGGER.info("");
         LOGGER.info("Expose following Admin endpoint");
         LOGGER.info("http://" + host + ":" + port + "/" + APP_NAME + "/" + VERSION + "/...");
-        LOGGER.info("\n");
+        LOGGER.info("");
                 
         this.bindAndHandle = http.bindAndHandle(
             createRoute().flow(system, materializer), ConnectHttp.toHost(host, port), materializer
@@ -198,7 +204,8 @@ public class AdminHTTPListener {
         
         //XXX Provisioning actions: please extract a service !!?
         cRepo.save(container);        
-        Paths.get(FileSystemStorage.ROOT + "/" + id).toFile().mkdir();
+        //Paths.get(FileSystemStorage.ROOT + "/" + id).toFile().mkdir();
+        rfs.containerPath(id, "").toFile().mkdir();
 
         return redirect(Uri.create("http://" + host + ":" + port + "/" + CONTAINERS), StatusCodes.SEE_OTHER);
     }
@@ -207,7 +214,6 @@ public class AdminHTTPListener {
         return StringUtils.isBlank(value) || "null".equals(value) ? defaultValue : value;
     }
 
-//    @Slf4j
     @Singleton    
     @AllArgsConstructor(onConstructor = @__({ @Inject }))
     static class PageResolver {

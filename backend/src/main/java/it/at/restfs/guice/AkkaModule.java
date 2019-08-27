@@ -29,6 +29,7 @@ import it.at.restfs.http.PathResolver;
 import it.at.restfs.http.PerRequestContext;
 import it.at.restfs.storage.ContainerRepository;
 import it.at.restfs.storage.FileSystemContainerRepository;
+import it.at.restfs.storage.RootFileSystem;
 import it.at.restfs.storage.Storage;
 import it.at.restfs.storage.Storage.Implementation;
 import it.at.restfs.storage.dto.ResouceNotFoundException;
@@ -82,6 +83,10 @@ public class AkkaModule implements Module {
 				.implement(PerRequestContext.class, PerRequestContext.class)				
 				.build(PerRequestContext.Factory.class)
 		);
+        
+        binder
+        	.bind(RootFileSystem.class)
+        	.in(Singleton.class);        	
         
         binder
         	.bind(AuthorizationManager.class)

@@ -25,10 +25,10 @@ import lombok.SneakyThrows;
 
 public class FileSystemContainerRepository implements ContainerRepository {
     
-    private static String CONTAINER_PREFIX = "C-";
-    private static String WEBHOOK_PREFIX = "WH-";
-    private static String LAST_CALL_PREFIX = "LC-";
-    private static String STATISTICS_PREFIX = "S-";
+    private static String CONTAINER_PREFIX = "C-";	//file
+    private static String WEBHOOK_PREFIX = "WH-";	//folder
+    private static String LAST_CALL_PREFIX = "LC-";	//file
+    private static String STATISTICS_PREFIX = "S-";	//file
         
     /*
 	
@@ -44,7 +44,7 @@ public class FileSystemContainerRepository implements ContainerRepository {
     
     @Inject
     public FileSystemContainerRepository() {
-        mapper = new ObjectMapper(new YAMLFactory());
+    	this.mapper = new ObjectMapper(new YAMLFactory());
     }
 
     @SneakyThrows
@@ -66,6 +66,8 @@ public class FileSystemContainerRepository implements ContainerRepository {
     @Override
     public void save(Container container) {
         mapper.writeValue(buildContainer(container.getId()), container);
+        
+        new File(RootFileSystem.ROOT + WEBHOOK_PREFIX + container.getId()).mkdir();
     }
 
     @SneakyThrows
@@ -89,7 +91,7 @@ public class FileSystemContainerRepository implements ContainerRepository {
     @SneakyThrows
     @Override
     public List<UUID> findAll() {
-        final Path source = Paths.get(FileSystemStorage.ROOT); //reuse me please !!?
+        final Path source = Paths.get(RootFileSystem.ROOT); //reuse me please !!?
         
         try(Stream<Path> stream = Files.list(source)) {
             return stream
@@ -128,13 +130,7 @@ public class FileSystemContainerRepository implements ContainerRepository {
     @SneakyThrows
     @Override    
     public List<Path> getWebhook(UUID container) {
-        final Path rootWebHook = buildBaseWebHook(container);
-        
-        if (! Files.exists(rootWebHook)) {
-            return Lists.newArrayList();
-        }
-        
-        try(Stream<Path> stream = Files.list(rootWebHook)) {
+        try(Stream<Path> stream = Files.list(buildBaseWebHook(container))) {
             return stream
                 .filter(Files::isRegularFile)
                 .collect(Collectors.toList());                
@@ -157,30 +153,7 @@ public class FileSystemContainerRepository implements ContainerRepository {
 //    @Override
 //    public void deleteWebhook(UUID container) {
 //        Files.delete(buildBaseWebHook(container));
-//    }
-
-    private File buildContainer(UUID container) {
-        return new File(FileSystemStorage.ROOT + CONTAINER_PREFIX + container + ".yaml");
-    }
- 
-    @SneakyThrows
-    private File buildWebHook(UUID container) {
-        new File(FileSystemStorage.ROOT + WEBHOOK_PREFIX + container).mkdir(); //XXX create this when container is created !!?
-        
-        return buildBaseWebHook(container).resolve(String.valueOf(System.currentTimeMillis())).toFile();        
-    }
-
-    private Path buildBaseWebHook(UUID container) {
-        return Paths.get(FileSystemStorage.ROOT + WEBHOOK_PREFIX + container);
-    }
-    
-    private File buildLastCalls(UUID container) {
-        return new File(FileSystemStorage.ROOT + LAST_CALL_PREFIX + container);
-    }
-    
-    private File buildStatistics(UUID container) {
-        return new File(FileSystemStorage.ROOT + STATISTICS_PREFIX + container);
-    }
+//    }  
     
     @SneakyThrows
 	@Override
@@ -200,4 +173,23 @@ public class FileSystemContainerRepository implements ContainerRepository {
         return mapper.<Map<Integer, Long>>readValue(lastCalls, new TypeReference<Map<Integer, Long>>() { });
 	}
 
+    private File buildContainer(UUID container) {
+        return new File(RootFileSystem.ROOT + CONTAINER_PREFIX + container);
+    }
+ 
+    private File buildWebHook(UUID container) {
+        return buildBaseWebHook(container).resolve(String.valueOf(System.currentTimeMillis())).toFile();        
+    }
+
+    private Path buildBaseWebHook(UUID container) {
+        return Paths.get(RootFileSystem.ROOT + WEBHOOK_PREFIX + container);
+    }
+    
+    private File buildLastCalls(UUID container) {
+        return new File(RootFileSystem.ROOT + LAST_CALL_PREFIX + container);
+    }
+    
+    private File buildStatistics(UUID container) {
+        return new File(RootFileSystem.ROOT + STATISTICS_PREFIX + container);
+    }    
 }

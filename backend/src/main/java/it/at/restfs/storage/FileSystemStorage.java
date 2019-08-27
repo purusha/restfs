@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Comparator;
@@ -16,9 +15,12 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import it.at.restfs.http.PathResolver;
+
+import com.google.inject.Inject;
+
 import it.at.restfs.storage.dto.AbsolutePath;
 import it.at.restfs.storage.dto.AssetType;
 import it.at.restfs.storage.dto.FileStatus;
@@ -29,11 +31,9 @@ import lombok.SneakyThrows;
 
 public class FileSystemStorage implements Storage {
 	
-	//XXX get value from System Property
-	//XXX create on startup if not exist
-    public static final String ROOT = "/tmp/" + PathResolver.APP_NAME + "/";
-    
-    /*
+    private RootFileSystem rfs;
+
+	/*
 
         TODO
         
@@ -41,6 +41,12 @@ public class FileSystemStorage implements Storage {
         - this class does NOT work under win32 SO
 
      */
+	
+	@Inject
+	public FileSystemStorage(RootFileSystem rfs) {
+		this.rfs = rfs;
+		
+	}
 
     @SneakyThrows(IOException.class)
     @Override
@@ -190,7 +196,7 @@ public class FileSystemStorage implements Storage {
     }
 
     private Path resolve(UUID container, String path, boolean flag) {
-        final Path realPath = Paths.get(ROOT + "/" + container + path);        
+        final Path realPath = rfs.containerPath(container, path);        
         final File realFile = realPath.toFile();        
         
         if (!realFile.exists() && !flag) {
