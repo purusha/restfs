@@ -13,12 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 /*
  
 	  le diverse implementazioni della it.at.restfs.storage.Storage possono andare su servizi diversi ... 
-	  
 	  ad ogni container è associata una di queste
-
 	  lo scopo di questa classe è di risolvere l'implementazione da usare 
-  
-	  e passando inoltre la config da passare per poter istanziare l'impl corretta
+	  passando inoltre la config corretta da usare
 	  
 */
 
