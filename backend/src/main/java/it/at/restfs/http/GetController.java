@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class GetController implements Controller {
 	
-//	@Delegate
 	private PerRequestContext x;            
 
     //operation = OPEN (this is download)

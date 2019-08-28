@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class DeleteController implements Controller {
 
-//	@Delegate
 	private PerRequestContext x;            
 	
     //operation = DELETE
