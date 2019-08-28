@@ -17,10 +17,11 @@ import lombok.SneakyThrows;
 
 public class RootFileSystem {
 	
-	public static final String ROOT = "/tmp/" + PathResolver.APP_NAME + "/";
+	//XXX get value from System Property or Configuration File
+	private static final String ROOT = "/tmp/" + PathResolver.APP_NAME + "/";
 	
 	@Getter	
-	private final String root; //XXX get value from System Property or Configuration File
+	private final String root; 
 	
 	@Inject
 	public RootFileSystem() {
@@ -39,7 +40,7 @@ public class RootFileSystem {
 	}
 
 	private String createRootWin32() {
-		return Files.createTempDir().getAbsolutePath();
+		return Files.createTempDir().getAbsolutePath() + File.separator;
 	}	
 	
 	public boolean isUseful() {
@@ -49,4 +50,12 @@ public class RootFileSystem {
 	public Path containerPath(UUID container, String path) {
 		return Paths.get(root + File.separator + container + path);
 	}
+		
+	public File fileOf(String prefix, UUID container) {
+        return new File(root + File.separator + prefix + container);
+    }
+ 
+	public Path pathOf(String prefix, UUID container) {
+        return Paths.get(root + File.separator + prefix + container);
+    }	
 }

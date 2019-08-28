@@ -41,10 +41,12 @@ public class FileSystemContainerRepository implements ContainerRepository {
 	 */
     
     private final ObjectMapper mapper;
+	private final RootFileSystem rfs;
     
     @Inject
-    public FileSystemContainerRepository() {
-    	this.mapper = new ObjectMapper(new YAMLFactory());
+    public FileSystemContainerRepository(RootFileSystem rfs) {
+    	this.rfs = rfs;
+		this.mapper = new ObjectMapper(new YAMLFactory());
     }
 
     @SneakyThrows
@@ -67,13 +69,15 @@ public class FileSystemContainerRepository implements ContainerRepository {
     public void save(Container container) {
         mapper.writeValue(buildContainer(container.getId()), container);
         
-        new File(RootFileSystem.ROOT + WEBHOOK_PREFIX + container.getId()).mkdir();
+        rfs.fileOf(WEBHOOK_PREFIX, container.getId()).mkdir();
     }
 
     @SneakyThrows
     @Override
     public void saveWebhook(UUID container, List<Event> events) {
-        mapper.writeValue(buildWebHook(container), events);
+    	final File webHook = buildWebHook(container).resolve(String.valueOf(System.currentTimeMillis())).toFile();
+    	
+        mapper.writeValue(webHook, events);
     }
     
     @SneakyThrows
@@ -91,7 +95,7 @@ public class FileSystemContainerRepository implements ContainerRepository {
     @SneakyThrows
     @Override
     public List<UUID> findAll() {
-        final Path source = Paths.get(RootFileSystem.ROOT); //reuse me please !!?
+        final Path source = Paths.get(rfs.getRoot());
         
         try(Stream<Path> stream = Files.list(source)) {
             return stream
@@ -130,7 +134,7 @@ public class FileSystemContainerRepository implements ContainerRepository {
     @SneakyThrows
     @Override    
     public List<Path> getWebhook(UUID container) {
-        try(Stream<Path> stream = Files.list(buildBaseWebHook(container))) {
+        try(Stream<Path> stream = Files.list(buildWebHook(container))) {
             return stream
                 .filter(Files::isRegularFile)
                 .collect(Collectors.toList());                
@@ -174,22 +178,18 @@ public class FileSystemContainerRepository implements ContainerRepository {
 	}
 
     private File buildContainer(UUID container) {
-        return new File(RootFileSystem.ROOT + CONTAINER_PREFIX + container);
+    	return rfs.fileOf(CONTAINER_PREFIX, container);
     }
  
-    private File buildWebHook(UUID container) {
-        return buildBaseWebHook(container).resolve(String.valueOf(System.currentTimeMillis())).toFile();        
-    }
-
-    private Path buildBaseWebHook(UUID container) {
-        return Paths.get(RootFileSystem.ROOT + WEBHOOK_PREFIX + container);
+    private Path buildWebHook(UUID container) {
+    	return rfs.pathOf(WEBHOOK_PREFIX, container);
     }
     
     private File buildLastCalls(UUID container) {
-        return new File(RootFileSystem.ROOT + LAST_CALL_PREFIX + container);
+    	return rfs.fileOf(LAST_CALL_PREFIX, container);
     }
     
     private File buildStatistics(UUID container) {
-        return new File(RootFileSystem.ROOT + STATISTICS_PREFIX + container);
+    	return rfs.fileOf(STATISTICS_PREFIX, container);
     }    
 }
