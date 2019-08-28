@@ -8,17 +8,16 @@ import it.at.restfs.storage.dto.AbsolutePath;
 import it.at.restfs.storage.dto.AssetType;
 import it.at.restfs.storage.dto.FileStatus;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.Delegate;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class DeleteController implements Controller {
 
-	@Delegate
+//	@Delegate
 	private PerRequestContext x;            
 	
     //operation = DELETE
     public Route delete(Request t) {
-        return withFuture(() -> {
+        return x.withFuture(() -> {
             final AssetType typeOf = x.getStorage().typeOf(t.getContainer(), AbsolutePath.of(t.getPath()));        
             
             final FileStatus result = AssetType.FILE == typeOf ? 

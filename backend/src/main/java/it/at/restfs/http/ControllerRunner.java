@@ -138,8 +138,7 @@ public class ControllerRunner {
         
         try {
         	final Field field = data.getPerReq();       	        	        	
-        	field.set(controller, factory.create(request));
-        	
+        	field.set(controller, factory.create(request));        	
         	LOGGER.info("operation is {}", request.getOperation());
         	
         	return (Route) data.getOperations().stream()

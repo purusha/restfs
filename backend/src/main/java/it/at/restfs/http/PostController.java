@@ -14,12 +14,11 @@ import it.at.restfs.http.HTTPListener.Request;
 import it.at.restfs.storage.dto.AssetType;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.experimental.Delegate;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class PostController implements Controller {
     
-	@Delegate
+//	@Delegate
 	private PerRequestContext x;            
     
     //operation = MKDIRS

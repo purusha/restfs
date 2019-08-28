@@ -10,12 +10,11 @@ import it.at.restfs.http.HTTPListener.Request;
 import it.at.restfs.storage.dto.AbsolutePath;
 import it.at.restfs.storage.dto.AssetType;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.Delegate;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class GetController implements Controller {
 	
-	@Delegate
+//	@Delegate
 	private PerRequestContext x;            
 
     //operation = OPEN (this is download)
