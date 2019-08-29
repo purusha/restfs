@@ -38,60 +38,13 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class ControllerRunner {
-	
-	//XXX per queste cose ci sarebbe la pena di morte !!!?
-	final static Map<HttpMethod, RunningData> RUN_CONTEXT = new HashMap<HttpMethod, RunningData>() {
-		private static final long serialVersionUID = -7910997263891218171L;
-
-		{
-			
-			put(HttpMethods.GET, resolve(GetController.class));
-			put(HttpMethods.POST, resolve(PostController.class));
-			put(HttpMethods.PUT, resolve(PutController.class));
-			put(HttpMethods.DELETE, resolve(DeleteController.class));
-		}
-
-		@SuppressWarnings("unchecked")
-		private RunningData resolve(Class<? extends Controller> class1) {
-			final Field field = ReflectionUtils.getFields(class1, new com.google.common.base.Predicate<Field>() {
-				@Override
-				public boolean apply(Field field) {
-					return field.getType().equals(PerRequestContext.class);
-				}
-			}).iterator().next();
-			
-			field.setAccessible(true);
-						
-			final List<Method> operations = Arrays.stream(class1.getDeclaredMethods())
-				.filter((input) -> input.getModifiers() == Modifier.PUBLIC)
-				.filter((input) -> ReflectionUtils.withReturnType(Route.class).apply(input))
-				.filter((input) -> ReflectionUtils.withParametersCount(1).apply(input) && input.getParameterTypes()[0].equals(Request.class))
-				.collect(Collectors.toList());		
-			
-			LOGGER.info("for {} found {} field and {} operation method", class1.getSimpleName(), field.getName(), operations.size());
-			
-			return new RunningData(class1, field, operations);
-		}
-	};	
 	
     private final AuthorizationManager authManager;     
     private final ContainerRepository cRepo;
 	private final PerRequestContext.Factory factory;
 	private final Injector injector;
-	
-	@Inject
-    public ControllerRunner(
-		Injector injector,
-        AuthorizationManager authManager,
-        ContainerRepository cRepo,
-        PerRequestContext.Factory factory
-    ) {
-    	this.injector = injector;
-        this.authManager = authManager;
-        this.cRepo = cRepo;
-		this.factory = factory;
-    }
     
     //XXX this method should be moved into a Controller ?
     //XXX and should be executed in a Future ?
@@ -162,4 +115,39 @@ public class ControllerRunner {
 		private final List<Method> operations;
 		
 	}
+	
+	//XXX per queste cose ci sarebbe la pena di morte !!!?
+	final static Map<HttpMethod, RunningData> RUN_CONTEXT = new HashMap<HttpMethod, RunningData>() {
+		private static final long serialVersionUID = -7910997263891218171L;
+
+		{
+			
+			put(HttpMethods.GET, resolve(GetController.class));
+			put(HttpMethods.POST, resolve(PostController.class));
+			put(HttpMethods.PUT, resolve(PutController.class));
+			put(HttpMethods.DELETE, resolve(DeleteController.class));
+		}
+
+		@SuppressWarnings("unchecked")
+		private RunningData resolve(Class<? extends Controller> class1) {
+			final Field field = ReflectionUtils.getFields(class1, new com.google.common.base.Predicate<Field>() {
+				@Override
+				public boolean apply(Field field) {
+					return field.getType().equals(PerRequestContext.class);
+				}
+			}).iterator().next();
+			
+			field.setAccessible(true);
+						
+			final List<Method> operations = Arrays.stream(class1.getDeclaredMethods())
+				.filter((input) -> input.getModifiers() == Modifier.PUBLIC)
+				.filter((input) -> ReflectionUtils.withReturnType(Route.class).apply(input))
+				.filter((input) -> ReflectionUtils.withParametersCount(1).apply(input) && input.getParameterTypes()[0].equals(Request.class))
+				.collect(Collectors.toList());		
+			
+			LOGGER.info("for {} found {} field and {} operation method", class1.getSimpleName(), field.getName(), operations.size());
+			
+			return new RunningData(class1, field, operations);
+		}
+	};	
 }

@@ -22,6 +22,12 @@ public interface Storage {
 			this.implClazz = i;
 		}
 	}	
+	
+	/*
+		todo
+		
+		1) tutti i path dovrebero essere di tipo AbsolutePath e non String
+	 */
     
     boolean exist(UUID container);
 

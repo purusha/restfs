@@ -23,23 +23,20 @@ import lombok.extern.slf4j.Slf4j;
 public class StorageResolver {
 	
 	private final Injector injector;
-	private final ContainerRepository containerRepository;
+	private final ContainerRepository cRepo;
 
 	@Inject
-	public StorageResolver(Injector injector, ContainerRepository containerRepository) {
+	public StorageResolver(Injector injector, ContainerRepository cRepo) {
 		this.injector = injector;
-		this.containerRepository = containerRepository;
+		this.cRepo = cRepo;
 	}
 		
 	public Storage get(UUID uuidC) {
-		final Container container = containerRepository.load(uuidC);
+		final Container container = cRepo.load(uuidC);		
 		
-		//XXX get this from container instance and also it's configuration
-		final String containerImpl = Storage.Implementation.FS.key;
-		
-		//XXX resolve StorageProvider or Factory for pass custom container config
-		//XXX use http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/assistedinject/FactoryModuleBuilder.html
-		final Storage storage = injector.getInstance(Key.get(Storage.class, Names.named(containerImpl)));
+		final Storage storage = injector.getInstance(
+			Key.get(Storage.class, Names.named(container.getStorage().key))
+		);
 		
 		LOGGER.debug("container {}/{} use {} as storage", container.getId(), container.getName(), storage.getClass().getSimpleName());
 		

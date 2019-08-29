@@ -72,9 +72,8 @@ public class AkkaModule implements Module {
         for (Implementation implementation : Storage.Implementation.values()) {
             binder
 	            .bind(Key.get(Storage.class, Names.named(implementation.key)))
-	            .to(implementation.implClazz);
-            	//we can't do this because each implementation wrap it's own connection!!
-	            //.in(Singleton.class); 
+	            .to(implementation.implClazz)
+	            .in(Singleton.class); 
 			
 		}
         
