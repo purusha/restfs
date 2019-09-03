@@ -204,7 +204,6 @@ public class AdminHTTPListener {
         
         //XXX Provisioning actions: please extract a service !!?
         cRepo.save(container);        
-        //Paths.get(FileSystemStorage.ROOT + "/" + id).toFile().mkdir();
         rfs.containerPath(id, "").toFile().mkdir();
 
         return redirect(Uri.create("http://" + host + ":" + port + "/" + CONTAINERS), StatusCodes.SEE_OTHER);

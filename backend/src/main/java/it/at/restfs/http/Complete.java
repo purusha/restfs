@@ -18,7 +18,8 @@ import akka.http.javadsl.server.Route;
 */
 public class Complete {
     private static final String ABSOLUTE_PATH = new File("").getAbsolutePath();
-    public static final Route NOT_FOUND_ROUTE = akka.http.javadsl.server.Directives.complete(StatusCodes.NOT_FOUND);
+    
+    public static final Route NOT_FOUND_ROUTE = complete(StatusCodes.NOT_FOUND);
     
     public static Route textHtml(String payload) {
        return complete(HttpEntities.create(
@@ -37,8 +38,8 @@ public class Complete {
     }
 
     public static Route internalError(Exception e) {
-        return complete(StatusCodes.INTERNAL_SERVER_ERROR, e.getMessage());
-     }
+    	return complete(StatusCodes.INTERNAL_SERVER_ERROR, e.getMessage());
+    }
     
     public static Route noContent() {
         return complete(StatusCodes.NO_CONTENT);
@@ -46,8 +47,7 @@ public class Complete {
 
     public static Route withType(ContentType type, Uri uri) {
         return complete(HttpEntities.create(
-            type,
-            buildPath(uri)
+            type, buildPath(uri)
         ));        
     }
     
