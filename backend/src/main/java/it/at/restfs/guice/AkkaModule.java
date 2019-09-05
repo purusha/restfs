@@ -20,9 +20,10 @@ import akka.http.javadsl.Http;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.ExceptionHandler;
 import akka.stream.ActorMaterializer;
+import it.at.restfs.auth.AuthorizationChecker;
+import it.at.restfs.auth.AuthorizationManager;
 import it.at.restfs.event.EventRepository;
 import it.at.restfs.event.ShortTimeInMemory;
-import it.at.restfs.http.AuthorizationManager;
 import it.at.restfs.http.ControllerRunner;
 import it.at.restfs.http.Filter;
 import it.at.restfs.http.PathResolver;
@@ -31,7 +32,6 @@ import it.at.restfs.storage.ContainerRepository;
 import it.at.restfs.storage.FileSystemContainerRepository;
 import it.at.restfs.storage.RootFileSystem;
 import it.at.restfs.storage.Storage;
-import it.at.restfs.storage.Storage.Implementation;
 import it.at.restfs.storage.dto.ResouceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -69,13 +69,21 @@ public class AkkaModule implements Module {
             .bind(Http.class)
             .toInstance(Http.get(actorSystem));
         
-        for (Implementation implementation : Storage.Implementation.values()) {
+        for (Storage.Implementation i : Storage.Implementation.values()) {
             binder
-	            .bind(Key.get(Storage.class, Names.named(implementation.key)))
-	            .to(implementation.implClazz)
+	            .bind(Key.get(Storage.class, Names.named(i.key)))
+	            .to(i.implClazz)
 	            .in(Singleton.class); 
 			
 		}
+        
+        for (AuthorizationChecker.Implementation i : AuthorizationChecker.Implementation.values()) {
+            binder
+	            .bind(Key.get(AuthorizationChecker.class, Names.named(i.key)))
+	            .to(i.implClazz)
+	            .in(Singleton.class); 
+			
+		}        
         
         binder.install(
     		new FactoryModuleBuilder()

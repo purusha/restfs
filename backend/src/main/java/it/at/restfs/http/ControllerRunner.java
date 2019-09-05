@@ -2,6 +2,7 @@ package it.at.restfs.http;
 
 import static akka.http.javadsl.server.Directives.complete;
 import static it.at.restfs.http.PathResolver.getPathString;
+import static it.at.restfs.http.Complete.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -19,7 +20,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.ReflectionUtils;
 
-//import com.google.common.base.Predicate;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
@@ -29,6 +29,7 @@ import akka.http.javadsl.model.HttpMethods;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.model.Uri;
 import akka.http.javadsl.server.Route;
+import it.at.restfs.auth.AuthorizationManager;
 import it.at.restfs.event.Event;
 import it.at.restfs.http.HTTPListener.Request;
 import it.at.restfs.storage.ContainerRepository;
@@ -50,7 +51,7 @@ public class ControllerRunner {
     //XXX and should be executed in a Future ?
     public Route stats(UUID container, String authorization) {        
         if (! authManager.isTokenValidFor(authorization, container)) {
-            return complete(StatusCodes.FORBIDDEN);
+        	return forbidden();
         }
         
         return complete(
@@ -64,7 +65,7 @@ public class ControllerRunner {
     //XXX and should be executed in a Future ?    
     public Route last(UUID container, String authorization) {        
         if (! authManager.isTokenValidFor(authorization, container)) {
-            return complete(StatusCodes.FORBIDDEN);
+        	return forbidden();
         }
         
         return complete(
@@ -77,14 +78,14 @@ public class ControllerRunner {
 	@SneakyThrows(Throwable.class)
 	public Route handler(UUID container, String authorization, Uri uri, HttpMethod method, String operation) {        
         if (! authManager.isTokenValidFor(authorization, container)) {
-            return complete(StatusCodes.FORBIDDEN);
+            return forbidden();
         }
         
         final RunningData data = RUN_CONTEXT.get(method);
 		final Controller controller = injector.getInstance(data.getCClazz());
         
         if (Objects.isNull(controller)) {
-        	complete(StatusCodes.METHOD_NOT_ALLOWED);
+        	return methodNotAllowed();
         }
         
         final Request request = new Request(container, getPathString(uri) , operation);

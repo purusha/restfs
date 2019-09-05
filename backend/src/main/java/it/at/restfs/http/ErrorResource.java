@@ -12,7 +12,7 @@ public class ErrorResource {
     private final String message;
     
     /*
-        XXX: build this from Exception instance
+        XXX: build this also from Exception instance
      */
     
 }

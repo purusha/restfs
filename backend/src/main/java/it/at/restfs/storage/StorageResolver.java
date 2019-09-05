@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 	  le diverse implementazioni della it.at.restfs.storage.Storage possono andare su servizi diversi ... 
 	  ad ogni container è associata una di queste
 	  lo scopo di questa classe è di risolvere l'implementazione da usare 
-	  passando inoltre la config corretta da usare
 	  
 */
 
@@ -35,10 +34,10 @@ public class StorageResolver {
 		final Container container = cRepo.load(uuidC);		
 		
 		final Storage storage = injector.getInstance(
-			Key.get(Storage.class, Names.named(container.getStorage().key))
+			Key.get(Storage.class, Names.named(container.getStorage()))
 		);
 		
-		LOGGER.debug("container {}/{} use {} as storage", container.getId(), container.getName(), storage.getClass().getSimpleName());
+		LOGGER.debug("container {}/{} use {} as Storage", container.getId(), container.getName(), storage.getClass().getSimpleName());
 		
 		return storage;
 	}

@@ -1,4 +1,4 @@
-package it.at.restfs.http;
+package it.at.restfs.auth;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,10 +17,12 @@ public class AuthorizationManager {
     
     private final ContainerRepository cRepo;
     private final List<Storage> storages;
+	private final AuthorizationCheckerResolver authResolver;    
     
     @Inject
-    public AuthorizationManager(Injector injector, ContainerRepository cRepo) {
+    public AuthorizationManager(Injector injector, ContainerRepository cRepo, AuthorizationCheckerResolver authResolver) {
     	this.cRepo = cRepo;
+		this.authResolver = authResolver;
     	
     	this.storages = Arrays
     		.stream(Storage.Implementation.values())
@@ -29,23 +31,12 @@ public class AuthorizationManager {
     }
 
 
-    public boolean isTokenValidFor(String authorization, UUID container) {
-        
+    public boolean isTokenValidFor(String authorization, UUID container) {        
         if ( !existsSomeWhere(container) || !cRepo.exist(container) ) {
             return false;
         }
                 
-        /*
-            
-            TODO:
-            
-            1) check if 'authorization' is valid
-            
-            2) check if 'authorization' is associated to 'container'
-    
-         */
-        
-        return true;
+        return authResolver.get(container).isTokenValid(authorization);
     }
     
     private boolean existsSomeWhere(UUID container) {

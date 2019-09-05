@@ -16,8 +16,9 @@ import akka.http.javadsl.server.Route;
 /*
     akka Facade complete* methods
 */
+
 public class Complete {
-    private static final String ABSOLUTE_PATH = new File("").getAbsolutePath();
+    private static final String ABSOLUTE_PATH = new File("").getAbsolutePath(); //tricks
     
     public static final Route NOT_FOUND_ROUTE = complete(StatusCodes.NOT_FOUND);
     
@@ -44,6 +45,14 @@ public class Complete {
     public static Route noContent() {
         return complete(StatusCodes.NO_CONTENT);
     }
+    
+    public static Route methodNotAllowed() {
+    	return complete(StatusCodes.METHOD_NOT_ALLOWED);
+    }
+    
+    public static Route forbidden() {
+    	return complete(StatusCodes.FORBIDDEN);
+    }
 
     public static Route withType(ContentType type, Uri uri) {
         return complete(HttpEntities.create(
@@ -55,7 +64,7 @@ public class Complete {
         return withType(ContentTypes.create(type), uri);
     }
     
-    public static Path buildPath(Uri uri) {
+    private static Path buildPath(Uri uri) {
         return new File(ABSOLUTE_PATH + uri.path()).toPath();
     }    
     
