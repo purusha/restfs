@@ -1,8 +1,8 @@
 package it.at.restfs.http;
 
 import static akka.http.javadsl.server.Directives.complete;
+import static it.at.restfs.http.Complete.methodNotAllowed;
 import static it.at.restfs.http.PathResolver.getPathString;
-import static it.at.restfs.http.Complete.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -29,7 +29,7 @@ import akka.http.javadsl.model.HttpMethods;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.model.Uri;
 import akka.http.javadsl.server.Route;
-import it.at.restfs.auth.AuthorizationManager;
+import it.at.restfs.auth.Authorized;
 import it.at.restfs.event.Event;
 import it.at.restfs.http.HTTPListener.Request;
 import it.at.restfs.storage.ContainerRepository;
@@ -42,45 +42,35 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class ControllerRunner {
 	
-    private final AuthorizationManager authManager;     
     private final ContainerRepository cRepo;
 	private final PerRequestContext.Factory factory;
 	private final Injector injector;
     
     //XXX this method should be moved into a Controller ?
     //XXX and should be executed in a Future ?
-    public Route stats(UUID container, String authorization) {        
-        if (! authManager.isTokenValidFor(authorization, container)) {
-        	return forbidden();
-        }
-        
+	@Authorized
+    public Route stats(ContainerAuth ctx) {        
         return complete(
             StatusCodes.OK, 
-            cRepo.getStatistics(container),
+            cRepo.getStatistics(ctx.getContainer()),
             Jackson.<Map<Integer, Long>>marshaller()
         );
     }
 
     //XXX this method should be moved into a Controller ?
-    //XXX and should be executed in a Future ?    
-    public Route last(UUID container, String authorization) {        
-        if (! authManager.isTokenValidFor(authorization, container)) {
-        	return forbidden();
-        }
-        
+    //XXX and should be executed in a Future ?   
+	@Authorized	
+    public Route last(ContainerAuth ctx) {        
         return complete(
             StatusCodes.OK, 
-            cRepo.getCalls(container), 
+            cRepo.getCalls(ctx.getContainer()), 
             Jackson.<List<Event>>marshaller()
         );
     }
-        
+
+	@Authorized
 	@SneakyThrows(Throwable.class)
-	public Route handler(UUID container, String authorization, Uri uri, HttpMethod method, String operation) {        
-        if (! authManager.isTokenValidFor(authorization, container)) {
-            return forbidden();
-        }
-        
+	public Route handler(ContainerAuth ctx, Uri uri, HttpMethod method, String operation) {        
         final RunningData data = RUN_CONTEXT.get(method);
 		final Controller controller = injector.getInstance(data.getCClazz());
         
@@ -88,7 +78,7 @@ public class ControllerRunner {
         	return methodNotAllowed();
         }
         
-        final Request request = new Request(container, getPathString(uri) , operation);
+        final Request request = new Request(ctx.getContainer(), getPathString(uri) , operation);
         
         try {
         	final Field field = data.getPerReq();       	        	        	
@@ -114,6 +104,15 @@ public class ControllerRunner {
 		private final Class<? extends Controller> cClazz;
 		private final Field perReq;
 		private final List<Method> operations;
+		
+	}
+	
+	@Getter
+	@RequiredArgsConstructor	
+	public static class ContainerAuth {
+		
+		private final UUID container;
+		private final String authorization;
 		
 	}
 	

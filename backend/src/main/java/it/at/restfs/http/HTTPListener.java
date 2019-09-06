@@ -41,6 +41,7 @@ import akka.http.javadsl.server.Rejection;
 import akka.http.javadsl.server.Route;
 import akka.http.javadsl.server.directives.LogEntry;
 import akka.stream.ActorMaterializer;
+import it.at.restfs.http.ControllerRunner.ContainerAuth;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -119,18 +120,18 @@ public class HTTPListener {
                                         parameter(OP, (String operation) ->
                                             extractUri(uri ->
                                                 extractMethod(method ->                                                
-                                                	runner.handler(UUID.fromString(container), authorization, uri, method, operation)
+                                                	runner.handler(buildCA(container, authorization), uri, method, operation)
                                                 )
                                             )
                                         ),
                                         pathPrefix(segment("stats"), () ->
                                             get(() ->                                            
-                                            	runner.stats(UUID.fromString(container), authorization)
+                                            	runner.stats(buildCA(container, authorization))
                                             )
                                         ),
                                         pathPrefix(segment("last"), () ->
                                             get(() ->                                            
-                                            	runner.last(UUID.fromString(container), authorization)
+                                            	runner.last(buildCA(container, authorization))
                                             )
                                         )
                                                                             
@@ -144,7 +145,10 @@ public class HTTPListener {
             )
         );
     }
-
+    
+    private ContainerAuth buildCA(String container, String authorization) {
+    	return new ContainerAuth(UUID.fromString(container), authorization);
+    }
     
     @Getter 
     @Setter

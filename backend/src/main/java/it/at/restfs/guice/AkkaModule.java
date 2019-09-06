@@ -10,6 +10,7 @@ import com.google.inject.Key;
 import com.google.inject.Module;
 import com.google.inject.Singleton;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.google.inject.matcher.Matchers;
 import com.google.inject.name.Names;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -22,6 +23,8 @@ import akka.http.javadsl.server.ExceptionHandler;
 import akka.stream.ActorMaterializer;
 import it.at.restfs.auth.AuthorizationChecker;
 import it.at.restfs.auth.AuthorizationManager;
+import it.at.restfs.auth.Authorized;
+import it.at.restfs.auth.AuthorizedInterceptor;
 import it.at.restfs.event.EventRepository;
 import it.at.restfs.event.ShortTimeInMemory;
 import it.at.restfs.http.ControllerRunner;
@@ -116,6 +119,12 @@ public class AkkaModule implements Module {
         binder
             .bind(Filter.class)
             .in(Singleton.class);
+        
+        final AuthorizedInterceptor i = new AuthorizedInterceptor();
+        binder.requestInjection(i);
+        
+        binder
+        	.bindInterceptor(Matchers.any(), Matchers.annotatedWith(Authorized.class), i);
         
         binder
             .bind(ExceptionHandler.class)
