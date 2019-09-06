@@ -116,7 +116,6 @@ public class ControllerRunner {
 		
 	}
 	
-	//XXX per queste cose ci sarebbe la pena di morte !!!?
 	final static Map<HttpMethod, RunningData> RUN_CONTEXT = new HashMap<HttpMethod, RunningData>() {
 		private static final long serialVersionUID = -7910997263891218171L;
 
@@ -150,4 +149,5 @@ public class ControllerRunner {
 			return new RunningData(class1, field, operations);
 		}
 	};	
+	
 }

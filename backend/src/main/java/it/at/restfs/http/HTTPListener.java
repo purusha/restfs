@@ -155,7 +155,7 @@ public class HTTPListener {
     static public class Request {
         private final UUID container;
         private final String path;
-        private final String operation;
+        private final String operation; //should be Optional<String>
         
         @JsonCreator
         public Request(

@@ -17,6 +17,7 @@ public class Container {
     
     /*
     	add a property for enable/disabled Container instance
+    	this field MUST BE checked only when HTTPEndpoint will be called
      */
         
     private boolean statsEnabled = false;
