@@ -1,6 +1,6 @@
 package it.at.restfs.auth;
 
-import static it.at.restfs.http.Complete.forbidden;
+import static it.at.restfs.http.services.Complete.forbidden;
 
 import java.util.Arrays;
 

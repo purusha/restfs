@@ -9,7 +9,7 @@ import org.junit.Test;
 import it.at.restfs.BaseTest;
 import it.at.restfs.Operation;
 import it.at.restfs.Stage;
-import it.at.restfs.http.PathResolver;
+import it.at.restfs.http.services.PathHelper;
 
 public class PersistentConnection extends BaseTest {  
     
@@ -47,11 +47,11 @@ public class PersistentConnection extends BaseTest {
         curlParams.add("POST");
         
         curlParams.add(String.format(
-            "http://%s:%d/%s/%s/file1?op=%s", getPublicEndpoint().getKey(), getPublicEndpoint().getValue(), PathResolver.APP_NAME, PathResolver.VERSION, Operation.CREATE.name()                    
+            "http://%s:%d/%s/%s/file1?op=%s", getPublicEndpoint().getKey(), getPublicEndpoint().getValue(), PathHelper.APP_NAME, PathHelper.VERSION, Operation.CREATE.name()                    
         ));
         
         curlParams.add(String.format(
-            "http://%s:%d/%s/%s/file2?op=%s", getPublicEndpoint().getKey(), getPublicEndpoint().getValue(), PathResolver.APP_NAME, PathResolver.VERSION, Operation.CREATE.name()                    
+            "http://%s:%d/%s/%s/file2?op=%s", getPublicEndpoint().getKey(), getPublicEndpoint().getValue(), PathHelper.APP_NAME, PathHelper.VERSION, Operation.CREATE.name()                    
         ));        
         
         final ProcessBuilder pb = new ProcessBuilder(curlParams);

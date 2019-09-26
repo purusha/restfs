@@ -11,7 +11,7 @@ import com.google.common.collect.Iterables;
 import it.at.restfs.BaseTest;
 import it.at.restfs.Operation;
 import it.at.restfs.Stage;
-import it.at.restfs.http.PathResolver;
+import it.at.restfs.http.services.PathHelper;
 import okhttp3.ResponseBody;
 
 public class GzipRequestContent extends BaseTest {  
@@ -64,7 +64,7 @@ public class GzipRequestContent extends BaseTest {
         curlParams.add("-X");
         curlParams.add("POST");
         curlParams.add(String.format(
-            "http://%s:%d/%s/%s/file?op=APPEND", getPublicEndpoint().getKey(), getPublicEndpoint().getValue(), PathResolver.APP_NAME, PathResolver.VERSION                    
+            "http://%s:%d/%s/%s/file?op=APPEND", getPublicEndpoint().getKey(), getPublicEndpoint().getValue(), PathHelper.APP_NAME, PathHelper.VERSION                    
         ));        
         
         final ProcessBuilder pb = new ProcessBuilder(curlParams);

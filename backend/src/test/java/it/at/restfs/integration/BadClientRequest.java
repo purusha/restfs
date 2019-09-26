@@ -8,7 +8,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import it.at.restfs.BaseTest;
 import it.at.restfs.Stage;
-import it.at.restfs.http.PathResolver;
+import it.at.restfs.http.services.PathHelper;
 
 public class BadClientRequest extends BaseTest {
 
@@ -72,9 +72,9 @@ public class BadClientRequest extends BaseTest {
         final String uri;
         
         if (op) {
-            uri = String.format("http://%s:%d/%s/%s/file?op=CREATE", getPublicEndpoint().getKey(), getPublicEndpoint().getValue(), PathResolver.APP_NAME, PathResolver.VERSION);
+            uri = String.format("http://%s:%d/%s/%s/file?op=CREATE", getPublicEndpoint().getKey(), getPublicEndpoint().getValue(), PathHelper.APP_NAME, PathHelper.VERSION);
         } else {
-            uri = String.format("http://%s:%d/%s/%s/file", getPublicEndpoint().getKey(), getPublicEndpoint().getValue(), PathResolver.APP_NAME, PathResolver.VERSION);
+            uri = String.format("http://%s:%d/%s/%s/file", getPublicEndpoint().getKey(), getPublicEndpoint().getValue(), PathHelper.APP_NAME, PathHelper.VERSION);
         }
         
         curlParams.add(uri);        

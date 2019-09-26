@@ -11,14 +11,14 @@ import org.apache.commons.lang3.SystemUtils;
 import com.google.common.io.Files;
 import com.google.inject.Inject;
 
-import it.at.restfs.http.PathResolver;
+import it.at.restfs.http.services.PathHelper;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
 public class RootFileSystem {
 	
 	//XXX get value from System Property or Configuration File
-	private static final String ROOT = "/tmp/" + PathResolver.APP_NAME + "/";
+	private static final String ROOT = "/tmp/" + PathHelper.APP_NAME + "/";
 	
 	@Getter	
 	private final String root; 

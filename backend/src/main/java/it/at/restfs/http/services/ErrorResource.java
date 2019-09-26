@@ -1,4 +1,4 @@
-package it.at.restfs.http;
+package it.at.restfs.http.services;
 
 import java.util.UUID;
 import lombok.Data;

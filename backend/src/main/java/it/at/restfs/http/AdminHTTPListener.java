@@ -13,11 +13,11 @@ import static akka.http.javadsl.server.Directives.redirect;
 import static akka.http.javadsl.server.Directives.route;
 import static akka.http.javadsl.server.PathMatchers.segment;
 import static akka.http.javadsl.server.PathMatchers.uuidSegment;
-import static it.at.restfs.http.Complete.internalError;
-import static it.at.restfs.http.Complete.textHtml;
-import static it.at.restfs.http.Complete.uriResolver;
-import static it.at.restfs.http.PathResolver.APP_NAME;
-import static it.at.restfs.http.PathResolver.VERSION;
+import static it.at.restfs.http.services.Complete.internalError;
+import static it.at.restfs.http.services.Complete.textHtml;
+import static it.at.restfs.http.services.Complete.uriResolver;
+import static it.at.restfs.http.services.PathHelper.APP_NAME;
+import static it.at.restfs.http.services.PathHelper.VERSION;
 
 import java.io.IOException;
 import java.lang.reflect.Method;

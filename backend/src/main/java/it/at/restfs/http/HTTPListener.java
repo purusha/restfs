@@ -9,11 +9,14 @@ import static akka.http.javadsl.server.Directives.handleExceptions;
 import static akka.http.javadsl.server.Directives.headerValueByName;
 import static akka.http.javadsl.server.Directives.logRequestResult;
 import static akka.http.javadsl.server.Directives.parameter;
+import static akka.http.javadsl.server.Directives.pathEndOrSingleSlash;
 import static akka.http.javadsl.server.Directives.pathPrefix;
+import static akka.http.javadsl.server.Directives.post;
 import static akka.http.javadsl.server.Directives.route;
 import static akka.http.javadsl.server.PathMatchers.segment;
-import static it.at.restfs.http.PathResolver.APP_NAME;
-import static it.at.restfs.http.PathResolver.VERSION;
+import static it.at.restfs.http.services.PathHelper.APP_NAME;
+import static it.at.restfs.http.services.PathHelper.VERSION;
+import static it.at.restfs.http.services.PathHelper.buildCA;
 
 import java.util.List;
 import java.util.UUID;
@@ -41,7 +44,7 @@ import akka.http.javadsl.server.Rejection;
 import akka.http.javadsl.server.Route;
 import akka.http.javadsl.server.directives.LogEntry;
 import akka.stream.ActorMaterializer;
-import it.at.restfs.http.ControllerRunner.ContainerAuth;
+import it.at.restfs.http.services.Filter;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -133,6 +136,13 @@ public class HTTPListener {
                                             get(() ->                                            
                                             	runner.last(buildCA(container, authorization))
                                             )
+                                        ),
+                                        pathPrefix("token", () ->
+                                        	pathEndOrSingleSlash(() ->
+	                                        	post(() ->
+	                                        		runner.token(buildCA(container, authorization))
+	                                        	)
+                                        	)
                                         )
                                                                             
                                     )
@@ -145,11 +155,7 @@ public class HTTPListener {
             )
         );
     }
-    
-    private ContainerAuth buildCA(String container, String authorization) {
-    	return new ContainerAuth(UUID.fromString(container), authorization);
-    }
-    
+        
     @Getter 
     @Setter
     static public class Request {

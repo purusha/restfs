@@ -1,5 +1,7 @@
 package it.at.restfs.auth;
 
+import java.util.UUID;
+
 public interface AuthorizationChecker {	
 	
 	public enum Implementation {
@@ -16,6 +18,6 @@ public interface AuthorizationChecker {
 		}
 	}		
 	
-	public boolean isTokenValid(String authorization);
+	public boolean isTokenValid(UUID container, String authorization);
 
 }

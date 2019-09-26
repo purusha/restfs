@@ -1,4 +1,4 @@
-package it.at.restfs.http;
+package it.at.restfs.http.services;
 
 import static akka.http.javadsl.server.Directives.*;
 
@@ -49,6 +49,10 @@ public class Complete {
     public static Route methodNotAllowed() {
     	return complete(StatusCodes.METHOD_NOT_ALLOWED);
     }
+    
+    public static Route notImplemented() {
+    	return complete(StatusCodes.NOT_IMPLEMENTED);
+    }    
     
     public static Route forbidden() {
     	return complete(StatusCodes.FORBIDDEN);

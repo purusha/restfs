@@ -36,7 +36,7 @@ public class AuthorizationManager {
             return false;
         }
                 
-        return authResolver.get(container).isTokenValid(authorization);
+        return authResolver.get(container).isTokenValid(container, authorization);
     }
     
     private boolean existsSomeWhere(UUID container) {

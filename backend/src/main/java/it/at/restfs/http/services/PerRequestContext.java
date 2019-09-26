@@ -1,4 +1,4 @@
-package it.at.restfs.http;
+package it.at.restfs.http.services;
 
 import static akka.http.javadsl.server.Directives.completeOKWithFuture;
 
@@ -18,7 +18,7 @@ import it.at.restfs.storage.StorageResolver;
 import lombok.AccessLevel;
 import lombok.Getter;
 
-@Getter(value = AccessLevel.PACKAGE)
+@Getter(value = AccessLevel.PUBLIC)
 public class PerRequestContext {
 	
 	public interface Factory {

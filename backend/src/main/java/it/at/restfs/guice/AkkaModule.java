@@ -28,9 +28,9 @@ import it.at.restfs.auth.AuthorizedInterceptor;
 import it.at.restfs.event.EventRepository;
 import it.at.restfs.event.ShortTimeInMemory;
 import it.at.restfs.http.ControllerRunner;
-import it.at.restfs.http.Filter;
-import it.at.restfs.http.PathResolver;
-import it.at.restfs.http.PerRequestContext;
+import it.at.restfs.http.services.Filter;
+import it.at.restfs.http.services.PathHelper;
+import it.at.restfs.http.services.PerRequestContext;
 import it.at.restfs.storage.ContainerRepository;
 import it.at.restfs.storage.FileSystemContainerRepository;
 import it.at.restfs.storage.RootFileSystem;
@@ -46,7 +46,7 @@ public class AkkaModule implements Module {
         
         final Config config = ConfigFactory.load();
 
-        final ActorSystem actorSystem = ActorSystem.create(PathResolver.APP_NAME, config);
+        final ActorSystem actorSystem = ActorSystem.create(PathHelper.APP_NAME, config);
         
         binder
             .bind(ActorSystem.class)

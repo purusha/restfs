@@ -1,9 +1,7 @@
 package it.at.restfs.http;
 
-import static akka.http.javadsl.server.Directives.complete;
-import static it.at.restfs.http.Complete.methodNotAllowed;
-import static it.at.restfs.http.PathResolver.getPathString;
-
+import static it.at.restfs.http.services.Complete.methodNotAllowed;
+import static it.at.restfs.http.services.PathHelper.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -23,16 +21,14 @@ import org.reflections.ReflectionUtils;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
-import akka.http.javadsl.marshallers.jackson.Jackson;
 import akka.http.javadsl.model.HttpMethod;
 import akka.http.javadsl.model.HttpMethods;
-import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.model.Uri;
 import akka.http.javadsl.server.Route;
 import it.at.restfs.auth.Authorized;
-import it.at.restfs.event.Event;
+import it.at.restfs.auth.NotAuthorized;
 import it.at.restfs.http.HTTPListener.Request;
-import it.at.restfs.storage.ContainerRepository;
+import it.at.restfs.http.services.PerRequestContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -42,32 +38,25 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class ControllerRunner {
 	
-    private final ContainerRepository cRepo;
-	private final PerRequestContext.Factory factory;
+	private final PerRequestContext.Factory factory;	
+	private final MangementController mController;
 	private final Injector injector;
     
-    //XXX this method should be moved into a Controller ?
-    //XXX and should be executed in a Future ?
 	@Authorized
     public Route stats(ContainerAuth ctx) {        
-        return complete(
-            StatusCodes.OK, 
-            cRepo.getStatistics(ctx.getContainer()),
-            Jackson.<Map<Integer, Long>>marshaller()
-        );
+		return mController.stats(build(ctx.getContainer(), "stats", null));
     }
 
-    //XXX this method should be moved into a Controller ?
-    //XXX and should be executed in a Future ?   
 	@Authorized	
-    public Route last(ContainerAuth ctx) {        
-        return complete(
-            StatusCodes.OK, 
-            cRepo.getCalls(ctx.getContainer()), 
-            Jackson.<List<Event>>marshaller()
-        );
+    public Route last(ContainerAuth ctx) {  
+		return mController.last(build(ctx.getContainer(), "last", null));
     }
 
+	@NotAuthorized
+    public Route token(ContainerAuth ctx) {     
+		return mController.token(ctx);
+    }
+	
 	@Authorized
 	@SneakyThrows(Throwable.class)
 	public Route handler(ContainerAuth ctx, Uri uri, HttpMethod method, String operation) {        
@@ -78,12 +67,11 @@ public class ControllerRunner {
         	return methodNotAllowed();
         }
         
-        final Request request = new Request(ctx.getContainer(), getPathString(uri) , operation);
-        
         try {
-        	final Field field = data.getPerReq();       	        	        	
-        	field.set(controller, factory.create(request));        	
-        	LOGGER.info("operation is {}", request.getOperation());
+        	final Request request = build(ctx.getContainer(), getPathString(uri) , operation);
+        			        	        	
+        	data.getPerReq().set(controller, factory.create(request));        	
+        	LOGGER.debug("will call operation {}", request.getOperation());
         	
         	return (Route) data.getOperations().stream()
 				.filter(m -> StringUtils.equalsIgnoreCase(m.getName(), request.getOperation()))
@@ -96,7 +84,7 @@ public class ControllerRunner {
             throw e.getCause();
         }
     }
-
+	
 	@Getter
 	@RequiredArgsConstructor
 	private static class RunningData {
@@ -125,6 +113,8 @@ public class ControllerRunner {
 			put(HttpMethods.POST, resolve(PostController.class));
 			put(HttpMethods.PUT, resolve(PutController.class));
 			put(HttpMethods.DELETE, resolve(DeleteController.class));
+			
+			//don't add MangementController to this data
 		}
 
 		@SuppressWarnings("unchecked")

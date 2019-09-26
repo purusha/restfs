@@ -28,7 +28,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
 import it.at.restfs.http.AdminHTTPListener;
-import it.at.restfs.http.PathResolver;
+import it.at.restfs.http.services.PathHelper;
 import it.at.restfs.storage.RootFileSystem;
 import lombok.Builder;
 import lombok.Getter;
@@ -68,14 +68,14 @@ public abstract class Stage {
         service = new Retrofit.Builder()
             .addConverterFactory(ScalarsConverterFactory.create())
             .baseUrl(String.format(
-                "http://%s:%d/%s/%s/", publicEndpoint.getKey(), publicEndpoint.getValue(), PathResolver.APP_NAME, PathResolver.VERSION                    
+                "http://%s:%d/%s/%s/", publicEndpoint.getKey(), publicEndpoint.getValue(), PathHelper.APP_NAME, PathHelper.VERSION                    
             ))
             .build()
             .create(RestFs.class);
         
         admin = new Retrofit.Builder()
             .baseUrl(String.format(
-                "http://%s:%d/%s/%s/", adminEndpoint.getKey(), adminEndpoint.getValue(), PathResolver.APP_NAME, PathResolver.VERSION                    
+                "http://%s:%d/%s/%s/", adminEndpoint.getKey(), adminEndpoint.getValue(), PathHelper.APP_NAME, PathHelper.VERSION                    
             ))
             .build()
             .create(Admin.class);
