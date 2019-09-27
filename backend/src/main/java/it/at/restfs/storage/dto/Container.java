@@ -8,8 +8,6 @@ import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
-import it.at.restfs.auth.AuthorizationChecker;
-import it.at.restfs.storage.Storage;
 import lombok.Data;
 
 /*
@@ -32,10 +30,10 @@ public class Container {
     private String name;
     private UUID id;
     
-    private boolean statsEnabled = false;
-    private boolean webHookEnabled = false;
-    private String storage = Storage.Implementation.FS.key;
-    private String authorization = AuthorizationChecker.Implementation.MASTER_PWD.key;
+    private boolean statsEnabled;
+    private boolean webHookEnabled;
+    private String storage;
+    private String authorization;
         
     @JsonIgnore
 	public Config getAuthorizationConfig() {

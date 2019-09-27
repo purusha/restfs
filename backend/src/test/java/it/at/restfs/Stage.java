@@ -27,6 +27,7 @@ import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
+import it.at.restfs.auth.AuthorizationChecker;
 import it.at.restfs.http.AdminHTTPListener;
 import it.at.restfs.http.services.PathHelper;
 import it.at.restfs.storage.RootFileSystem;
@@ -159,7 +160,10 @@ public abstract class Stage {
     
     @SneakyThrows
     protected void createContainer(UUID container) {
-        final Call<ResponseBody> create = admin.create(AdminHTTPListener.CONTAINERS, container, Boolean.TRUE, Boolean.TRUE);
+        final Call<ResponseBody> create = admin.create(
+    		AdminHTTPListener.CONTAINERS, container, Boolean.TRUE, Boolean.TRUE, AuthorizationChecker.Implementation.MASTER_PWD.key        
+		);
+        
         final Response<ResponseBody> execute = create.execute();
         
         if (execute.isSuccessful()) {

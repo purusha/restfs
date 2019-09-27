@@ -60,8 +60,10 @@ import akka.http.javadsl.server.Rejection;
 import akka.http.javadsl.server.Route;
 import akka.http.javadsl.server.directives.LogEntry;
 import akka.stream.ActorMaterializer;
+import it.at.restfs.auth.AuthorizationChecker;
 import it.at.restfs.storage.ContainerRepository;
 import it.at.restfs.storage.RootFileSystem;
+import it.at.restfs.storage.Storage;
 import it.at.restfs.storage.dto.Container;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -191,16 +193,21 @@ public class AdminHTTPListener {
     }
 
     private Route createContainer(Map<String, String> map) {
+    	
         final String name = getOrDefault(map.get("name"), GENERATOR.generate(12));
         final UUID id = UUID.fromString(getOrDefault(map.get("id"), UUID.randomUUID().toString()));
         final Boolean statsEnabled = Boolean.valueOf(getOrDefault(map.get("statsEnabled"), Boolean.FALSE.toString()));
-        final Boolean webHookEnabled = Boolean.valueOf(getOrDefault(map.get("webHookEnabled"), Boolean.FALSE.toString()));
-
+        final Boolean webHookEnabled = Boolean.valueOf(getOrDefault(map.get("webHookEnabled"), Boolean.FALSE.toString()));        
+        final String storage = getOrDefault(map.get("storage"), Storage.Implementation.FS.key);
+        final String authorization = getOrDefault(map.get("authorization"), AuthorizationChecker.Implementation.NO_AUTH.key);        
+        
         final Container container = new Container();
         container.setName(name);
         container.setId(id);
         container.setStatsEnabled(statsEnabled);
         container.setWebHookEnabled(webHookEnabled);
+        container.setStorage(storage);
+        container.setAuthorization(authorization);
         
         //XXX Provisioning actions: please extract a service !!?
         cRepo.save(container);        
