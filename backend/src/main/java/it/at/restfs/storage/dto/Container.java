@@ -20,30 +20,23 @@ import lombok.Data;
 @Data
 public class Container {
 	
+	/*
+		add a property for enable/disabled Container instance
+		this field MUST BE checked only ones ... when HTTPEndpoint will be called
+		all call received on disabled container will respond forbidden (403)
+		
+		- un container potrà essere disabilitato/abilitato solo dagli endpoint di Admin
+		
+	 */
+	
     private String name;
-    
     private UUID id;
     
-    /*
-    	add a property for enable/disabled Container instance
-    	this field MUST BE checked only ones ... when HTTPEndpoint will be called
-    	all call received to disabled container will respond forbidden (403)
-     */
-        
     private boolean statsEnabled = false;
-    
     private boolean webHookEnabled = false;
-    
-    @JsonIgnore
-    public String getStorage() {
-    	return Storage.Implementation.FS.key;
-    }
-    
-    @JsonIgnore
-    public String getAuthorization() {
-    	return AuthorizationChecker.Implementation.MASTER_PWD.key;
-    }
-
+    private String storage = Storage.Implementation.FS.key;
+    private String authorization = AuthorizationChecker.Implementation.MASTER_PWD.key;
+        
     @JsonIgnore
 	public Config getAuthorizationConfig() {
     	HashMap<String, String> data = Maps.newHashMap();

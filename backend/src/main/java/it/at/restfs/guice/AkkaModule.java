@@ -28,6 +28,7 @@ import it.at.restfs.auth.AuthorizedInterceptor;
 import it.at.restfs.event.EventRepository;
 import it.at.restfs.event.ShortTimeInMemory;
 import it.at.restfs.http.ControllerRunner;
+import it.at.restfs.http.services.Complete;
 import it.at.restfs.http.services.Filter;
 import it.at.restfs.http.services.PathHelper;
 import it.at.restfs.http.services.PerRequestContext;
@@ -155,7 +156,7 @@ public class AkkaModule implements Module {
                             return complete(StatusCodes.CONFLICT, x.getMessage());
                         }
                         
-                        return complete(StatusCodes.INTERNAL_SERVER_ERROR);
+                        return Complete.internalError();
                         
                     })
                     .match(ResouceNotFoundException.class, x -> {
