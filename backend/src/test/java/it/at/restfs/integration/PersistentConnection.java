@@ -1,14 +1,16 @@
 package it.at.restfs.integration;
 
 import static java.nio.charset.Charset.defaultCharset;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+
 import it.at.restfs.BaseTest;
 import it.at.restfs.Operation;
-import it.at.restfs.Stage;
 import it.at.restfs.http.services.PathHelper;
 
 public class PersistentConnection extends BaseTest {  
@@ -20,8 +22,7 @@ public class PersistentConnection extends BaseTest {
      */
     
     @Test
-    public void simpleCase() throws Exception {
-        
+    public void simpleCase() throws Exception {            	
         final String response = doubleCall();
         
         matchEverywhere(String.format("Re-using existing connection! (#0) with host %s", getPublicEndpoint().getKey()) , response);
@@ -37,8 +38,8 @@ public class PersistentConnection extends BaseTest {
         curlParams.add("-s");
         curlParams.add("-H");
         curlParams.add("Accept: application/json");
-        curlParams.add("-H");
-        curlParams.add("Authorization: " + Stage._42);
+//        curlParams.add("-H");
+//        curlParams.add("Authorization: ");
         curlParams.add("-H");
         curlParams.add("X-Container: " + getContainer().toString());
         curlParams.add("-H");

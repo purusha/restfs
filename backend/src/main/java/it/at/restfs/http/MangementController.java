@@ -69,7 +69,9 @@ public class MangementController implements Controller {
 				
 				final Config authConf = c.getAuthorizationConfig(); //XXX it's safe to tie AuthorizationConfig on Container instance ???
 				
-				if (StringUtils.equals(authConf.getString("masterPwd"), ctx.getAuthorization())) {
+				if (StringUtils.equals(
+					authConf.getString("masterPwd"), ctx.getAuthorization().orElseThrow(() -> new RuntimeException())
+				)) {
 					result = Complete.simple(UUID.randomUUID().toString());
 				} else {
 					result = Complete.forbidden();

@@ -1,22 +1,23 @@
 package it.at.restfs.integration;
 
+import static it.at.restfs.PatternBuilder.json;
+
 import java.util.List;
+
 import org.junit.Test;
+
 import com.google.common.collect.Iterables;
+
 import it.at.restfs.BaseTest;
 import it.at.restfs.Operation;
 import okhttp3.ResponseBody;
-import static it.at.restfs.PatternBuilder.*;
 
 public class Statistics extends BaseTest {
 
     @Test
     public void simpleCase() throws Throwable {
         
-        final ExecutionContext ctx = ExecutionContext.builder()
-            .container(getContainer())
-            .stopOnError(true)
-            .build();
+        final ExecutionContext ctx = context();
         
         runCommands(
             ctx, 

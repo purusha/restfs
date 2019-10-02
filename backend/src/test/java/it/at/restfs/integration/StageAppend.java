@@ -1,12 +1,16 @@
 package it.at.restfs.integration;
 
 import static it.at.restfs.PatternBuilder.file;
+
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
+
 import org.junit.Test;
+
 import com.google.common.collect.Iterables;
+
 import it.at.restfs.BaseTest;
 import it.at.restfs.Operation;
 import okhttp3.ResponseBody;
@@ -19,10 +23,7 @@ public class StageAppend extends BaseTest {
     @Test
     public void simpleCase() throws Exception {              
         final List<ResponseBody> commands = runCommands(
-            ExecutionContext.builder()
-                .container(getContainer())
-                .stopOnError(true)
-                .build(),
+            context(),
             buildCommand("file", Operation.CREATE),
             buildCommand("file", Operation.APPEND, TEXT),
             buildCommand("file", Operation.OPEN)
@@ -42,10 +43,7 @@ public class StageAppend extends BaseTest {
         final String encoded = URLEncoder.encode(ALL_FALL, StandardCharsets.UTF_8.name());
 
         final List<ResponseBody> commands = runCommands(
-            ExecutionContext.builder()
-                .container(getContainer())
-                .stopOnError(true)
-                .build(),
+    		context(),
             buildCommand("file", Operation.CREATE),
             buildCommand("file", Operation.APPEND, encoded),
             buildCommand("file", Operation.OPEN)
@@ -63,10 +61,7 @@ public class StageAppend extends BaseTest {
         final String encoded = Base64.getEncoder().encodeToString(ALL_FALL.getBytes());
 
         final List<ResponseBody> commands = runCommands(
-            ExecutionContext.builder()
-                .container(getContainer())
-                .stopOnError(true)
-                .build(),
+    		context(),
             buildCommand("file", Operation.CREATE),
             buildCommand("file", Operation.APPEND, encoded),
             buildCommand("file", Operation.OPEN)
@@ -83,10 +78,7 @@ public class StageAppend extends BaseTest {
     public void htmlContent() throws Exception {              
         final ResponseBody open = Iterables.getLast(
             runCommands(
-                ExecutionContext.builder()
-                    .container(getContainer())
-                    .stopOnError(true)
-                    .build(),
+        		context(),
                 buildCommand("file5", Operation.CREATE),
                 buildCommand("file5", Operation.APPEND, "<html><head></head><body><p>Hello World</p></body></html>"),
                 buildCommand("file5", Operation.OPEN)
@@ -103,10 +95,7 @@ public class StageAppend extends BaseTest {
     public void moreAppendWithDifferentCarriageReturn() throws Exception {              
         final ResponseBody open = Iterables.getLast(
             runCommands(
-                ExecutionContext.builder()
-                    .container(getContainer())
-                    .stopOnError(true)
-                    .build(),
+        		context(),
                 buildCommand("file4", Operation.CREATE),
                 buildCommand("file4", Operation.APPEND, TEXT),
                 buildCommand("file4", Operation.APPEND, "\n"),
@@ -132,10 +121,7 @@ public class StageAppend extends BaseTest {
         try {
             
             runCommands(
-                ExecutionContext.builder()
-                    .container(getContainer())
-                    .stopOnError(true)
-                    .build(),
+        		context(),
                 buildCommand("dir", Operation.MKDIRS),
                 buildCommand("dir", Operation.OPEN)
             );       
@@ -157,10 +143,7 @@ public class StageAppend extends BaseTest {
         try {
                   
             runCommands(
-                ExecutionContext.builder()
-                    .container(getContainer())
-                    .stopOnError(true)
-                    .build(),
+        		context(),
                 buildCommand("file2", Operation.APPEND, "my body")
             );   
             
@@ -181,10 +164,7 @@ public class StageAppend extends BaseTest {
         try {                
 
             runCommands(
-                ExecutionContext.builder()
-                    .container(getContainer())
-                    .stopOnError(true)
-                    .build(),
+        		context(),
                 buildCommand("file3", Operation.OPEN)
             );
             

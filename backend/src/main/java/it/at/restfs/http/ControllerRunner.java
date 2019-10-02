@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -100,7 +101,7 @@ public class ControllerRunner {
 	public static class ContainerAuth {
 		
 		private final UUID container;
-		private final String authorization;
+		private final Optional<String> authorization;
 		
 	}
 	

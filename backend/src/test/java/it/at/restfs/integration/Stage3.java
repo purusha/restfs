@@ -2,6 +2,7 @@ package it.at.restfs.integration;
 
 import org.junit.Ignore;
 import org.junit.Test;
+
 import it.at.restfs.BaseTest;
 import it.at.restfs.Operation;
 
@@ -14,10 +15,7 @@ public class Stage3 extends BaseTest {
         try {
             
             runCommands(
-                ExecutionContext.builder()
-                    .container(getContainer())
-                    .stopOnError(true)
-                    .build(),
+        		context(),
                 buildCommand("file", Operation.GETSTATUS)                    
             );
             
@@ -38,10 +36,7 @@ public class Stage3 extends BaseTest {
         try {
             
             runCommands(
-                ExecutionContext.builder()
-                    .container(getContainer())
-                    .stopOnError(true)
-                    .build(),
+        		context(),
                 buildCommand("dir", Operation.LISTSTATUS)                    
             );
             
@@ -62,10 +57,7 @@ public class Stage3 extends BaseTest {
         try {
             
             runCommands(
-                ExecutionContext.builder()
-                    .container(getContainer())
-                    .stopOnError(true)
-                    .build(),
+        		context(),
                 buildCommand("file", Operation.RENAME, queryBuilder("target", "file2"))
             );
             
@@ -86,10 +78,7 @@ public class Stage3 extends BaseTest {
         try {
             
             runCommands(
-                ExecutionContext.builder()
-                    .container(getContainer())
-                    .stopOnError(true)
-                    .build(),
+        		context(),
                 buildCommand("file", Operation.DELETE)
             );
             
@@ -110,10 +99,7 @@ public class Stage3 extends BaseTest {
         try {
             
             runCommands(
-                ExecutionContext.builder()
-                    .container(getContainer())
-                    .stopOnError(true)
-                    .build(),
+        		context(),
                 buildCommand("dir/file", Operation.CREATE)
             );
             
@@ -134,10 +120,7 @@ public class Stage3 extends BaseTest {
         try {
             
             runCommands(
-                ExecutionContext.builder()
-                    .container(getContainer())
-                    .stopOnError(true)
-                    .build(),
+        		context(),            		
                 buildCommand("file", Operation.CREATE),
                 buildCommand("file", Operation.CREATE)
             );
@@ -160,10 +143,7 @@ public class Stage3 extends BaseTest {
         try {
             
             runCommands(
-                ExecutionContext.builder()
-                    .container(getContainer())
-                    .stopOnError(true)
-                    .build(),
+        		context(),            		
                 buildCommand("dir", Operation.MKDIRS),
                 buildCommand("dir", Operation.MKDIRS)
             );

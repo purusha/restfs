@@ -7,6 +7,7 @@ import static akka.http.javadsl.server.Directives.extractUri;
 import static akka.http.javadsl.server.Directives.get;
 import static akka.http.javadsl.server.Directives.handleExceptions;
 import static akka.http.javadsl.server.Directives.headerValueByName;
+import static akka.http.javadsl.server.Directives.optionalHeaderValueByName;
 import static akka.http.javadsl.server.Directives.logRequestResult;
 import static akka.http.javadsl.server.Directives.parameter;
 import static akka.http.javadsl.server.Directives.pathEndOrSingleSlash;
@@ -19,6 +20,7 @@ import static it.at.restfs.http.services.PathHelper.VERSION;
 import static it.at.restfs.http.services.PathHelper.buildCA;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
@@ -116,7 +118,7 @@ public class HTTPListener {
                                 return complete(StatusCodes.BAD_REQUEST, "add header \"Accept: application/json\"");
                             }
                         
-                            return headerValueByName(AUTHORIZATION, (String authorization) ->
+                            return optionalHeaderValueByName(AUTHORIZATION, (Optional<String> authorization) ->
                                 headerValueByName(X_CONTAINER, (String container) ->    
                                     route(
                                         

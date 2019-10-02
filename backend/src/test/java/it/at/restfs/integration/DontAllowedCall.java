@@ -1,6 +1,7 @@
 package it.at.restfs.integration;
 
 import org.junit.Test;
+
 import it.at.restfs.BaseTest;
 import it.at.restfs.Operation;
 
@@ -13,10 +14,7 @@ public class DontAllowedCall extends BaseTest {
         try {
             
             runCommands(
-                ExecutionContext.builder()
-                    .container(getContainer())
-                    .stopOnError(true)
-                    .build(), 
+        		context(), 
                 buildCommand("file", Operation.CREATE),
                 buildCommand("file2", Operation.CREATE),
                 buildCommand("", Operation.LISTSTATUS),
@@ -40,10 +38,7 @@ public class DontAllowedCall extends BaseTest {
         try {
             
             runCommands(
-                ExecutionContext.builder()
-                    .container(getContainer())
-                    .stopOnError(true)
-                    .build(), 
+        		context(),             		
                 buildCommand("file", Operation.CREATE),
                 buildCommand("", Operation.LISTSTATUS),
                 buildCommand("file2", Operation.RENAME, queryBuilder("target", "file3"))
@@ -66,10 +61,7 @@ public class DontAllowedCall extends BaseTest {
         try {
             
             runCommands(
-                ExecutionContext.builder()
-                    .container(getContainer())
-                    .stopOnError(true)
-                    .build(), 
+        		context(),             		
                 buildCommand("dir", Operation.MKDIRS),
                 buildCommand("dir2", Operation.MKDIRS),
                 buildCommand("", Operation.LISTSTATUS),
@@ -93,10 +85,7 @@ public class DontAllowedCall extends BaseTest {
         try {
             
             runCommands(
-                ExecutionContext.builder()
-                    .container(getContainer())
-                    .stopOnError(true)
-                    .build(), 
+        		context(),             		
                 buildCommand("dir", Operation.CREATE),
                 buildCommand("", Operation.LISTSTATUS),
                 buildCommand("dir2", Operation.RENAME, queryBuilder("target", "dir3"))

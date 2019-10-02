@@ -1,13 +1,17 @@
 package it.at.restfs.integration;
 
+import static it.at.restfs.PatternBuilder.file;
+import static it.at.restfs.PatternBuilder.folder;
+
 import java.util.List;
+
 import org.junit.Test;
+
 import com.google.common.collect.Iterables;
+
 import it.at.restfs.BaseTest;
 import it.at.restfs.Operation;
 import okhttp3.ResponseBody;
-
-import static it.at.restfs.PatternBuilder.*;
 
 public class CreateFileAndFolderWithStrangeCharacter extends BaseTest {  
     
@@ -19,11 +23,7 @@ public class CreateFileAndFolderWithStrangeCharacter extends BaseTest {
     @Test
     public void folderNameWithSpecialChars() throws Exception {      
         final List<ResponseBody> commands = runCommands(
-            ExecutionContext.builder()
-                .container(getContainer())
-//                .printResponse(true)
-                .stopOnError(true)
-                .build(),
+    		context(),
             buildCommand("dir/dir#", Operation.MKDIRS),               
             buildCommand("dir/dir&", Operation.MKDIRS),
             buildCommand("dir/dir@", Operation.MKDIRS),
@@ -60,11 +60,7 @@ public class CreateFileAndFolderWithStrangeCharacter extends BaseTest {
     @Test
     public void fileNamesWithSpecialChars() throws Exception {      
         final List<ResponseBody> commands = runCommands(
-            ExecutionContext.builder()
-                .container(getContainer())
-//                .printResponse(true)
-                .stopOnError(true)
-                .build(),
+    		context(),        		
             buildCommand("dir", Operation.MKDIRS),
             buildCommand("dir/dir#", Operation.CREATE),               
             buildCommand("dir/dir&", Operation.CREATE),

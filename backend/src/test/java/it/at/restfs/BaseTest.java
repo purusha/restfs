@@ -1,35 +1,52 @@
 package it.at.restfs;
 
 import java.util.UUID;
+
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
+
 import lombok.Getter;
 import lombok.SneakyThrows;
 
 public class BaseTest extends Stage {
+	
+	@Getter
+	private UUID container;
 
-    @Getter
-    private final UUID container = UUID.randomUUID();    
-    
+	/*
+	 * 	di default tutti i container vengono creati auth = NO_AUTH; ecco perchè authHeader non è valorizzata
+	 */
+	
+	public ExecutionContext context() {		
+		final ExecutionContext ctx = ExecutionContext.builder()                
+            .container(container)
+//            .printResponse(true)
+            .stopOnError(true)
+//            .authHeader(" ")
+            .build(); 
+		
+		return ctx;		
+	}
+	
     @Before
     public void setUp() {
+    	container = UUID.randomUUID();
+    	
         System.out.println("\nprocess " + this.getClass().getSimpleName() + " on " + container);
         
         createContainer(container);                
     }
     
     @After
-    public void tearDown() {
-        
+    public void tearDown() {        
         /*
          * when run test calling remote service (on another machine)
          * this step is not available, because internally use a local file system
          * to find difference whith expected result
          */
         
-        showDiff(container);
-        
+        showDiff(container);        
     }
     
     protected void expected(String expected, String result) {

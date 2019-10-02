@@ -1,5 +1,6 @@
 package it.at.restfs.http.services;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -27,7 +28,7 @@ public class PathHelper {
 		return new Request(container, uri , operation);
 	}
     
-    public static ContainerAuth buildCA(String container, String authorization) {
+    public static ContainerAuth buildCA(String container, Optional<String> authorization) {
     	return new ContainerAuth(UUID.fromString(container), authorization); //XXX what happend if container is not an UUID instance ?
     }
     

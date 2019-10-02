@@ -4,11 +4,14 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
 import org.apache.commons.text.RandomStringGenerator;
 import org.apache.commons.text.RandomStringGenerator.Builder;
 import org.junit.Test;
+
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+
 import it.at.restfs.BaseTest;
 import it.at.restfs.Operation;
 import okhttp3.ResponseBody;
@@ -18,12 +21,10 @@ public class RandomGenerator extends BaseTest {
     private static final Random RANDOM = new Random();
     private static final String CONTENT = "All fall gala hall this\\is/a%test\t_~!@#$%^&*()dude";
     private static final String CR = "\n";
-    
-    private final Random r = RANDOM;
-    private final Builder builder = new RandomStringGenerator.Builder();
+    private static final Builder BUILDER = new RandomStringGenerator.Builder();
     
     /*
-        XXX into this class there are all equals methods for Performance stress test in parallel fashion !!? 
+        XXX into this class there are all equals methods ... for Performance stress test in parallel fashion !!? 
      */
     
     @Test
@@ -74,10 +75,7 @@ public class RandomGenerator extends BaseTest {
      */
     
     private void pipe() throws Throwable {
-        final ExecutionContext ctx = ExecutionContext.builder()
-            .container(getContainer())
-            .stopOnError(true)
-            .build();
+        final ExecutionContext ctx = context();
         
         final List<String> folders = createFolders(ctx, 120);
         
@@ -117,7 +115,7 @@ public class RandomGenerator extends BaseTest {
     }
 
     private List<String> append(ExecutionContext ctx, List<String> files) {
-        final RandomStringGenerator gen = builder.withinRange('a', 'z').build();
+        final RandomStringGenerator gen = BUILDER.withinRange('a', 'z').build();
         final List<String> filesWithContent = Lists.newArrayList();        
         final List<ExecutionCommand> command = Lists.newArrayList();
         
@@ -163,11 +161,11 @@ public class RandomGenerator extends BaseTest {
     private List<String> createFolders(ExecutionContext ctx, int numberOf) {        
         final ExecutionCommand[] command = new ExecutionCommand[numberOf];
         final List<String> result = Lists.newArrayList();
-        final RandomStringGenerator gen = builder.withinRange('a', 'z').build();
+        final RandomStringGenerator gen = BUILDER.withinRange('a', 'z').build();
         
         for (int i = 0; i < numberOf; i++) {
-            final String path = IntStream.range(1, r.nextInt(5) + 5)
-                .mapToObj(x -> gen.generate(r.nextInt(5) + 5))                
+            final String path = IntStream.range(1, RANDOM.nextInt(5) + 5)
+                .mapToObj(x -> gen.generate(RANDOM.nextInt(5) + 5))                
                 .collect(Collectors.joining("/"));
 
             result.add(path);
@@ -182,11 +180,11 @@ public class RandomGenerator extends BaseTest {
     private List<String> createFiles(ExecutionContext ctx, int numberOf, List<String> folder) {
         final ExecutionCommand[] command = new ExecutionCommand[numberOf];
         final List<String> result = Lists.newArrayList();
-        final RandomStringGenerator gen = builder.withinRange('a', 'z').build();
+        final RandomStringGenerator gen = BUILDER.withinRange('a', 'z').build();
         
         for (int i = 0; i < numberOf; i++) {
-            final String fileName = gen.generate(r.nextInt(5) + 5);
-            final String folderName = folder.get(r.nextInt(folder.size()));
+            final String fileName = gen.generate(RANDOM.nextInt(5) + 5);
+            final String folderName = folder.get(RANDOM.nextInt(folder.size()));
             final String path = folderName + "/" + fileName;
             
             result.add(path);

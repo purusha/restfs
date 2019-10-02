@@ -42,10 +42,15 @@ import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public abstract class Stage {
+	
+	/*
+		TODO:
+		
+		1) remove System.out.println ... use logging please !!?
+		
+	 */
     
     private static final Config TEST_CONF = ConfigFactory.parseFile(new File(Stage.class.getResource("/test.conf").getPath()));
-    
-    public static final String _42 = "42"; //XXX 42 is not a really auth value header !!?
     
     private final OSFeatures features;
     private final RestFs service;
@@ -124,7 +129,7 @@ public abstract class Stage {
     private ResponseBody remoteCall(ExecutionContext context, ExecutionCommand cmd) {
         System.out.println("$> " + cmd);
                         
-        final Object[] callParams = cmd.callParams(_42, context.getContainer());
+        final Object[] callParams = cmd.callParams(context.getAuthHeader(), context.getContainer());
                 
         @SuppressWarnings("unchecked")
         final Call<ResponseBody> result = (Call<ResponseBody>) Arrays.stream(RestFs.class.getMethods())
@@ -159,9 +164,9 @@ public abstract class Stage {
     }
     
     @SneakyThrows
-    protected void createContainer(UUID container) {
+    protected void createContainer(UUID container) { //XXX get an ExecutionContext as parameter
         final Call<ResponseBody> create = admin.create(
-    		AdminHTTPListener.CONTAINERS, container, Boolean.TRUE, Boolean.TRUE, AuthorizationChecker.Implementation.MASTER_PWD.key        
+    		AdminHTTPListener.CONTAINERS, container, Boolean.TRUE, Boolean.TRUE, AuthorizationChecker.Implementation.NO_AUTH.key        
 		);
         
         final Response<ResponseBody> execute = create.execute();
@@ -183,7 +188,7 @@ public abstract class Stage {
     }
     
     @SneakyThrows(value = {IOException.class, InterruptedException.class, URISyntaxException.class})
-    protected void showDiff(UUID container) {
+    protected void showDiff(UUID container) { //XXX get an ExecutionContext as parameter
         final URL resource = getClass().getClassLoader().getResource(this.getClass().getSimpleName() + ".tree");
         
         if (Objects.isNull(resource)) {
@@ -251,7 +256,9 @@ public abstract class Stage {
     public static class ExecutionContext {
         private final UUID container;
         private final boolean stopOnError; 
-        private final boolean printResponse;                
+        private final boolean printResponse;         
+		private final String authHeader;
+		private final AuthorizationChecker.Implementation type;     
     }
 
     public static interface ExecutionCommand {
@@ -262,7 +269,7 @@ public abstract class Stage {
         
     }
     
-    public static class SimpleExecutionCommand implements ExecutionCommand {
+    private static class SimpleExecutionCommand implements ExecutionCommand {
         
         @Getter
         private final Operation operation;
@@ -315,7 +322,7 @@ public abstract class Stage {
         }
     }
         
-    public static class StatsExecutionCommand implements ExecutionCommand {
+    private static class StatsExecutionCommand implements ExecutionCommand {
 
         @Override
         public Operation getOperation() {
@@ -346,6 +353,6 @@ public abstract class Stage {
         
         private final Response<ResponseBody> response;
     }
-    
+        
 }
 

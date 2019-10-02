@@ -2,6 +2,7 @@ package it.at.restfs.auth;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -31,7 +32,7 @@ public class AuthorizationManager {
     }
 
 
-    public boolean isTokenValidFor(String authorization, UUID container) {        
+    public boolean isTokenValidFor(Optional<String> authorization, UUID container) {        
         if ( !existsSomeWhere(container) || !cRepo.exist(container) ) {
             return false;
         }
