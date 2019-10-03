@@ -1,4 +1,4 @@
-package it.at.restfs.integration;
+package it.at.restfs.integration.noAuth;
 
 import java.util.List;
 import java.util.Random;
@@ -12,11 +12,11 @@ import org.junit.Test;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-import it.at.restfs.BaseTest;
+import it.at.restfs.NoAuthBaseTest;
 import it.at.restfs.Operation;
 import okhttp3.ResponseBody;
 
-public class RandomGenerator extends BaseTest {
+public class RandomGenerator extends NoAuthBaseTest {
     
     private static final Random RANDOM = new Random();
     private static final String CONTENT = "All fall gala hall this\\is/a%test\t_~!@#$%^&*()dude";

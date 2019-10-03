@@ -1,4 +1,4 @@
-package it.at.restfs.integration;
+package it.at.restfs.integration.noAuth;
 
 import static it.at.restfs.PatternBuilder.file;
 import static it.at.restfs.PatternBuilder.folder;
@@ -9,11 +9,11 @@ import org.junit.Test;
 
 import com.google.common.collect.Iterables;
 
-import it.at.restfs.BaseTest;
+import it.at.restfs.NoAuthBaseTest;
 import it.at.restfs.Operation;
 import okhttp3.ResponseBody;
 
-public class CreateFileAndFolderWithStrangeCharacter extends BaseTest {  
+public class CreateFileAndFolderWithStrangeCharacter extends NoAuthBaseTest {  
     
     /*
         crea folder e file con nomi contenenti caratteri speciali

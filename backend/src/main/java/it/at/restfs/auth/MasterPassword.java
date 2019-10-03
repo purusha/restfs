@@ -5,9 +5,11 @@ import java.util.UUID;
 
 public class MasterPassword implements AuthorizationChecker {
 
+	private static final int LENGTH = UUID.randomUUID().toString().length();
+
 	@Override
 	public boolean isTokenValid(UUID container, Optional<String> authorization) {
-		return Boolean.TRUE;
+		return authorization.isPresent() && authorization.get().length() == LENGTH;
 	}
 	
 	/*
@@ -32,10 +34,11 @@ public class MasterPassword implements AuthorizationChecker {
 			
 				> 
 			
-			
+			-------------------------------------------------------------------------------------------------
 			
 			Questa classe si occuperà di verificare l'esistenza del dato authorization nel file del container
 
+			-------------------------------------------------------------------------------------------------
 
 	 */
 

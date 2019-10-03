@@ -7,7 +7,7 @@ import org.junit.experimental.ParallelComputer;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.reflections.Reflections;
-import it.at.restfs.BaseTest;
+import it.at.restfs.NoAuthBaseTest;
 
 public class Parallel {
     
@@ -15,7 +15,7 @@ public class Parallel {
     
     @Test
     public void test() {
-        final Set<Class<? extends BaseTest>> allClasses = reflections.getSubTypesOf(BaseTest.class);
+        final Set<Class<? extends NoAuthBaseTest>> allClasses = reflections.getSubTypesOf(NoAuthBaseTest.class);
         final Class<?>[] array = new Class<?>[allClasses.size()]; 
         
         //run

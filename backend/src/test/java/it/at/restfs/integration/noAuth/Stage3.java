@@ -1,12 +1,12 @@
-package it.at.restfs.integration;
+package it.at.restfs.integration.noAuth;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
-import it.at.restfs.BaseTest;
+import it.at.restfs.NoAuthBaseTest;
 import it.at.restfs.Operation;
 
-public class Stage3 extends BaseTest {  
+public class Stage3 extends NoAuthBaseTest {  
   
     @Test
     public void fileGetStatus() {             

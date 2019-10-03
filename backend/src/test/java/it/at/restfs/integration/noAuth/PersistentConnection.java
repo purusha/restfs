@@ -1,4 +1,4 @@
-package it.at.restfs.integration;
+package it.at.restfs.integration.noAuth;
 
 import static java.nio.charset.Charset.defaultCharset;
 
@@ -9,11 +9,11 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
-import it.at.restfs.BaseTest;
+import it.at.restfs.NoAuthBaseTest;
 import it.at.restfs.Operation;
 import it.at.restfs.http.services.PathHelper;
 
-public class PersistentConnection extends BaseTest {  
+public class PersistentConnection extends NoAuthBaseTest {  
     
     /*
 

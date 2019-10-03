@@ -164,9 +164,9 @@ public abstract class Stage {
     }
     
     @SneakyThrows
-    protected void createContainer(UUID container) { //XXX get an ExecutionContext as parameter
+    protected void createContainer(ExecutionContext ctx) { //XXX get an ExecutionContext as parameter
         final Call<ResponseBody> create = admin.create(
-    		AdminHTTPListener.CONTAINERS, container, Boolean.TRUE, Boolean.TRUE, AuthorizationChecker.Implementation.NO_AUTH.key        
+    		AdminHTTPListener.CONTAINERS, ctx.getContainer(), Boolean.TRUE, Boolean.TRUE, ctx.getType().key        
 		);
         
         final Response<ResponseBody> execute = create.execute();

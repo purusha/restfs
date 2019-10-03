@@ -1,4 +1,4 @@
-package it.at.restfs.integration;
+package it.at.restfs.integration.noAuth;
 
 import static it.at.restfs.PatternBuilder.file;
 
@@ -11,11 +11,11 @@ import org.junit.Test;
 
 import com.google.common.collect.Iterables;
 
-import it.at.restfs.BaseTest;
+import it.at.restfs.NoAuthBaseTest;
 import it.at.restfs.Operation;
 import okhttp3.ResponseBody;
 
-public class StageAppend extends BaseTest {  
+public class StageAppend extends NoAuthBaseTest {  
     
     private static final String ALL_FALL = "All fall gala hall this\\is/a%test\t_~!@#$%^&*()dude";
     private static final String TEXT = "my body";

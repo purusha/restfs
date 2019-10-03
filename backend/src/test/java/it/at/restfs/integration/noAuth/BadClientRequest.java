@@ -1,4 +1,4 @@
-package it.at.restfs.integration;
+package it.at.restfs.integration.noAuth;
 
 import static java.nio.charset.Charset.defaultCharset;
 
@@ -10,10 +10,10 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import it.at.restfs.BaseTest;
+import it.at.restfs.NoAuthBaseTest;
 import it.at.restfs.http.services.PathHelper;
 
-public class BadClientRequest extends BaseTest {
+public class BadClientRequest extends NoAuthBaseTest {
 
     @Test
     public void requestWithoutAcceptHeader() throws Exception {

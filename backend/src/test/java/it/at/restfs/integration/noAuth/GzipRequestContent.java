@@ -1,4 +1,4 @@
-package it.at.restfs.integration;
+package it.at.restfs.integration.noAuth;
 
 import static java.nio.charset.Charset.defaultCharset;
 
@@ -12,12 +12,12 @@ import org.junit.Test;
 
 import com.google.common.collect.Iterables;
 
-import it.at.restfs.BaseTest;
+import it.at.restfs.NoAuthBaseTest;
 import it.at.restfs.Operation;
 import it.at.restfs.http.services.PathHelper;
 import okhttp3.ResponseBody;
 
-public class GzipRequestContent extends BaseTest {  
+public class GzipRequestContent extends NoAuthBaseTest {  
     
     private static final String TEXT = "my body"; //XXX make it random please
   

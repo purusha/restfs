@@ -1,11 +1,11 @@
-package it.at.restfs.integration;
+package it.at.restfs.integration.noAuth;
 
 import org.junit.Test;
 
-import it.at.restfs.BaseTest;
+import it.at.restfs.NoAuthBaseTest;
 import it.at.restfs.Operation;
 
-public class DontAllowedCall extends BaseTest {
+public class DontAllowedCall extends NoAuthBaseTest {
     
     @Test
     public void cantRenameFileWithFileNameThatJustExist() {
