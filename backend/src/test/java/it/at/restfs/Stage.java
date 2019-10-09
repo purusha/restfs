@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -28,6 +29,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
 import it.at.restfs.auth.AuthorizationChecker;
+import it.at.restfs.auth.AuthorizationChecker.Implementation;
 import it.at.restfs.http.AdminHTTPListener;
 import it.at.restfs.http.services.PathHelper;
 import it.at.restfs.storage.RootFileSystem;
@@ -54,7 +56,7 @@ public abstract class Stage {
     
     private final OSFeatures features;
     private final RestFs service;
-    private final Admin admin;   
+    protected final Admin admin;   
     
     @Getter
     private final Pair<String, Integer> publicEndpoint;
@@ -164,10 +166,19 @@ public abstract class Stage {
     }
     
     @SneakyThrows
-    protected void createContainer(ExecutionContext ctx) { //XXX get an ExecutionContext as parameter
-        final Call<ResponseBody> create = admin.create(
-    		AdminHTTPListener.CONTAINERS, ctx.getContainer(), Boolean.TRUE, Boolean.TRUE, ctx.getType().key        
-		);
+    protected void createContainer(ExecutionContext ctx) {
+    	
+    	final Map<String, String> fields = new HashMap<String, String>();
+    	fields.put("id", ctx.getContainer().toString());
+    	fields.put("statsEnabled", Boolean.TRUE.toString());
+    	fields.put("webHookEnabled", Boolean.TRUE.toString());
+    	fields.put("authorization", ctx.getType().name());
+    	
+    	if (ctx.getType() == Implementation.MASTER_PWD) {
+    		fields.put("masterPwd", ctx.getAuthHeader());
+    	}
+    	
+        final Call<ResponseBody> create = admin.create(AdminHTTPListener.CONTAINERS, fields);
         
         final Response<ResponseBody> execute = create.execute();
         

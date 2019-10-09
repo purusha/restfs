@@ -83,7 +83,7 @@ public class AkkaModule implements Module {
         
         for (AuthorizationChecker.Implementation i : AuthorizationChecker.Implementation.values()) {
             binder
-	            .bind(Key.get(AuthorizationChecker.class, Names.named(i.key)))
+	            .bind(Key.get(AuthorizationChecker.class, Names.named(i.name())))
 	            .to(i.implClazz)
 	            .in(Singleton.class); 
 			

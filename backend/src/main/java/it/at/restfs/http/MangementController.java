@@ -20,6 +20,7 @@ import it.at.restfs.event.Event;
 import it.at.restfs.http.ControllerRunner.ContainerAuth;
 import it.at.restfs.http.HTTPListener.Request;
 import it.at.restfs.http.services.Complete;
+import it.at.restfs.storage.AuthorizationConfigResolver;
 import it.at.restfs.storage.ContainerRepository;
 import it.at.restfs.storage.dto.Container;
 
@@ -27,11 +28,12 @@ import it.at.restfs.storage.dto.Container;
 public class MangementController implements Controller {
 	
 	private final ContainerRepository cRepo;
-	//private final AuthorizationCheckerResolver authResolver;
+	private final AuthorizationConfigResolver configResolver;
 	
 	@Inject
-    public MangementController(ContainerRepository cRepo) {
+    public MangementController(ContainerRepository cRepo, AuthorizationConfigResolver configResolver) {
 		this.cRepo = cRepo;
+		this.configResolver = configResolver;
 	}	
 	
     //XXX should be executed in a Future ?	
@@ -57,7 +59,6 @@ public class MangementController implements Controller {
 		
 		final Container c = cRepo.load(ctx.getContainer());		
 		final Implementation authType = AuthorizationChecker.Implementation.valueOf(c.getAuthorization());
-		//AuthorizationChecker checker = authResolver.get(ctx.getContainer());
 		final Route result;
 		
 		switch (authType) {			
@@ -67,7 +68,7 @@ public class MangementController implements Controller {
 			
 			case MASTER_PWD: {
 				
-				final Config authConf = c.getAuthorizationConfig(); //XXX it's safe to tie AuthorizationConfig on Container instance ???
+				final Config authConf = configResolver.get(c);
 				
 				if (StringUtils.equals(
 					authConf.getString("masterPwd"), ctx.getAuthorization().orElseThrow(() -> new RuntimeException())

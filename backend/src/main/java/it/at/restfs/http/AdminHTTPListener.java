@@ -22,6 +22,7 @@ import static it.at.restfs.http.services.PathHelper.VERSION;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,7 @@ import akka.http.javadsl.server.Route;
 import akka.http.javadsl.server.directives.LogEntry;
 import akka.stream.ActorMaterializer;
 import it.at.restfs.auth.AuthorizationChecker;
+import it.at.restfs.storage.AuthorizationConfigResolver;
 import it.at.restfs.storage.ContainerRepository;
 import it.at.restfs.storage.RootFileSystem;
 import it.at.restfs.storage.Storage;
@@ -106,6 +108,7 @@ public class AdminHTTPListener {
     private final String host;
     private final Integer port;
 	private final RootFileSystem rfs;
+	private final AuthorizationConfigResolver configResolver;
     
     @Inject
     public AdminHTTPListener(
@@ -116,12 +119,14 @@ public class AdminHTTPListener {
         ExceptionHandler handler,
         ContainerRepository cRepo,
         PageResolver pageResolver,
-        RootFileSystem rfs
+        RootFileSystem rfs,
+        AuthorizationConfigResolver configResolver
     ) {
         this.cRepo = cRepo;
         this.handler = handler;
         this.pageResolver = pageResolver;
 		this.rfs = rfs;
+		this.configResolver = configResolver;
         
         host = config.getString("restfs.http.admin.interface");
         port = config.getInt("restfs.http.admin.port");
@@ -192,14 +197,14 @@ public class AdminHTTPListener {
         );
     }
 
-    private Route createContainer(Map<String, String> map) {
+    private Route createContainer(Map<String, String> params) {
     	
-        final String name = getOrDefault(map.get("name"), GENERATOR.generate(12));
-        final UUID id = UUID.fromString(getOrDefault(map.get("id"), UUID.randomUUID().toString()));
-        final Boolean statsEnabled = Boolean.valueOf(getOrDefault(map.get("statsEnabled"), Boolean.FALSE.toString()));
-        final Boolean webHookEnabled = Boolean.valueOf(getOrDefault(map.get("webHookEnabled"), Boolean.FALSE.toString()));        
-        final String storage = getOrDefault(map.get("storage"), Storage.Implementation.FS.key);
-        final String authorization = getOrDefault(map.get("authorization"), AuthorizationChecker.Implementation.NO_AUTH.key);        
+        final String name = getOrDefault(params.get("name"), GENERATOR.generate(12));
+        final UUID id = UUID.fromString(getOrDefault(params.get("id"), UUID.randomUUID().toString()));
+        final Boolean statsEnabled = Boolean.valueOf(getOrDefault(params.get("statsEnabled"), Boolean.FALSE.toString()));
+        final Boolean webHookEnabled = Boolean.valueOf(getOrDefault(params.get("webHookEnabled"), Boolean.FALSE.toString()));        
+        final String storage = getOrDefault(params.get("storage"), Storage.Implementation.FS.key);
+        final String authorization = getOrDefault(params.get("authorization"), AuthorizationChecker.Implementation.NO_AUTH.name());        
         
         final Container container = new Container();
         container.setName(name);
@@ -209,9 +214,36 @@ public class AdminHTTPListener {
         container.setStorage(storage);
         container.setAuthorization(authorization);
         
-        //XXX Provisioning actions: please extract a service !!?
+        /*
+        	START Provisioning actions: please extract a service !!?
+         */
+        
         cRepo.save(container);        
         rfs.containerPath(id, "").toFile().mkdir();
+        
+        switch(AuthorizationChecker.Implementation.valueOf(authorization)) {
+			case MASTER_PWD: {
+				
+				final String pwd = params.get(AuthorizationChecker.Implementation.MASTER_PWD.key);
+				
+				configResolver.save(container, Collections.singletonMap("masterPwd", pwd));
+				
+			}break;
+			
+			case NO_AUTH:
+				break;
+				
+			case OAUTH2:
+				break;
+				
+			default:
+				break;        
+        }
+        
+        /*
+	    	END Provisioning actions: please extract a service !!?
+	     */
+        
 
         return redirect(Uri.create("http://" + host + ":" + port + "/" + CONTAINERS), StatusCodes.SEE_OTHER);
     }

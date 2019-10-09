@@ -11,7 +11,7 @@ import it.at.restfs.NoAuthBaseTest;
 
 public class Parallel {
     
-    private final Reflections reflections = new Reflections("it.at.restfs.integration");
+    private final Reflections reflections = new Reflections("it.at.restfs.integration.noAuth");
     
     @Test
     public void test() {

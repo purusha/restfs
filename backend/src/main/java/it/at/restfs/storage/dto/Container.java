@@ -1,12 +1,6 @@
 package it.at.restfs.storage.dto;
 
-import java.util.HashMap;
 import java.util.UUID;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.collect.Maps;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 
 import lombok.Data;
 
@@ -34,13 +28,5 @@ public class Container {
     private boolean webHookEnabled;
     private String storage;
     private String authorization;
-        
-    @JsonIgnore
-	public Config getAuthorizationConfig() {
-    	HashMap<String, String> data = Maps.newHashMap();
-    	data.put("masterPwd", "");
-    	
-		return ConfigFactory.parseMap(data);
-	}    
     
 }

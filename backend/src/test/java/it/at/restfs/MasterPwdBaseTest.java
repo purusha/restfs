@@ -25,15 +25,7 @@ public class MasterPwdBaseTest extends Stage {
 	 */
 	
 	public ExecutionContext context() {		
-		final ExecutionContext ctx = ExecutionContext.builder()                
-            .container(container)
-//            .printResponse(true)
-            .stopOnError(true)
-            .type(Implementation.MASTER_PWD) //"1234567890-X"
-            .authHeader(token)            
-            .build(); 
-		
-		return ctx;		
+		return context(token);		
 	}
 	
     @Before
@@ -42,10 +34,12 @@ public class MasterPwdBaseTest extends Stage {
     	
         System.out.println("\nprocess " + this.getClass().getSimpleName() + " on " + container);
         
-        createContainer(context());   
+        createContainer(context("123-my-strong-password !!?:D")); //make in more rundom please !!?  
         
         //XXX call token api here
         token = UUID.randomUUID().toString(); 
+        //token = admin.token();
+        
     }
     
     @After
@@ -57,6 +51,16 @@ public class MasterPwdBaseTest extends Stage {
          */
         
         showDiff(container);        
+    }
+    
+    private ExecutionContext context(String authHeader) {
+    	return ExecutionContext.builder()                
+            .container(container)
+//                .printResponse(true)
+            .stopOnError(true)
+            .type(Implementation.MASTER_PWD)
+            .authHeader(authHeader)            
+            .build();     	
     }
     
 }
