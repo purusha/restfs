@@ -90,6 +90,10 @@ public interface RestFs {
         @Header(HTTPListener.AUTHORIZATION) String authorization,
         @Header(HTTPListener.X_CONTAINER) UUID container
     );
+    
+    /*
+     * 	Management Operation starts here
+     */
 
     @Headers("Accept: application/json")
     @GET("stats")
@@ -97,5 +101,12 @@ public interface RestFs {
         @Header(HTTPListener.AUTHORIZATION) String authorization,
         @Header(HTTPListener.X_CONTAINER) UUID container
     );
+    
+    @Headers("Accept: application/json")
+    @POST("token")
+    Call<ResponseBody> token(
+        @Header(HTTPListener.AUTHORIZATION) String authorization,
+        @Header(HTTPListener.X_CONTAINER) UUID container
+    );    
     
 }

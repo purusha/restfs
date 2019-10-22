@@ -3,6 +3,7 @@ package it.at.restfs.storage;
 import java.io.File;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.inject.Inject;
@@ -12,13 +13,13 @@ import com.typesafe.config.ConfigFactory;
 import it.at.restfs.storage.dto.Container;
 import lombok.SneakyThrows;
 
-public class AuthorizationConfigResolver {
+public class AuthorizationConfigHandler {
 
 	private final ObjectMapper mapper;
 	private final RootFileSystem rfs;
 	
 	@Inject
-    public AuthorizationConfigResolver(RootFileSystem rfs) {
+    public AuthorizationConfigHandler(RootFileSystem rfs) {
     	this.rfs = rfs;
 		this.mapper = new ObjectMapper(new YAMLFactory());
     }
@@ -28,11 +29,16 @@ public class AuthorizationConfigResolver {
 		mapper.writeValue(buildAuth(c), data);		
 	}
 	
+	@SneakyThrows
 	public Config get(Container c) {
-		return ConfigFactory.parseFile(buildAuth(c));
+		final Map<String, Object> content = mapper.<Map<String, Object>>readValue(
+			buildAuth(c), new TypeReference<Map<String, Object>>() { }
+		);
+		
+		return ConfigFactory.parseMap(content);
 	} 
 	
 	private File buildAuth(Container c) {
-		return rfs.containerPath(c.getId(), "-" + c.getAuthorization()).toFile();
+		return rfs.pathOf("AUTH-", c.getId()).toFile();
 	}
 }

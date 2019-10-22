@@ -4,12 +4,26 @@ import java.util.UUID;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestRule;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 
 import it.at.restfs.auth.AuthorizationChecker.Implementation;
 import lombok.Getter;
 import lombok.experimental.Delegate;
 
 public class NoAuthBaseTest extends Stage {	
+	
+	@Rule
+	public TestRule watcher = new TestWatcher() {
+		protected void starting(Description description) {			
+			System.out.println("Running");
+			System.out.println("class: " + description.getClassName());
+			System.out.println("method: " + description.getMethodName());
+			System.out.println("--------------------------------------------------");			
+		}
+	};
 	
 	@Delegate
 	private ExpectationsBuilder expects = new ExpectationsBuilder();
@@ -24,7 +38,7 @@ public class NoAuthBaseTest extends Stage {
 	public ExecutionContext context() {		
 		final ExecutionContext ctx = ExecutionContext.builder()                
             .container(container)
-//            .printResponse(true)
+//          .printResponse(true)
             .stopOnError(true)
             .type(Implementation.NO_AUTH)
             .build(); 
@@ -35,8 +49,7 @@ public class NoAuthBaseTest extends Stage {
     @Before
     public void setUp() {
     	container = UUID.randomUUID();
-    	
-        System.out.println("\nprocess " + this.getClass().getSimpleName() + " on " + container);
+    	System.out.println("container: " + container);
         
         createContainer(context());         
     }

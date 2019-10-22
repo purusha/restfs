@@ -95,7 +95,7 @@ public class RandomGenerator extends NoAuthBaseTest {
         open(ctx, filesWithContent);
         
         wait(10);        
-        final List<ResponseBody> r1 = runCommands(ctx, buildStatsCommand());                
+        final List<ResponseBody> r1 = runCommands(ctx, buildMgmtCommand(Operation.STATS));                
         
         int expected = (folders.size() * 2) + (files.size() * 2) + (filesWithContent.size() * 2); //don't count /stats call
         

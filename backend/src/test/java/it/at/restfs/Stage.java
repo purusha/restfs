@@ -67,8 +67,7 @@ public abstract class Stage {
     //XXX use Inject please !!?
     private final RootFileSystem rfs = new RootFileSystem();
 
-    protected Stage() {
-        
+    protected Stage() {        
         publicEndpoint = Pair.of(TEST_CONF.getString("http.public.host"), TEST_CONF.getInt("http.public.port"));
         
         adminEndpoint = Pair.of(TEST_CONF.getString("http.admin.host"), TEST_CONF.getInt("http.admin.port"));
@@ -226,8 +225,21 @@ public abstract class Stage {
         }        
     }
     
-    protected ExecutionCommand buildStatsCommand() {
-        return new StatsExecutionCommand();
+    protected ExecutionCommand buildMgmtCommand(Operation o) {    	
+    	if (! Operation.isManagement(o)) {
+    		throw new RuntimeException("Use this api only for management operations");
+    	}
+    	
+    	switch(o) {
+    		case STATS: 
+    			return new StatsExecutionCommand();
+    			
+    		case TOKEN: 
+    			return new TokenExecutionCommand();
+    			
+    		default: 
+    			return null; //XXX eheheh ???
+    	}
     }
     
     protected ExecutionCommand buildCommand(String data, Operation op) {
@@ -265,11 +277,13 @@ public abstract class Stage {
     @Getter
     @Builder
     public static class ExecutionContext {
+    	
         private final UUID container;
         private final boolean stopOnError; 
         private final boolean printResponse;         
 		private final String authHeader;
-		private final AuthorizationChecker.Implementation type;     
+		private final AuthorizationChecker.Implementation type;    
+		
     }
 
     public static interface ExecutionCommand {
@@ -356,6 +370,30 @@ public abstract class Stage {
             return "call STATS";
         }        
     }
+    
+    private static class TokenExecutionCommand implements ExecutionCommand {
+
+        @Override
+        public Operation getOperation() {
+            return Operation.TOKEN;
+        }
+
+        //XXX this implementation is coupled to RestFs methods signature
+        @Override
+        public Object[] callParams(String authorization, UUID container) {
+            final List<Object> result = Lists.newArrayList();
+
+            result.add(authorization);
+            result.add(container);
+            
+            return result.toArray(new Object[result.size()]);
+        }
+
+        @Override
+        public String toString() {
+            return "call TOKEN";
+        }        
+    }    
 
     @Getter
     @RequiredArgsConstructor

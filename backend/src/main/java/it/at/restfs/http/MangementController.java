@@ -1,16 +1,22 @@
 package it.at.restfs.http;
 
 import static akka.http.javadsl.server.Directives.complete;
+import static akka.http.javadsl.server.Directives.completeOKWithFuture;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.typesafe.config.Config;
 
+import akka.dispatch.MessageDispatcher;
 import akka.http.javadsl.marshallers.jackson.Jackson;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.Route;
@@ -20,7 +26,7 @@ import it.at.restfs.event.Event;
 import it.at.restfs.http.ControllerRunner.ContainerAuth;
 import it.at.restfs.http.HTTPListener.Request;
 import it.at.restfs.http.services.Complete;
-import it.at.restfs.storage.AuthorizationConfigResolver;
+import it.at.restfs.storage.AuthorizationConfigHandler;
 import it.at.restfs.storage.ContainerRepository;
 import it.at.restfs.storage.dto.Container;
 
@@ -28,12 +34,14 @@ import it.at.restfs.storage.dto.Container;
 public class MangementController implements Controller {
 	
 	private final ContainerRepository cRepo;
-	private final AuthorizationConfigResolver configResolver;
+	private final AuthorizationConfigHandler configResolver;
+	private final MessageDispatcher dispatcher;
 	
 	@Inject
-    public MangementController(ContainerRepository cRepo, AuthorizationConfigResolver configResolver) {
+    public MangementController(ContainerRepository cRepo, AuthorizationConfigHandler configResolver, MessageDispatcher dispatcher) {
 		this.cRepo = cRepo;
 		this.configResolver = configResolver;
+		this.dispatcher = dispatcher;
 	}	
 	
     //XXX should be executed in a Future ?	
@@ -54,42 +62,69 @@ public class MangementController implements Controller {
         );
     }	
 
-    //XXX should be executed in a Future ?
-	public Route token(ContainerAuth ctx) { 		
-		
-		final Container c = cRepo.load(ctx.getContainer());		
+    //XXX add test for all branch in this method
+	public Route token(ContainerAuth ctx) {
+    	final Container c = cRepo.load(ctx.getContainer());		
 		final Implementation authType = AuthorizationChecker.Implementation.valueOf(c.getAuthorization());
-		final Route result;
 		
-		switch (authType) {			
-			case OAUTH2: {
-				result = Complete.notImplemented();
-			}break;
+		if (Implementation.OAUTH2 == authType) {
+			return Complete.notImplemented(); //XXX please add code to do some magic here !!?
+		} else if (Implementation.NO_AUTH == authType) {
+			return Complete.methodNotAllowed();
+		} /* else if (Implementation.MASTER_PWD == authType) {
 			
-			case MASTER_PWD: {
-				
-				final Config authConf = configResolver.get(c);
-				
-				if (StringUtils.equals(
-					authConf.getString("masterPwd"), ctx.getAuthorization().orElseThrow(() -> new RuntimeException())
-				)) {
-					result = Complete.simple(UUID.randomUUID().toString());
-				} else {
-					result = Complete.forbidden();
-				}
-				
-			}break;	
+		} */
+		
+		//XXX only for MASTER_PWD
+		return withFuture(() -> {
 			
-			case NO_AUTH: {
-				result = Complete.methodNotAllowed();
-			}break;		
+			final Config authConf = configResolver.get(c);
 			
-			default: {
-				result = null;
+			if (StringUtils.equals(
+				authConf.getString("masterPwd"), ctx.getAuthorization().orElseThrow(() -> new RuntimeException())
+			)) {
+				return token(UUID.randomUUID().toString(), Implementation.MASTER_PWD);
+			} else {
+				return Complete.forbidden();
 			}
-		}		
+			
+		});		
+	}
+	
+	/*
+	
+		TOKEN endpoint
+	
+		se il container è configurato come MASTER_PWD 		
+			> l'auth header deve contenere la master password della configurazione
+			> il token generato deve essere conservato su file ( UUID ) e ritornato al client ( durata ?, num di token generabili ? )
 		
-		return result;
+		
+		se il container è configurato come NO_AUTH l'endpoint andrà in errore		
+		
+		
+		se il container è configurato come OAUTH2 ... ???			
+	
+	*/	
+	
+	//XXX code duplication of it.at.restfs.http.services.PerRequestContext.withFuture(Supplier<T>)
+    //see https://doc.akka.io/docs/akka-http/current/handling-blocking-operations-in-akka-http-routes.html
+    private <T> Route withFuture(Supplier<T> supplier) {
+        return completeOKWithFuture(
+            CompletableFuture.supplyAsync(supplier, dispatcher),
+            Jackson.<T>marshaller()
+        );        
+    }
+	
+    //XXX extract a model for this
+	private Map<String, String> token(String token, Implementation authType) {
+		final HashMap<String, String> response = Maps.<String, String>newHashMap();
+		
+		response.put("token", token);
+		response.put("ttl", String.valueOf(Integer.MAX_VALUE));
+		response.put("type", authType.key);
+		
+		return response;
 	}
 	
 }

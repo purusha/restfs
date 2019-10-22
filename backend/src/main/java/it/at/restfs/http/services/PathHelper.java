@@ -29,7 +29,7 @@ public class PathHelper {
 	}
     
     public static ContainerAuth buildCA(String container, Optional<String> authorization) {
-    	return new ContainerAuth(UUID.fromString(container), authorization); //XXX what happend if container is not an UUID instance ?
+    	return new ContainerAuth(UUID.fromString(container), authorization); //XXX what happens if container is not an UUID instance ?
     }
     
 }

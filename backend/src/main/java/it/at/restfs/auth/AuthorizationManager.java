@@ -31,16 +31,15 @@ public class AuthorizationManager {
 	    	.collect(Collectors.toList());
     }
 
-
     public boolean isTokenValidFor(Optional<String> authorization, UUID container) {        
-        if ( !existsSomeWhere(container) || !cRepo.exist(container) ) {
+        if ( !existsSomewhere(container) || !cRepo.exist(container) ) {
             return false;
         }
                 
         return authResolver.get(container).isTokenValid(container, authorization);
     }
     
-    private boolean existsSomeWhere(UUID container) {
+    private boolean existsSomewhere(UUID container) {
     	return storages.stream().anyMatch(s -> s.exist(container));
     }
 

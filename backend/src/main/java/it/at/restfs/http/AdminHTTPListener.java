@@ -62,7 +62,7 @@ import akka.http.javadsl.server.Route;
 import akka.http.javadsl.server.directives.LogEntry;
 import akka.stream.ActorMaterializer;
 import it.at.restfs.auth.AuthorizationChecker;
-import it.at.restfs.storage.AuthorizationConfigResolver;
+import it.at.restfs.storage.AuthorizationConfigHandler;
 import it.at.restfs.storage.ContainerRepository;
 import it.at.restfs.storage.RootFileSystem;
 import it.at.restfs.storage.Storage;
@@ -108,7 +108,7 @@ public class AdminHTTPListener {
     private final String host;
     private final Integer port;
 	private final RootFileSystem rfs;
-	private final AuthorizationConfigResolver configResolver;
+	private final AuthorizationConfigHandler configResolver;
     
     @Inject
     public AdminHTTPListener(
@@ -120,7 +120,7 @@ public class AdminHTTPListener {
         ContainerRepository cRepo,
         PageResolver pageResolver,
         RootFileSystem rfs,
-        AuthorizationConfigResolver configResolver
+        AuthorizationConfigHandler configResolver
     ) {
         this.cRepo = cRepo;
         this.handler = handler;
@@ -217,14 +217,15 @@ public class AdminHTTPListener {
         /*
         	START Provisioning actions: please extract a service !!?
          */
-        
-        cRepo.save(container);        
-        rfs.containerPath(id, "").toFile().mkdir();
-        
+                
         switch(AuthorizationChecker.Implementation.valueOf(authorization)) {
 			case MASTER_PWD: {
 				
 				final String pwd = params.get(AuthorizationChecker.Implementation.MASTER_PWD.key);
+				
+				if (StringUtils.isBlank(pwd)) {
+					throw new RuntimeException("mandatory field not resolved for container: " + id);
+				}
 				
 				configResolver.save(container, Collections.singletonMap("masterPwd", pwd));
 				
@@ -239,6 +240,10 @@ public class AdminHTTPListener {
 			default:
 				break;        
         }
+        
+        cRepo.save(container);     
+        
+        rfs.containerPath(id, "").toFile().mkdir();
         
         /*
 	    	END Provisioning actions: please extract a service !!?

@@ -30,8 +30,7 @@ public class Statistics extends NoAuthBaseTest {
         wait(5);
         
         final List<ResponseBody> r1 = runCommands(
-            ctx, 
-            buildStatsCommand()
+            ctx, buildMgmtCommand(Operation.STATS)
         );
         
         match(json(), Iterables.get(r1, 0).string());        
@@ -51,8 +50,7 @@ public class Statistics extends NoAuthBaseTest {
         wait(10);
         
         final List<ResponseBody> r2 = runCommands(
-            ctx, 
-            buildStatsCommand()
+            ctx, buildMgmtCommand(Operation.STATS)
         );
         
         expected("{\"200\":13}", Iterables.get(r2, 0).string());
