@@ -1,4 +1,4 @@
-package it.at.restfs.storage;
+package it.at.restfs.auth;
 
 import java.io.File;
 import java.util.Map;
@@ -10,6 +10,7 @@ import com.google.inject.Inject;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
+import it.at.restfs.storage.RootFileSystem;
 import it.at.restfs.storage.dto.Container;
 import lombok.SneakyThrows;
 

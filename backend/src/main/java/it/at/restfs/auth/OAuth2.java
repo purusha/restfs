@@ -3,11 +3,18 @@ package it.at.restfs.auth;
 import java.util.Optional;
 import java.util.UUID;
 
-public class OAuth2 implements AuthorizationChecker {
+import it.at.restfs.storage.dto.Container;
+
+public class OAuth2 implements AuthorizationChecker, AuthorizationMaker {
 
 	@Override
 	public boolean isTokenValid(UUID container, Optional<String> authorization) {
-		return Boolean.TRUE;
+		return Boolean.FALSE;
+	}
+
+	@Override
+	public String creteToken(Container container) {
+		return "42";
 	}
 
 }

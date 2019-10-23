@@ -22,6 +22,7 @@ import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.ExceptionHandler;
 import akka.stream.ActorMaterializer;
 import it.at.restfs.auth.AuthorizationChecker;
+import it.at.restfs.auth.AuthorizationMaker;
 import it.at.restfs.auth.AuthorizationManager;
 import it.at.restfs.auth.Authorized;
 import it.at.restfs.auth.AuthorizedInterceptor;
@@ -82,11 +83,17 @@ public class AkkaModule implements Module {
 		}
         
         for (AuthorizationChecker.Implementation i : AuthorizationChecker.Implementation.values()) {
+        	
             binder
 	            .bind(Key.get(AuthorizationChecker.class, Names.named(i.name())))
-	            .to(i.implClazz)
+	            .to(i.c)
 	            .in(Singleton.class); 
-			
+
+            binder
+	            .bind(Key.get(AuthorizationMaker.class, Names.named(i.name())))
+	            .to(i.m)
+	            .in(Singleton.class); 
+            
 		}        
         
         binder.install(

@@ -6,7 +6,6 @@ import static akka.http.javadsl.server.Directives.completeOKWithFuture;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
@@ -22,11 +21,12 @@ import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.Route;
 import it.at.restfs.auth.AuthorizationChecker;
 import it.at.restfs.auth.AuthorizationChecker.Implementation;
+import it.at.restfs.auth.AuthorizationConfigHandler;
+import it.at.restfs.auth.AuthorizationManager;
 import it.at.restfs.event.Event;
 import it.at.restfs.http.ControllerRunner.ContainerAuth;
 import it.at.restfs.http.HTTPListener.Request;
 import it.at.restfs.http.services.Complete;
-import it.at.restfs.storage.AuthorizationConfigHandler;
 import it.at.restfs.storage.ContainerRepository;
 import it.at.restfs.storage.dto.Container;
 
@@ -36,12 +36,17 @@ public class MangementController implements Controller {
 	private final ContainerRepository cRepo;
 	private final AuthorizationConfigHandler configResolver;
 	private final MessageDispatcher dispatcher;
+	private final AuthorizationManager authManager;
 	
 	@Inject
-    public MangementController(ContainerRepository cRepo, AuthorizationConfigHandler configResolver, MessageDispatcher dispatcher) {
+    public MangementController(
+		ContainerRepository cRepo, AuthorizationConfigHandler configResolver, 
+		MessageDispatcher dispatcher, AuthorizationManager authManager
+	) {
 		this.cRepo = cRepo;
 		this.configResolver = configResolver;
 		this.dispatcher = dispatcher;
+		this.authManager = authManager;
 	}	
 	
     //XXX should be executed in a Future ?	
@@ -82,8 +87,8 @@ public class MangementController implements Controller {
 			
 			if (StringUtils.equals(
 				authConf.getString("masterPwd"), ctx.getAuthorization().orElseThrow(() -> new RuntimeException())
-			)) {
-				return token(UUID.randomUUID().toString(), Implementation.MASTER_PWD);
+			)) {				
+				return token(authManager.generateTokenFor(c), Implementation.MASTER_PWD);
 			} else {
 				return Complete.forbidden();
 			}
@@ -122,7 +127,7 @@ public class MangementController implements Controller {
 		
 		response.put("token", token);
 		response.put("ttl", String.valueOf(Integer.MAX_VALUE));
-		response.put("type", authType.key);
+		response.put("type", authType.k);
 		
 		return response;
 	}

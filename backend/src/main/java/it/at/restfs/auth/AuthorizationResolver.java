@@ -20,18 +20,18 @@ import lombok.extern.slf4j.Slf4j;
 */
 
 @Slf4j
-public class AuthorizationCheckerResolver {
+public class AuthorizationResolver {
 
 	private final Injector injector;
 	private final ContainerRepository cRepo;
 
 	@Inject
-	public AuthorizationCheckerResolver(Injector injector, ContainerRepository cRepo) {
+	public AuthorizationResolver(Injector injector, ContainerRepository cRepo) {
 		this.injector = injector;
 		this.cRepo = cRepo;
 	}
 	
-	public AuthorizationChecker get(UUID uuidC) {
+	public AuthorizationChecker getChecker(UUID uuidC) {
 		final Container container = cRepo.load(uuidC);		
 		
 		final AuthorizationChecker checker = injector.getInstance(
@@ -42,4 +42,17 @@ public class AuthorizationCheckerResolver {
 				
 		return checker;
 	}
+	
+	public AuthorizationMaker getMaker(UUID uuidC) {
+		final Container container = cRepo.load(uuidC);		
+		
+		final AuthorizationMaker maker = injector.getInstance(
+			Key.get(AuthorizationMaker.class, Names.named(container.getAuthorization()))
+		);
+		
+		LOGGER.debug("container {}/{} use {} as AuthorizationMaker", container.getId(), container.getName(), maker.getClass().getSimpleName());
+				
+		return maker;
+	}
+	
 }

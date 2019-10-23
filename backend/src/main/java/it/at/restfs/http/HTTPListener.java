@@ -129,12 +129,12 @@ public class HTTPListener {
                                                 )
                                             )
                                         ),
-                                        pathPrefix(segment("stats"), () ->
+                                        pathPrefix(segment("stats"), () -> //XXX make it like token api
                                             get(() ->                                            
                                             	runner.stats(buildCA(container, authorization))
                                             )
                                         ),
-                                        pathPrefix(segment("last"), () ->
+                                        pathPrefix(segment("last"), () -> //XXX make it like token api
                                             get(() ->                                            
                                             	runner.last(buildCA(container, authorization))
                                             )

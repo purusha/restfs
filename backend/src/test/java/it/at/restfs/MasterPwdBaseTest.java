@@ -105,7 +105,8 @@ public class MasterPwdBaseTest extends Stage {
 //          .printResponse(true)
 			.stopOnError(true)
 			.type(Implementation.MASTER_PWD)
-			.authHeader(authHeader).build();
+			.authHeader(authHeader)
+			.build();
 	}
 
 }

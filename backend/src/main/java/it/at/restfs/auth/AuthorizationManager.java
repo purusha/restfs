@@ -13,15 +13,16 @@ import com.google.inject.name.Names;
 
 import it.at.restfs.storage.ContainerRepository;
 import it.at.restfs.storage.Storage;
+import it.at.restfs.storage.dto.Container;
 
 public class AuthorizationManager {
     
     private final ContainerRepository cRepo;
     private final List<Storage> storages;
-	private final AuthorizationCheckerResolver authResolver;    
+	private final AuthorizationResolver authResolver;    
     
     @Inject
-    public AuthorizationManager(Injector injector, ContainerRepository cRepo, AuthorizationCheckerResolver authResolver) {
+    public AuthorizationManager(Injector injector, ContainerRepository cRepo, AuthorizationResolver authResolver) {
     	this.cRepo = cRepo;
 		this.authResolver = authResolver;
     	
@@ -36,11 +37,15 @@ public class AuthorizationManager {
             return false;
         }
                 
-        return authResolver.get(container).isTokenValid(container, authorization);
+        return authResolver.getChecker(container).isTokenValid(container, authorization);
     }
     
     private boolean existsSomewhere(UUID container) {
     	return storages.stream().anyMatch(s -> s.exist(container));
     }
+
+	public String generateTokenFor(Container c) {
+		return authResolver.getMaker(c.getId()).creteToken(c);
+	}
 
 }

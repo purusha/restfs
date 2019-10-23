@@ -62,7 +62,7 @@ import akka.http.javadsl.server.Route;
 import akka.http.javadsl.server.directives.LogEntry;
 import akka.stream.ActorMaterializer;
 import it.at.restfs.auth.AuthorizationChecker;
-import it.at.restfs.storage.AuthorizationConfigHandler;
+import it.at.restfs.auth.AuthorizationConfigHandler;
 import it.at.restfs.storage.ContainerRepository;
 import it.at.restfs.storage.RootFileSystem;
 import it.at.restfs.storage.Storage;
@@ -221,7 +221,7 @@ public class AdminHTTPListener {
         switch(AuthorizationChecker.Implementation.valueOf(authorization)) {
 			case MASTER_PWD: {
 				
-				final String pwd = params.get(AuthorizationChecker.Implementation.MASTER_PWD.key);
+				final String pwd = params.get(AuthorizationChecker.Implementation.MASTER_PWD.k);
 				
 				if (StringUtils.isBlank(pwd)) {
 					throw new RuntimeException("mandatory field not resolved for container: " + id);
