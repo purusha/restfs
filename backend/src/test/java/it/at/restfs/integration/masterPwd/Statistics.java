@@ -1,4 +1,4 @@
-package it.at.restfs.integration.noAuth;
+package it.at.restfs.integration.masterPwd;
 
 import static it.at.restfs.PatternBuilder.json;
 
@@ -8,11 +8,11 @@ import org.junit.Test;
 
 import com.google.common.collect.Iterables;
 
-import it.at.restfs.MasterPwdBaseTest;
+import it.at.restfs.NoAuthBaseTest;
 import it.at.restfs.Operation;
 import okhttp3.ResponseBody;
 
-public class Statistics extends MasterPwdBaseTest {
+public class Statistics extends NoAuthBaseTest {
 
     @Test
     public void simpleCase() throws Throwable {

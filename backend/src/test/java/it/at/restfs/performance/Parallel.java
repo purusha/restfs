@@ -7,16 +7,19 @@ import org.junit.experimental.ParallelComputer;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.reflections.Reflections;
+
+import it.at.restfs.MasterPwdBaseTest;
 import it.at.restfs.NoAuthBaseTest;
 
 public class Parallel {
     
-    private final Reflections reflections = new Reflections("it.at.restfs.integration.noAuth");
+    private final Reflections reflections = new Reflections("it.at.restfs.integration");
     
     @Test
-    public void test() {
+    public void noAuth() {
         final Set<Class<? extends NoAuthBaseTest>> allClasses = reflections.getSubTypesOf(NoAuthBaseTest.class);
-        final Class<?>[] array = new Class<?>[allClasses.size()]; 
+        final Class<?>[] array = new Class<?>[allClasses.size()];         
+        //System.out.println("found " + array.length + " classes !!?");
         
         //run
         final Result realRun = realRun(allClasses.toArray(array));
@@ -25,6 +28,24 @@ public class Parallel {
         
         Assert.assertEquals(0, realRun.getFailureCount());        
     }
+    
+    @Test
+    public void masterPwd() {
+        final Set<Class<? extends MasterPwdBaseTest>> allClasses = reflections.getSubTypesOf(MasterPwdBaseTest.class);
+        final Class<?>[] array = new Class<?>[allClasses.size()];         
+        //System.out.println("found " + array.length + " classes !!?");
+        
+        //run
+        final Result realRun = realRun(allClasses.toArray(array));
+        
+        realRun.getFailures().forEach(f -> System.out.println(f));
+        
+        Assert.assertEquals(0, realRun.getFailureCount());        
+    }    
+    
+    /*
+     * no test under
+     */
     
     private Result realRun(Class<?>[] cls) {
         

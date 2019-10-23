@@ -13,6 +13,8 @@ import it.at.restfs.storage.dto.Container;
 import lombok.SneakyThrows;
 
 public class MasterPassword implements AuthorizationChecker, AuthorizationMaker {
+	
+	public final static String REPO_PREFIX = "AUTH-REPO-";	//folder
 
 	private final RootFileSystem rfs;
 	
@@ -50,7 +52,7 @@ public class MasterPassword implements AuthorizationChecker, AuthorizationMaker 
 		return token;
 	}
 	
-	private Path buildRepository(UUID container) { //directory
+	private Path buildRepository(UUID container) { 
     	return rfs.pathOf("AUTH-REPO-", container);
     }	
 	

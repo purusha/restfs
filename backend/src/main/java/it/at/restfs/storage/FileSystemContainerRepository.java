@@ -19,16 +19,17 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 
+import it.at.restfs.auth.MasterPassword;
 import it.at.restfs.event.Event;
 import it.at.restfs.storage.dto.Container;
 import lombok.SneakyThrows;
 
 public class FileSystemContainerRepository implements ContainerRepository {
     
-    private static String CONTAINER_PREFIX = "C-";	//file
-    private static String WEBHOOK_PREFIX = "WH-";	//folder
-    private static String LAST_CALL_PREFIX = "LC-";	//file
-    private static String STATISTICS_PREFIX = "S-";	//file
+    private final static String CONTAINER_PREFIX = "C-";	//file
+    private final static String WEBHOOK_PREFIX = "WH-";		//folder
+    private final static String LAST_CALL_PREFIX = "LC-";	//file
+    private final static String STATISTICS_PREFIX = "S-";	//file
         
     /*
 	
@@ -101,6 +102,7 @@ public class FileSystemContainerRepository implements ContainerRepository {
             return stream
                 .filter(Files::isDirectory)
                 .filter(folder -> ! StringUtils.startsWith(folder.toFile().getName(), WEBHOOK_PREFIX))
+                .filter(folder -> ! StringUtils.startsWith(folder.toFile().getName(), MasterPassword.REPO_PREFIX))
                 .map(folder -> UUID.fromString(folder.toFile().getName()))
                 .collect(Collectors.toList());                
         }
