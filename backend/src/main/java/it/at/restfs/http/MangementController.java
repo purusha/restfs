@@ -67,33 +67,36 @@ public class MangementController implements Controller {
         );
     }	
 
+    //XXX do u rember Open-Close principle ???
     //XXX add test for all branch in this method
 	public Route token(ContainerAuth ctx) {
     	final Container c = cRepo.load(ctx.getContainer());		
 		final Implementation authType = AuthorizationChecker.Implementation.valueOf(c.getAuthorization());
 		
 		if (Implementation.OAUTH2 == authType) {
-			return Complete.notImplemented(); //XXX please add code to do some magic here !!?
+			return Complete.notImplemented(); //XXX call configured oAuth2 service end return a token generated!!!?
+			
+		} else if (Implementation.BASIC_AUTH == authType) {
+			return Complete.methodNotAllowed();
+			
 		} else if (Implementation.NO_AUTH == authType) {
 			return Complete.methodNotAllowed();
-		} /* else if (Implementation.MASTER_PWD == authType) {
-			
-		} */
+		} 
 		
 		//XXX only for MASTER_PWD
-		return withFuture(() -> {
+		//return withFuture(() -> {
 			
 			final Config authConf = configResolver.get(c);
 			
 			if (StringUtils.equals(
 				authConf.getString("masterPwd"), ctx.getAuthorization().orElseThrow(() -> new RuntimeException())
 			)) {				
-				return token(authManager.generateTokenFor(c), Implementation.MASTER_PWD);
+				return withFuture(() -> token(authManager.generateTokenFor(c), Implementation.MASTER_PWD));
 			} else {
 				return Complete.forbidden();
 			}
 			
-		});		
+		//});		
 	}
 	
 	/*

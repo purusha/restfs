@@ -42,6 +42,9 @@ public class MasterPwdBaseTest extends Stage {
 
 	@Getter
 	private String token;
+	
+	@Getter
+	private final String firstPassword = "123-my-strong-password";  // make it more random please !!?
 
 	/*
 	 * di default tutti i container vengono creati auth = MASTER_PWD
@@ -57,7 +60,7 @@ public class MasterPwdBaseTest extends Stage {
 		container = UUID.randomUUID();
 		System.out.println("container: " + container);
 
-		final ExecutionContext currentCtx = context("123-my-strong-password"); // make it more random please !!?
+		final ExecutionContext currentCtx = context(firstPassword);
 		
 		createContainer(currentCtx);
 		
@@ -66,26 +69,6 @@ public class MasterPwdBaseTest extends Stage {
 		).get(0);
 
 		token = extractToken(FACTORY.createParser(responseBody.byteStream()));
-	}
-
-	//XXX this is not good ... !!?
-	private String extractToken(JsonParser parser) throws IOException {		
-		while(!parser.isClosed()){
-		    JsonToken jsonToken = parser.nextToken();
-
-		    if(JsonToken.FIELD_NAME.equals(jsonToken)){
-		        String fieldName = parser.getCurrentName();
-		        //System.out.println(fieldName);
-
-		        jsonToken = parser.nextToken();
-
-		        if("token".equals(fieldName)){
-		            return parser.getValueAsString();
-		        } 
-		    }
-		}		
-		
-		throw new RuntimeException("cannot resolve 'token' property");
 	}
 
 	@After
@@ -109,4 +92,23 @@ public class MasterPwdBaseTest extends Stage {
 			.build();
 	}
 
+	//XXX this is not good ... !!?
+	private String extractToken(JsonParser parser) throws IOException {		
+		while(!parser.isClosed()){
+		    JsonToken jsonToken = parser.nextToken();
+
+		    if(JsonToken.FIELD_NAME.equals(jsonToken)){
+		        String fieldName = parser.getCurrentName();
+		        //System.out.println(fieldName);
+
+		        jsonToken = parser.nextToken();
+
+		        if("token".equals(fieldName)){
+		            return parser.getValueAsString();
+		        } 
+		    }
+		}		
+		
+		throw new RuntimeException("cannot resolve 'token' property");
+	}	
 }

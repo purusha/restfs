@@ -68,6 +68,7 @@ class MacOsx implements OSFeatures {
   
 }
 
+//XXX use me !!?
 class Windows implements OSFeatures {
 
 	@Override

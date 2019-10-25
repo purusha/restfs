@@ -218,6 +218,7 @@ public class AdminHTTPListener {
         	START Provisioning actions: please extract a service !!?
          */
                 
+        //XXX do u rember Open-Close principle ???
         switch(AuthorizationChecker.Implementation.valueOf(authorization)) {
 			case MASTER_PWD: {
 				

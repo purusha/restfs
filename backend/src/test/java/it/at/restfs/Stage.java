@@ -21,12 +21,9 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 
 import it.at.restfs.auth.AuthorizationChecker;
 import it.at.restfs.auth.AuthorizationChecker.Implementation;
@@ -37,6 +34,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.experimental.Delegate;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -52,48 +50,37 @@ public abstract class Stage {
 		
 	 */
     
-    private static final Config TEST_CONF = ConfigFactory.parseFile(new File(Stage.class.getResource("/test.conf").getPath()));
-    
-    private final OSFeatures features;
     private final RestFs service;
     protected final Admin admin;   
     
-    @Getter
-    private final Pair<String, Integer> publicEndpoint;
-    
-    @Getter
-    private final Pair<String, Integer> adminEndpoint;
+	//XXX please inject me !!?
+	@Delegate
+	private final IntegrationResolver ir = new IntegrationResolver();
     
     //XXX use Inject please !!?
     private final RootFileSystem rfs = new RootFileSystem();
 
     protected Stage() {        
-        publicEndpoint = Pair.of(TEST_CONF.getString("http.public.host"), TEST_CONF.getInt("http.public.port"));
-        
-        adminEndpoint = Pair.of(TEST_CONF.getString("http.admin.host"), TEST_CONF.getInt("http.admin.port"));
-        
         service = new Retrofit.Builder()
             .addConverterFactory(ScalarsConverterFactory.create())
             .baseUrl(String.format(
-                "http://%s:%d/%s/%s/", publicEndpoint.getKey(), publicEndpoint.getValue(), PathHelper.APP_NAME, PathHelper.VERSION                    
+                "http://%s:%d/%s/%s/", getPublicEndpoint().getKey(), getPublicEndpoint().getValue(), PathHelper.APP_NAME, PathHelper.VERSION                    
             ))
             .build()
             .create(RestFs.class);
         
         admin = new Retrofit.Builder()
             .baseUrl(String.format(
-                "http://%s:%d/%s/%s/", adminEndpoint.getKey(), adminEndpoint.getValue(), PathHelper.APP_NAME, PathHelper.VERSION                    
+                "http://%s:%d/%s/%s/", getAdminEndpoint().getKey(), getAdminEndpoint().getValue(), PathHelper.APP_NAME, PathHelper.VERSION                    
             ))
             .build()
             .create(Admin.class);
-                            
-        features = OSFeatures.build();
     }
     
     private Path printHierarchy(UUID container) throws IOException, InterruptedException {
         final File root = getContainer(container);
                 
-        final ProcessBuilder pb = new ProcessBuilder(features.ls());        
+        final ProcessBuilder pb = new ProcessBuilder(getFeatures().ls());        
         pb.directory(root);
         pb.redirectErrorStream(true);
         
@@ -101,7 +88,7 @@ public abstract class Stage {
 
         FileUtils.write(
             new File(root, container.toString() + ".tree"), 
-            String.join("\n", features.catchOutputOf(process)), 
+            String.join("\n", getFeatures().catchOutputOf(process)), 
             defaultCharset()
         );
 

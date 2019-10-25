@@ -10,10 +10,10 @@ public interface AuthorizationChecker {
 	 */
 	
 	public enum Implementation {
-		//XXX add BasicAuth method !!?
 		NO_AUTH("noAuth", NoAuthorization.class, NoAuthorization.class),
 		OAUTH2("oAuth2", OAuth2.class, OAuth2.class),
-		MASTER_PWD("masterPwd", MasterPassword.class, MasterPassword.class);
+		MASTER_PWD("masterPwd", MasterPassword.class, MasterPassword.class),
+		BASIC_AUTH("basicAuth", BasicAuth.class, BasicAuth.class);
 		
 		public String k; 
 		public Class<? extends AuthorizationChecker> c;
