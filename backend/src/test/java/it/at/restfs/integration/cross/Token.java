@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.CharacterPredicates;
 import org.apache.commons.text.RandomStringGenerator;
@@ -23,9 +24,7 @@ import it.at.restfs.http.services.PathHelper;
 public class Token {
 	
 	private static final Builder B = new RandomStringGenerator.Builder();
-	
-	
-	
+		
 	/*
 	 * this test must be provider for each type of values inner ==> it.at.restfs.auth.AuthorizationChecker
 	 */
@@ -33,25 +32,24 @@ public class Token {
 	public static class NoAuth extends NoAuthBaseTest {		
 		
 	    @Test
-	    public void token() throws Exception {            	
+	    public void tokenWithEmptyAuth() throws Exception {            	
 	        final String response = callToken(getContainer(), Optional.empty());
 	        
 	        matchEverywhere("HTTP/1.1 405 Method Not Allowed" , response);
-	    }
-	    
+	    }	    
 	}
 	
 	public static class MasterPwd extends MasterPwdBaseTest {
 		
 	    @Test
-	    public void tokenWithCorrectPwd() throws Exception {            	
+	    public void tokenWithCorrectAuth() throws Exception {            	
 	        final String response = callToken(getContainer(), Optional.of(getFirstPassword()));
 	        
 	        matchEverywhere("\"type\":\"masterPwd\",\"ttl\"" , response);	        	       
 	    }
 	    
 	    @Test
-	    public void tokenWithWrongPwd() throws Exception {        
+	    public void tokenWithWrongAuth() throws Exception {        
 	        final String response = callToken(
         		getContainer(), 
         		Optional.of(
@@ -61,7 +59,15 @@ public class Token {
 	        
 	        matchEverywhere("HTTP/1.1 403 Forbidden" , response);	        
 	    }		
-	    
+
+	    @Test
+	    public void tokenWithEmptyAuth() throws Exception {        
+	        final String response = callToken(
+        		getContainer(), Optional.of(StringUtils.EMPTY)
+    		);
+	        
+	        matchEverywhere("HTTP/1.1 403 Forbidden" , response);	        
+	    }			    
 	}
 	
     //XXX please make it with HttpClient instead of this !!?

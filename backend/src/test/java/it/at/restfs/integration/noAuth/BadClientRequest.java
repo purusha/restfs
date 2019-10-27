@@ -97,13 +97,9 @@ public class BadClientRequest extends NoAuthBaseTest {
             )
         ); 
         
-        System.out.println(out);
-        
-        if (process.waitFor() == 0) {
-            System.out.println("curl: Success!\n");
-        } else {
-            System.out.println("curl: Failure!\n");                        
-        }
+        if (process.waitFor() != 0) {
+            throw new RuntimeException("curl: Failure!\n");
+        }        
         
         return out;
     }

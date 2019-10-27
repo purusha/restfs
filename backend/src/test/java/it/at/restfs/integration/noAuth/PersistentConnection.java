@@ -67,11 +67,15 @@ public class PersistentConnection extends NoAuthBaseTest {
             )
         ); 
         
-        if (process.waitFor() == 0) {
-            System.out.println("curl: Success!\n");
-        } else {
-            System.out.println("curl: Failure!\n");
+        if (process.waitFor() != 0) {
+            throw new RuntimeException("curl: Failure!\n");
         }        
+        
+//        if (process.waitFor() == 0) {
+//            System.out.println("curl: Success!\n");
+//        } else {
+//            System.out.println("curl: Failure!\n");
+//        }        
         
         return out;
     }    

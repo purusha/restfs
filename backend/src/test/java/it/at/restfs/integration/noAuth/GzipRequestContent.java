@@ -1,13 +1,10 @@
 package it.at.restfs.integration.noAuth;
 
-import static java.nio.charset.Charset.defaultCharset;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import com.google.common.collect.Iterables;
@@ -73,20 +70,25 @@ public class GzipRequestContent extends NoAuthBaseTest {
         
         final Process process = pb.start();
 
-        final String out = String.join(
-            "\n", 
-            IOUtils.readLines(
-                process.getInputStream(), defaultCharset()
-            )
-        ); 
+//        final String out = String.join(
+//            "\n", 
+//            IOUtils.readLines(
+//                process.getInputStream(), defaultCharset()
+//            )
+//        ); 
         
-        if (process.waitFor() == 0) {
-            System.out.println("curl: Success!\n");
-        } else {
-            System.out.println("curl: Failure!\n");            
+        if (process.waitFor() != 0) {
+            throw new RuntimeException("curl: Failure!\n");
         }        
-        
-        System.out.println(out);
+//        
+//        
+//        if (process.waitFor() == 0) {
+//            System.out.println("curl: Success!\n");
+//        } else {
+//            System.out.println("curl: Failure!\n");            
+//        }        
+//        
+//        System.out.println(out);
     }    
        
 }

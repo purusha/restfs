@@ -84,19 +84,15 @@ public class MangementController implements Controller {
 		} 
 		
 		//XXX only for MASTER_PWD
-		//return withFuture(() -> {
-			
-			final Config authConf = configResolver.get(c);
-			
-			if (StringUtils.equals(
-				authConf.getString("masterPwd"), ctx.getAuthorization().orElseThrow(() -> new RuntimeException())
-			)) {				
-				return withFuture(() -> token(authManager.generateTokenFor(c), Implementation.MASTER_PWD));
-			} else {
-				return Complete.forbidden();
-			}
-			
-		//});		
+		final Config authConf = configResolver.get(c);
+		
+		if (ctx.getAuthorization().isPresent() && StringUtils.equals(
+			authConf.getString("masterPwd"), ctx.getAuthorization().get()
+		)) {				
+			return withFuture(() -> token(authManager.generateTokenFor(c), Implementation.MASTER_PWD));
+		} else {
+			return Complete.forbidden();
+		}
 	}
 	
 	/*
