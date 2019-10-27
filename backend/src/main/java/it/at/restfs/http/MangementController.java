@@ -1,10 +1,8 @@
 package it.at.restfs.http;
 
-import static akka.http.javadsl.server.Directives.complete;
 import static akka.http.javadsl.server.Directives.completeOKWithFuture;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -17,13 +15,11 @@ import com.typesafe.config.Config;
 
 import akka.dispatch.MessageDispatcher;
 import akka.http.javadsl.marshallers.jackson.Jackson;
-import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.Route;
 import it.at.restfs.auth.AuthorizationChecker;
 import it.at.restfs.auth.AuthorizationChecker.Implementation;
 import it.at.restfs.auth.AuthorizationConfigHandler;
 import it.at.restfs.auth.AuthorizationManager;
-import it.at.restfs.event.Event;
 import it.at.restfs.http.ControllerRunner.ContainerAuth;
 import it.at.restfs.http.HTTPListener.Request;
 import it.at.restfs.http.services.Complete;
@@ -49,22 +45,16 @@ public class MangementController implements Controller {
 		this.authManager = authManager;
 	}	
 	
-    //XXX should be executed in a Future ?	
-    public Route stats(Request t) {        
-        return complete(
-            StatusCodes.OK, 
-            cRepo.getStatistics(t.getContainer()),
-            Jackson.<Map<Integer, Long>>marshaller()
-        );
+    public Route stats(Request t) {  
+    	return withFuture(
+			() -> cRepo.getStatistics(t.getContainer())
+		);
     }
 
-	//XXX should be executed in a Future ?    
-    public Route last(Request t) {        
-        return complete(
-            StatusCodes.OK, 
-            cRepo.getCalls(t.getContainer()), 
-            Jackson.<List<Event>>marshaller()
-        );
+    public Route last(Request t) {
+    	return withFuture(
+			() -> cRepo.getCalls(t.getContainer())
+		);
     }	
 
     //XXX do u rember Open-Close principle ???

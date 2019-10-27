@@ -8,11 +8,11 @@ import org.junit.Test;
 
 import com.google.common.collect.Iterables;
 
-import it.at.restfs.NoAuthBaseTest;
+import it.at.restfs.MasterPwdBaseTest;
 import it.at.restfs.Operation;
 import okhttp3.ResponseBody;
 
-public class Statistics extends NoAuthBaseTest {
+public class Statistics extends MasterPwdBaseTest {
 
     @Test
     public void simpleCase() throws Throwable {
@@ -53,7 +53,7 @@ public class Statistics extends NoAuthBaseTest {
             ctx, buildMgmtCommand(Operation.STATS)
         );
         
-        expected("{\"200\":13}", Iterables.get(r2, 0).string());
+        expected("{\"200\":14}", Iterables.get(r2, 0).string());
         
     }
     
