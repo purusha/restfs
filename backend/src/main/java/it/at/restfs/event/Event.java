@@ -2,7 +2,8 @@ package it.at.restfs.event;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import it.at.restfs.http.HTTPListener.Request;
+
+import it.at.restfs.http.services.PathHelper.Request;
 import lombok.Getter;
 
 @Getter

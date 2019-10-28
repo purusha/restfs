@@ -1,7 +1,9 @@
 package it.at.restfs.http;
 
 import static it.at.restfs.http.services.Complete.methodNotAllowed;
-import static it.at.restfs.http.services.PathHelper.*;
+import static it.at.restfs.http.services.PathHelper.build;
+import static it.at.restfs.http.services.PathHelper.getPathString;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -12,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +28,8 @@ import akka.http.javadsl.model.Uri;
 import akka.http.javadsl.server.Route;
 import it.at.restfs.auth.Authorized;
 import it.at.restfs.auth.NotAuthorized;
-import it.at.restfs.http.HTTPListener.Request;
+import it.at.restfs.http.services.PathHelper.ContainerAuth;
+import it.at.restfs.http.services.PathHelper.Request;
 import it.at.restfs.http.services.PerRequestContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -95,16 +96,7 @@ public class ControllerRunner {
 		private final List<Method> operations;
 		
 	}
-	
-	@Getter
-	@RequiredArgsConstructor	
-	public static class ContainerAuth {
 		
-		private final UUID container;
-		private final Optional<String> authorization;
-		
-	}
-	
 	final static Map<HttpMethod, RunningData> RUN_CONTEXT = new HashMap<HttpMethod, RunningData>() {
 		private static final long serialVersionUID = -7910997263891218171L;
 

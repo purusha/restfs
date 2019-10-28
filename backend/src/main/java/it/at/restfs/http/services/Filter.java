@@ -1,7 +1,8 @@
 package it.at.restfs.http.services;
 
 import static akka.event.Logging.InfoLevel;
-import static it.at.restfs.http.services.PathHelper.*;
+import static it.at.restfs.http.services.PathHelper.build;
+import static it.at.restfs.http.services.PathHelper.getPathString;
 
 import java.util.Date;
 import java.util.UUID;

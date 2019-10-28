@@ -12,7 +12,7 @@ import akka.dispatch.MessageDispatcher;
 import akka.http.javadsl.marshallers.jackson.Jackson;
 import akka.http.javadsl.server.Route;
 import akka.stream.ActorMaterializer;
-import it.at.restfs.http.HTTPListener.Request;
+import it.at.restfs.http.services.PathHelper.Request;
 import it.at.restfs.storage.Storage;
 import it.at.restfs.storage.StorageResolver;
 import lombok.AccessLevel;

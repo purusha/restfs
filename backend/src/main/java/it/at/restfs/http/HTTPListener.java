@@ -7,8 +7,8 @@ import static akka.http.javadsl.server.Directives.extractUri;
 import static akka.http.javadsl.server.Directives.get;
 import static akka.http.javadsl.server.Directives.handleExceptions;
 import static akka.http.javadsl.server.Directives.headerValueByName;
-import static akka.http.javadsl.server.Directives.optionalHeaderValueByName;
 import static akka.http.javadsl.server.Directives.logRequestResult;
+import static akka.http.javadsl.server.Directives.optionalHeaderValueByName;
 import static akka.http.javadsl.server.Directives.parameter;
 import static akka.http.javadsl.server.Directives.pathEndOrSingleSlash;
 import static akka.http.javadsl.server.Directives.pathPrefix;
@@ -21,7 +21,6 @@ import static it.at.restfs.http.services.PathHelper.buildCA;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiFunction;
@@ -29,8 +28,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.typesafe.config.Config;
@@ -47,8 +44,6 @@ import akka.http.javadsl.server.Route;
 import akka.http.javadsl.server.directives.LogEntry;
 import akka.stream.ActorMaterializer;
 import it.at.restfs.http.services.Filter;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -120,34 +115,7 @@ public class HTTPListener {
                         
                             return optionalHeaderValueByName(AUTHORIZATION, (Optional<String> authorization) ->
                                 headerValueByName(X_CONTAINER, (String container) ->    
-                                    route(
-                                        
-                                        parameter(OP, (String operation) ->
-                                            extractUri(uri ->
-                                                extractMethod(method ->                                                
-                                                	runner.handler(buildCA(container, authorization), uri, method, operation)
-                                                )
-                                            )
-                                        ),
-                                        pathPrefix(segment("stats"), () -> //XXX make it like token api
-                                            get(() ->                                            
-                                            	runner.stats(buildCA(container, authorization))
-                                            )
-                                        ),
-                                        pathPrefix(segment("last"), () -> //XXX make it like token api
-                                            get(() ->                                            
-                                            	runner.last(buildCA(container, authorization))
-                                            )
-                                        ),
-                                        pathPrefix("token", () ->
-                                        	pathEndOrSingleSlash(() ->
-	                                        	post(() ->
-	                                        		runner.token(buildCA(container, authorization))
-	                                        	)
-                                        	)
-                                        )
-                                        
-                                    )
+                                    handler(container, authorization)
                                 )
                             );
                             
@@ -157,24 +125,43 @@ public class HTTPListener {
             )
         );
     }
-        
-    @Getter 
-    @Setter
-    static public class Request {
-        private final UUID container;
-        private final String path;
-        private final String operation; //should be Optional<String>
-        
-        @JsonCreator
-        public Request(
-            @JsonProperty("container") UUID container, 
-            @JsonProperty("path") String path, 
-            @JsonProperty("operation") String operation
-        ) {
-            this.container = container;
-            this.path = path;
-            this.operation = operation;
-        }
+    
+    private Route handler(String container, Optional<String> authorization) {
+    	return route(
+            
+            parameter(OP, (String operation) ->
+                extractUri(uri ->
+                    extractMethod(method ->                                                
+                    	runner.handler(buildCA(container, authorization), uri, method, operation)
+                    )
+                )
+            ),
+            
+            //management endpoints from here
+            pathPrefix("stats", () -> 
+            	pathEndOrSingleSlash(() ->
+                    get(() ->                                            
+                    	runner.stats(buildCA(container, authorization))
+                    )
+                )
+            ),
+            pathPrefix("last", () ->
+            	pathEndOrSingleSlash(() ->
+                    get(() ->                                            
+                    	runner.last(buildCA(container, authorization))
+                    )
+                )
+            ),
+            pathPrefix("token", () ->
+            	pathEndOrSingleSlash(() ->
+                	post(() ->
+                		runner.token(buildCA(container, authorization))
+                	)
+            	)
+            )
+            
+        );    	
     }
+            
         
 }

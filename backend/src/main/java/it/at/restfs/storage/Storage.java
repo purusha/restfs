@@ -24,9 +24,12 @@ public interface Storage {
 	}	
 	
 	/*
-		todo
+		
+		TODO
 		
 		1) tutti i path dovrebero essere di tipo AbsolutePath e non String
+		2) visto l'esistenza della classe PerRequestContext è utile rimuovere l'UUID container da tutte le API esposte
+		
 	 */
     
     boolean exist(UUID container);

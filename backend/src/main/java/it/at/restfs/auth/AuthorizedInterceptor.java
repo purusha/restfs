@@ -10,7 +10,7 @@ import org.apache.commons.lang3.ClassUtils;
 
 import com.google.inject.Inject;
 
-import it.at.restfs.http.ControllerRunner.ContainerAuth;
+import it.at.restfs.http.services.PathHelper.ContainerAuth;
 
 public class AuthorizedInterceptor implements MethodInterceptor {
 	

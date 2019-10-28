@@ -20,31 +20,21 @@ import it.at.restfs.auth.AuthorizationChecker;
 import it.at.restfs.auth.AuthorizationChecker.Implementation;
 import it.at.restfs.auth.AuthorizationConfigHandler;
 import it.at.restfs.auth.AuthorizationManager;
-import it.at.restfs.http.ControllerRunner.ContainerAuth;
-import it.at.restfs.http.HTTPListener.Request;
 import it.at.restfs.http.services.Complete;
+import it.at.restfs.http.services.PathHelper.ContainerAuth;
+import it.at.restfs.http.services.PathHelper.Request;
 import it.at.restfs.storage.ContainerRepository;
 import it.at.restfs.storage.dto.Container;
+import lombok.RequiredArgsConstructor;
 
-//@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class MangementController implements Controller {
 	
 	private final ContainerRepository cRepo;
 	private final AuthorizationConfigHandler configResolver;
 	private final MessageDispatcher dispatcher;
 	private final AuthorizationManager authManager;
-	
-	@Inject
-    public MangementController(
-		ContainerRepository cRepo, AuthorizationConfigHandler configResolver, 
-		MessageDispatcher dispatcher, AuthorizationManager authManager
-	) {
-		this.cRepo = cRepo;
-		this.configResolver = configResolver;
-		this.dispatcher = dispatcher;
-		this.authManager = authManager;
-	}	
-	
+		
     public Route stats(Request t) {  
     	return withFuture(
 			() -> cRepo.getStatistics(t.getContainer())
