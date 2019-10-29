@@ -100,7 +100,7 @@ public class RandomGenerator extends MasterPwdBaseTest {
         int expected = (folders.size() * 2) + (files.size() * 2) + (filesWithContent.size() * 2); //don't count /stats call
         int mgmtExpected = 1; //token
         
-        expected("{\"200\":" + expected + mgmtExpected + "}", Iterables.get(r1, 0).string());        
+        expected("{\"200\":" + (expected + mgmtExpected) + "}", Iterables.get(r1, 0).string());        
     }
     
     private void open(ExecutionContext ctx, List<String> files) {
