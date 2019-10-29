@@ -3,7 +3,6 @@ package it.at.restfs.integration.noAuth;
 import static java.nio.charset.Charset.defaultCharset;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -31,15 +30,10 @@ public class PersistentConnection extends NoAuthBaseTest {
 
     //XXX please make it with HttpClient instead of this !!?
     private String doubleCall() throws IOException, InterruptedException {
-        final List<String> curlParams = new ArrayList<String>();
-        
-        curlParams.add("/usr/bin/curl");    
-        curlParams.add("-v");
-        curlParams.add("-s");
-        curlParams.add("-H");
+    	final List<String> curlParams = getFeatures().curl();
+
+    	curlParams.add("-H");
         curlParams.add("Accept: application/json");
-//        curlParams.add("-H");
-//        curlParams.add("Authorization: ");
         curlParams.add("-H");
         curlParams.add("X-Container: " + getContainer().toString());
         curlParams.add("-H");
@@ -70,12 +64,6 @@ public class PersistentConnection extends NoAuthBaseTest {
         if (process.waitFor() != 0) {
             throw new RuntimeException("curl: Failure!\n");
         }        
-        
-//        if (process.waitFor() == 0) {
-//            System.out.println("curl: Success!\n");
-//        } else {
-//            System.out.println("curl: Failure!\n");
-//        }        
         
         return out;
     }    

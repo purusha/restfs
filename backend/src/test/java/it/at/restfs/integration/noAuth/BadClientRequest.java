@@ -3,7 +3,6 @@ package it.at.restfs.integration.noAuth;
 import static java.nio.charset.Charset.defaultCharset;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -46,23 +45,12 @@ public class BadClientRequest extends NoAuthBaseTest {
     
     //XXX please don't reause this
     private String curl(boolean accept, boolean authorization, boolean container, boolean op) throws IOException, InterruptedException {
-        final List<String> curlParams = new ArrayList<String>();
-        
-        curlParams.add("/usr/bin/curl");  //XXX this is not a good idea when run in win32 machine !!?  
-        curlParams.add("-v");
-        curlParams.add("-s");
+        final List<String> curlParams = getFeatures().curl();
         
         if (accept) {
             curlParams.add("-H");
             curlParams.add("Accept: application/json");            
         }
-        
-        /*
-        if (authorization) {
-            curlParams.add("-H");
-            curlParams.add("Authorization: ");
-        }
-        */
         
         if (container) {
             curlParams.add("-H");

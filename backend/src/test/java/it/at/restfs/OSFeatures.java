@@ -12,6 +12,8 @@ public interface OSFeatures {
   
     List<String> ls();
     
+    List<String> curl();
+    
     List<String> catchOutputOf(Process process) throws IOException;
     
     public static OSFeatures build() {      
@@ -35,6 +37,17 @@ class Linux implements OSFeatures {
         
         return result;
     }
+    
+    @Override
+    public List<String> curl() {
+        final List<String> result = new ArrayList<String>();
+        
+        result.add("/usr/bin/curl");
+        result.add("-v");
+        result.add("-s");
+        
+        return result;
+    }    
 
     @Override
     public List<String> catchOutputOf(Process process) throws IOException {
@@ -60,6 +73,17 @@ class MacOsx implements OSFeatures {
     }
 
     @Override
+    public List<String> curl() {
+        final List<String> result = new ArrayList<String>();
+        
+        result.add("/usr/bin/curl");
+        result.add("-v");
+        result.add("-s");
+        
+        return result;
+    }    
+    
+    @Override
     public List<String> catchOutputOf(Process process) throws IOException {
         return IOUtils.readLines(
             process.getInputStream(), defaultCharset()
@@ -68,7 +92,7 @@ class MacOsx implements OSFeatures {
   
 }
 
-//XXX use me !!?
+//XXX use and fill me please !!?
 class Windows implements OSFeatures {
 
 	@Override
@@ -76,6 +100,11 @@ class Windows implements OSFeatures {
 		return null;
 	}
 
+    @Override
+    public List<String> curl() {
+        return null;
+    }    
+	
 	@Override
 	public List<String> catchOutputOf(Process process) throws IOException {
 		return null;

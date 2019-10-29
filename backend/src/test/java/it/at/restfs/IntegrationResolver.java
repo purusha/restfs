@@ -22,12 +22,10 @@ public class IntegrationResolver {
     @Getter
     private final Pair<String, Integer> adminEndpoint;
     
-    public IntegrationResolver() {        
-        publicEndpoint = Pair.of(TEST_CONF.getString("http.public.host"), TEST_CONF.getInt("http.public.port"));
-        
-        adminEndpoint = Pair.of(TEST_CONF.getString("http.admin.host"), TEST_CONF.getInt("http.admin.port"));
-        
-        features = OSFeatures.build();
+    public IntegrationResolver() {            	
+        publicEndpoint = Pair.of(TEST_CONF.getString("http.public.host"), TEST_CONF.getInt("http.public.port"));        
+        adminEndpoint = Pair.of(TEST_CONF.getString("http.admin.host"), TEST_CONF.getInt("http.admin.port"));        
+        features = OSFeatures.build();        
     }
 	
 }

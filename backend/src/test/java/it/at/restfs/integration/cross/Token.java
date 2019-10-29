@@ -3,7 +3,6 @@ package it.at.restfs.integration.cross;
 import static java.nio.charset.Charset.defaultCharset;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -13,20 +12,24 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.CharacterPredicates;
 import org.apache.commons.text.RandomStringGenerator;
-import org.apache.commons.text.RandomStringGenerator.Builder;
 import org.junit.Test;
 
 import it.at.restfs.IntegrationResolver;
 import it.at.restfs.MasterPwdBaseTest;
 import it.at.restfs.NoAuthBaseTest;
+import it.at.restfs.OSFeatures;
 import it.at.restfs.http.services.PathHelper;
 
 public class Token {
 	
-	private static final Builder B = new RandomStringGenerator.Builder();
+	private static final IntegrationResolver RESOLVER = 
+		new IntegrationResolver();
+	
+	private static final RandomStringGenerator BUILDER = 
+		new RandomStringGenerator.Builder().filteredBy(CharacterPredicates.ASCII_ALPHA_NUMERALS).build();
 		
 	/*
-	 * this test must be provider for each type of values inner ==> it.at.restfs.auth.AuthorizationChecker
+	 * this test must be provided for each type of values inner ==> it.at.restfs.auth.AuthorizationChecker
 	 */
 	
 	public static class NoAuth extends NoAuthBaseTest {		
@@ -52,9 +55,7 @@ public class Token {
 	    public void tokenWithWrongAuth() throws Exception {        
 	        final String response = callToken(
         		getContainer(), 
-        		Optional.of(
-    				B.filteredBy(CharacterPredicates.ASCII_ALPHA_NUMERALS).build().generate(8)
-				)
+        		Optional.of(BUILDER.generate(8))
     		);
 	        
 	        matchEverywhere("HTTP/1.1 403 Forbidden" , response);	        
@@ -72,12 +73,9 @@ public class Token {
 	
     //XXX please make it with HttpClient instead of this !!?
     private static String callToken(UUID containerId, Optional<String> authHeader) throws IOException, InterruptedException {
-        final List<String> curlParams = new ArrayList<String>();
-        
-        curlParams.add("/usr/bin/curl");    
-        curlParams.add("-v");
-        curlParams.add("-s");
-        curlParams.add("-H");
+    	final List<String> curlParams = getFeatures().curl();
+
+    	curlParams.add("-H");
         curlParams.add("Accept: application/json");
         
         if (authHeader.isPresent()) {
@@ -115,9 +113,12 @@ public class Token {
         return out;
     }   
     
-    //XXX this is a tricks !!?
+    private static OSFeatures getFeatures() {
+		return RESOLVER.getFeatures();
+	}
+
     private static Pair<String, Integer> getPublicEndpoint() {
-    	return new IntegrationResolver().getPublicEndpoint();
+    	return RESOLVER.getPublicEndpoint();
     }
 	
 }

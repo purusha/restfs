@@ -2,7 +2,6 @@ package it.at.restfs.integration.noAuth;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -41,19 +40,14 @@ public class GzipRequestContent extends NoAuthBaseTest {
     
     //XXX please make it with HttpClient instead of this !!?
     private void appenGzipContent() throws IOException, InterruptedException {
-        final List<String> curlParams = new ArrayList<String>();
+    	final List<String> curlParams = getFeatures().curl();
         
-        curlParams.add("/usr/bin/curl");    
-        curlParams.add("-v");
-        curlParams.add("-s");
         curlParams.add("--trace-ascii");
         curlParams.add("http_trace.log");
         curlParams.add("--data-binary");
         curlParams.add("@file.gz");
         curlParams.add("-H");
         curlParams.add("Accept: application/json");
-//        curlParams.add("-H");
-//        curlParams.add("Authorization: " + " ");
         curlParams.add("-H");
         curlParams.add("X-Container: " + getContainer().toString());
         curlParams.add("-H");
@@ -69,26 +63,10 @@ public class GzipRequestContent extends NoAuthBaseTest {
         pb.redirectErrorStream(true);
         
         final Process process = pb.start();
-
-//        final String out = String.join(
-//            "\n", 
-//            IOUtils.readLines(
-//                process.getInputStream(), defaultCharset()
-//            )
-//        ); 
         
         if (process.waitFor() != 0) {
             throw new RuntimeException("curl: Failure!\n");
         }        
-//        
-//        
-//        if (process.waitFor() == 0) {
-//            System.out.println("curl: Success!\n");
-//        } else {
-//            System.out.println("curl: Failure!\n");            
-//        }        
-//        
-//        System.out.println(out);
     }    
        
 }
