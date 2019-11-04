@@ -251,7 +251,6 @@ public class AdminHTTPListener {
 	    	END Provisioning actions: please extract a service !!?
 	     */
         
-
         return redirect(Uri.create("http://" + host + ":" + port + "/" + CONTAINERS), StatusCodes.SEE_OTHER);
     }
         

@@ -17,7 +17,7 @@ import static akka.http.javadsl.server.Directives.route;
 import static akka.http.javadsl.server.PathMatchers.segment;
 import static it.at.restfs.http.services.PathHelper.APP_NAME;
 import static it.at.restfs.http.services.PathHelper.VERSION;
-import static it.at.restfs.http.services.PathHelper.buildCA;
+import static it.at.restfs.http.services.PathHelper.build;
 
 import java.util.List;
 import java.util.Optional;
@@ -132,7 +132,7 @@ public class HTTPListener {
             parameter(OP, (String operation) ->
                 extractUri(uri ->
                     extractMethod(method ->                                                
-                    	runner.handler(buildCA(container, authorization), uri, method, operation)
+                    	runner.handler(build(container, authorization), uri, method, operation)
                     )
                 )
             ),
@@ -141,21 +141,21 @@ public class HTTPListener {
             pathPrefix("stats", () -> 
             	pathEndOrSingleSlash(() ->
                     get(() ->                                            
-                    	runner.stats(buildCA(container, authorization))
+                    	runner.stats(build(container, authorization))
                     )
                 )
             ),
             pathPrefix("last", () ->
             	pathEndOrSingleSlash(() ->
                     get(() ->                                            
-                    	runner.last(buildCA(container, authorization))
+                    	runner.last(build(container, authorization))
                     )
                 )
             ),
             pathPrefix("token", () ->
             	pathEndOrSingleSlash(() ->
                 	post(() ->
-                		runner.token(buildCA(container, authorization))
+                		runner.token(build(container, authorization))
                 	)
             	)
             )

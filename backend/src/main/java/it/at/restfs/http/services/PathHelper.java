@@ -32,7 +32,7 @@ public class PathHelper {
 		return new Request(container, uri , operation);
 	}
     
-    public static ContainerAuth buildCA(String container, Optional<String> authorization) {
+    public static ContainerAuth build(String container, Optional<String> authorization) {
     	return new ContainerAuth(UUID.fromString(container), authorization); //XXX what happens if container is not an UUID instance ?
     }
         
@@ -46,7 +46,7 @@ public class PathHelper {
 	@Getter 
     @Setter
     public static class Request {
-        private final UUID container; //XXX is usefull ??
+        private final UUID container; //XXX is usefull only for future development ??
         private final String path;
         private final String operation; //should be Optional<String>
         
