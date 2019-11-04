@@ -37,9 +37,8 @@ import it.at.restfs.http.services.PathHelper;
 import it.at.restfs.http.services.PerRequestContext;
 import it.at.restfs.storage.ContainerRepository;
 import it.at.restfs.storage.FileSystemContainerRepository;
-import it.at.restfs.storage.FileSystemStorage;
-import it.at.restfs.storage.HdfsStorage;
 import it.at.restfs.storage.RootFileSystem;
+import it.at.restfs.storage.Storage;
 import it.at.restfs.storage.Storage.Implementation;
 import it.at.restfs.storage.StorageFactory;
 import it.at.restfs.storage.dto.ResouceNotFoundException;
@@ -78,36 +77,19 @@ public class AkkaModule implements Module {
         binder
             .bind(Http.class)
             .toInstance(Http.get(actorSystem));
-        
-        
-        
-
-    	/*        
-        for (Storage.Implementation i : Storage.Implementation.values()) {
-        	
-
-            binder
-	            .bind(Key.get(Storage.class, Names.named(i.key)))
-	            .to(i.implClazz)
-	            .in(Singleton.class);
-			
-		}
-        */
-    	
-        binder.install(new FactoryModuleBuilder().build(FileSystemStorage.Factory.class));
-        binder.install(new FactoryModuleBuilder().build(HdfsStorage.Factory.class));
-        
-        MapBinder<Implementation, StorageFactory<?>> mapbinder = MapBinder.newMapBinder(
+                        
+        final MapBinder<Implementation, StorageFactory<?>> storages = MapBinder.newMapBinder(
     		binder, new TypeLiteral<Implementation>(){}, new TypeLiteral<StorageFactory<?>>(){}
 		);
-
-		mapbinder.addBinding(Implementation.FS).to(FileSystemStorage.Factory.class);  
-        mapbinder.addBinding(Implementation.HFS).to(HdfsStorage.Factory.class);        
-        
-        
-        
-        
-        
+   
+        for (Storage.Implementation i : Storage.Implementation.values()) {       
+        	
+        	binder.install(
+    			new FactoryModuleBuilder().build(i.factory)
+			);
+        	
+        	storages.addBinding(i).to(i.factory);			
+		}
         
         for (AuthorizationChecker.Implementation i : AuthorizationChecker.Implementation.values()) {
         	
@@ -124,9 +106,7 @@ public class AkkaModule implements Module {
 		}        
         
         binder.install(
-    		new FactoryModuleBuilder()
-				.implement(PerRequestContext.class, PerRequestContext.class)				
-				.build(PerRequestContext.Factory.class)
+    		new FactoryModuleBuilder().build(PerRequestContext.Factory.class)
 		);
         
         binder

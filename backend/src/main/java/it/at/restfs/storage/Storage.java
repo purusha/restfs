@@ -9,15 +9,15 @@ import it.at.restfs.storage.dto.OpenFile;
 public interface Storage {
 	
 	public enum Implementation {
-		FS("fs", FileSystemStorage.class),
-		HFS("hdfs", HdfsStorage.class);
+		FS("fs", FileSystemStorage.Factory.class),
+		HFS("hdfs", HdfsStorage.Factory.class);
 		
 		public String key; 
-		public Class<? extends Storage> implClazz;
+		public Class<? extends StorageFactory<?>> factory;
 		
-		private Implementation(String k, Class<? extends Storage> i) {
+		private Implementation(String k, Class<? extends StorageFactory<?>> f) {
 			this.key = k;
-			this.implClazz = i;
+			this.factory = f;
 		}
 	}	
 	
