@@ -18,13 +18,13 @@ public class DeleteController implements Controller {
     //operation = DELETE
     public Route delete(Request t) {
         return x.withFuture(() -> {
-            final AssetType typeOf = x.getStorage().typeOf(t.getContainer(), AbsolutePath.of(t.getPath()));        
+            final AssetType typeOf = x.getStorage().typeOf(AbsolutePath.of(t.getPath()));        
             
             final FileStatus result = AssetType.FILE == typeOf ? 
-                x.getStorage().getStatus(t.getContainer(), t.getPath()) :
-                x.getStorage().listStatus(t.getContainer(), t.getPath());
+                x.getStorage().getStatus(t.getPath()) :
+                x.getStorage().listStatus(t.getPath());
             
-            x.getStorage().delete(t.getContainer(), t.getPath());
+            x.getStorage().delete(t.getPath());
             
             return result;                    
         });

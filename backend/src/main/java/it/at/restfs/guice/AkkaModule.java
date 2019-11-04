@@ -9,8 +9,10 @@ import com.google.inject.Binder;
 import com.google.inject.Key;
 import com.google.inject.Module;
 import com.google.inject.Singleton;
+import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.matcher.Matchers;
+import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Names;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -35,8 +37,11 @@ import it.at.restfs.http.services.PathHelper;
 import it.at.restfs.http.services.PerRequestContext;
 import it.at.restfs.storage.ContainerRepository;
 import it.at.restfs.storage.FileSystemContainerRepository;
+import it.at.restfs.storage.FileSystemStorage;
+import it.at.restfs.storage.HdfsStorage;
 import it.at.restfs.storage.RootFileSystem;
-import it.at.restfs.storage.Storage;
+import it.at.restfs.storage.Storage.Implementation;
+import it.at.restfs.storage.StorageFactory;
 import it.at.restfs.storage.dto.ResouceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -74,13 +79,35 @@ public class AkkaModule implements Module {
             .bind(Http.class)
             .toInstance(Http.get(actorSystem));
         
+        
+        
+
+    	/*        
         for (Storage.Implementation i : Storage.Implementation.values()) {
+        	
+
             binder
 	            .bind(Key.get(Storage.class, Names.named(i.key)))
 	            .to(i.implClazz)
-	            .in(Singleton.class); 
+	            .in(Singleton.class);
 			
 		}
+        */
+    	
+        binder.install(new FactoryModuleBuilder().build(FileSystemStorage.Factory.class));
+        binder.install(new FactoryModuleBuilder().build(HdfsStorage.Factory.class));
+        
+        MapBinder<Implementation, StorageFactory<?>> mapbinder = MapBinder.newMapBinder(
+    		binder, new TypeLiteral<Implementation>(){}, new TypeLiteral<StorageFactory<?>>(){}
+		);
+
+		mapbinder.addBinding(Implementation.FS).to(FileSystemStorage.Factory.class);  
+        mapbinder.addBinding(Implementation.HFS).to(HdfsStorage.Factory.class);        
+        
+        
+        
+        
+        
         
         for (AuthorizationChecker.Implementation i : AuthorizationChecker.Implementation.values()) {
         	

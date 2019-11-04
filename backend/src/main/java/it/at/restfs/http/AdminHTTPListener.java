@@ -244,6 +244,7 @@ public class AdminHTTPListener {
         
         cRepo.save(container);     
         
+        //XXX call this only if container storage is FS
         rfs.containerPath(id, "").toFile().mkdir();
         
         /*

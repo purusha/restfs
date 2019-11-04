@@ -1,7 +1,5 @@
 package it.at.restfs.storage;
 
-import java.util.UUID;
-
 import it.at.restfs.storage.dto.AbsolutePath;
 import it.at.restfs.storage.dto.AssetType;
 import it.at.restfs.storage.dto.FileStatus;
@@ -28,28 +26,27 @@ public interface Storage {
 		TODO
 		
 		1) tutti i path dovrebero essere di tipo AbsolutePath e non String
-		2) visto l'esistenza della classe PerRequestContext è utile rimuovere l'UUID container da tutte le API esposte
 		
 	 */
     
-    boolean exist(UUID container);
+    //boolean exist(UUID container);
 
-    FolderStatus listStatus(UUID container, String path);
+    FolderStatus listStatus(String path);
 
-    FileStatus getStatus(UUID container, String path);
+    FileStatus getStatus(String path);
 
-    OpenFile open(UUID container, String path);
+    OpenFile open(String path);
 
-    void make(UUID container, String path, AssetType folder);
+    void make(String path, AssetType folder);
 
-    void append(UUID container, String path, String body);
+    void append(String path, String body);
     
-    void delete(UUID container, String path);
+    void delete(String path);
     
-    AssetType typeOf(UUID container, AbsolutePath path);
+    AssetType typeOf(AbsolutePath path);
 
-    String rename(UUID container, String path, String target);
+    String rename(String path, String target);
 
-    String move(UUID container, String path, AbsolutePath target);
+    String move(String path, AbsolutePath target);
 
 }

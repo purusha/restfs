@@ -1,13 +1,16 @@
 package it.at.restfs.storage;
 
+import java.util.Arrays;
+import java.util.Map;
 import java.util.UUID;
 
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.google.inject.name.Names;
+import org.apache.commons.lang3.StringUtils;
 
+import com.google.inject.Inject;
+
+import it.at.restfs.storage.Storage.Implementation;
 import it.at.restfs.storage.dto.Container;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /*
@@ -19,26 +22,23 @@ import lombok.extern.slf4j.Slf4j;
 */
 
 @Slf4j
+@RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class StorageResolver {
 	
-	private final Injector injector;
 	private final ContainerRepository cRepo;
-
-	@Inject
-	public StorageResolver(Injector injector, ContainerRepository cRepo) {
-		this.injector = injector;
-		this.cRepo = cRepo;
-	}
-		
+	private final Map<Implementation, StorageFactory<?>> binder;
+	
 	public Storage get(UUID uuidC) {
-		final Container container = cRepo.load(uuidC);		
+		final Container container = cRepo.load(uuidC);
 		
-		final Storage storage = injector.getInstance(
-			Key.get(Storage.class, Names.named(container.getStorage()))
-		);
+		final Implementation impl = Arrays.stream(Implementation.values())
+			.filter(i -> StringUtils.equals(i.key, container.getStorage()))
+			.findFirst()
+			.get();
 		
-		LOGGER.debug("container {}/{} use {} as Storage", container.getId(), container.getName(), storage.getClass().getSimpleName());
+		LOGGER.debug("container {}/{} use {} as Storage", container.getId(), container.getName(), impl.implClazz.getSimpleName());
 		
-		return storage;
+		return binder.get(impl).create(uuidC);
 	}
+	
 }

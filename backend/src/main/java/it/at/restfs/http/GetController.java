@@ -19,7 +19,7 @@ public class GetController implements Controller {
 
     //operation = OPEN (this is download)
     public Route open(Request t) {                
-        if(AssetType.FOLDER == x.getStorage().typeOf(t.getContainer(), AbsolutePath.of(t.getPath()))) {
+        if(AssetType.FOLDER == x.getStorage().typeOf(AbsolutePath.of(t.getPath()))) {
             return complete(StatusCodes.BAD_REQUEST, "dowload is available only for file objects");
         }
         
@@ -29,21 +29,21 @@ public class GetController implements Controller {
              * XXX this implementation is too stupid ... how to meet the correct file encoding !!?
              */
             
-            return x.getStorage().open(t.getContainer(), t.getPath());
+            return x.getStorage().open(t.getPath());
         });
     }
 
     //operation = GETSTATUS
     public Route getstatus(Request t) {
         return x.withFuture(() -> {
-            return x.getStorage().getStatus(t.getContainer(), t.getPath());
+            return x.getStorage().getStatus(t.getPath());
         });        
     }
     
     //operation = LISTSTATUS
     public Route liststatus(Request t) {        
         return x.withFuture(() -> {
-            return x.getStorage().listStatus(t.getContainer(), t.getPath());
+            return x.getStorage().listStatus(t.getPath());
         });        
     }
 

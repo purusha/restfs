@@ -20,6 +20,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 
 import it.at.restfs.storage.dto.AbsolutePath;
 import it.at.restfs.storage.dto.AssetType;
@@ -31,7 +32,12 @@ import lombok.SneakyThrows;
 
 public class FileSystemStorage implements Storage {
 	
-    private RootFileSystem rfs;
+	public interface Factory extends StorageFactory<FileSystemStorage> {
+		FileSystemStorage create(UUID container);
+	}
+	
+	private final UUID container;
+    private final RootFileSystem rfs;
 
 	/*
 
@@ -43,15 +49,16 @@ public class FileSystemStorage implements Storage {
      */
 	
 	@Inject
-	public FileSystemStorage(RootFileSystem rfs) {
+	public FileSystemStorage(RootFileSystem rfs, @Assisted UUID container) {
+		this.container = container;
 		this.rfs = rfs;
 		
 	}
 
     @SneakyThrows(IOException.class)
     @Override
-    public FolderStatus listStatus(UUID container, String path) {
-        final Path realPath = resolve(container, path, false);
+    public FolderStatus listStatus(String path) {
+        final Path realPath = resolve(path, false);
       
         final FolderStatus result = new FolderStatus();
         build(realPath, realPath.toFile(), result);   
@@ -80,8 +87,8 @@ public class FileSystemStorage implements Storage {
 
     @SneakyThrows(IOException.class)
     @Override
-    public FileStatus getStatus(UUID container, String path) {
-        final Path realPath = resolve(container, path, false);
+    public FileStatus getStatus(String path) {
+        final Path realPath = resolve(path, false);
         
         final FileStatus result = new FileStatus();         
         build(realPath, realPath.toFile(), result);
@@ -91,8 +98,8 @@ public class FileSystemStorage implements Storage {
     
     @SneakyThrows(IOException.class)
     @Override
-    public OpenFile open(UUID container, String path) {        
-        final Path realPath = resolve(container, path, false);
+    public OpenFile open(String path) {        
+        final Path realPath = resolve(path, false);
                 
         final OpenFile result = new OpenFile();
         result.setPath(path);
@@ -103,8 +110,8 @@ public class FileSystemStorage implements Storage {
 
     @SneakyThrows(IOException.class)
     @Override
-    public void make(UUID container, String path, AssetType type) {
-        final Path realPath = resolve(container, path, true);
+    public void make(String path, AssetType type) {
+        final Path realPath = resolve(path, true);
                 
         switch(type) {
             case FOLDER: {
@@ -113,7 +120,7 @@ public class FileSystemStorage implements Storage {
                 
             case FILE: {
                 final String parent = extractParentSubpath(realPath, container);
-                resolve(container, parent, false); //XXX la directory parent deve esistere
+                resolve(parent, false); //XXX la directory parent deve esistere
                 
                 Files.createFile(realPath);
             } break;
@@ -122,16 +129,16 @@ public class FileSystemStorage implements Storage {
 
     @SneakyThrows(IOException.class)
     @Override
-    public void append(UUID container, String path, String body) {
-        final Path realPath = resolve(container, path, false);
+    public void append(String path, String body) {
+        final Path realPath = resolve(path, false);
 
         Files.write(realPath, body.getBytes(), StandardOpenOption.APPEND);
     }
 
     @SneakyThrows(IOException.class)
     @Override
-    public void delete(UUID container, String path) {
-        final Path realPath = resolve(container, path, false);
+    public void delete(String path) {
+        final Path realPath = resolve(path, false);
         
         try(Stream<Path> stream = Files.walk(realPath)) {
             stream
@@ -142,8 +149,8 @@ public class FileSystemStorage implements Storage {
     }
     
     @Override
-    public AssetType typeOf(UUID container, AbsolutePath path) {
-        final Path realPath = resolve(container, path.getPath(), false);        
+    public AssetType typeOf(AbsolutePath path) {
+        final Path realPath = resolve(path.getPath(), false);        
         final File realFile = realPath.toFile();        
         
         return realFile.isDirectory() ? AssetType.FOLDER : AssetType.FILE;
@@ -151,10 +158,10 @@ public class FileSystemStorage implements Storage {
 
     @SneakyThrows(IOException.class)
     @Override
-    public String rename(UUID container, String path, String target) {
-        final Path sourcePath = resolve(container, path, false);
+    public String rename(String path, String target) {
+        final Path sourcePath = resolve(path, false);
         final String parent = extractParentSubpath(sourcePath, container);
-        final Path targetPath = resolve(container, parent + "/" + target, true);
+        final Path targetPath = resolve(parent + "/" + target, true);
         
         Files.move(sourcePath, targetPath); //throw FileAlreadyExistsException when targetPath just exist !!?
         
@@ -163,11 +170,11 @@ public class FileSystemStorage implements Storage {
 
     @SneakyThrows(IOException.class)
     @Override
-    public String move(UUID container, String path, AbsolutePath target) {
-        final Path sourcePath = resolve(container, path, false);
-        final Path targetPath = resolve(container, target.getPath(), true);
+    public String move(String path, AbsolutePath target) {
+        final Path sourcePath = resolve(path, false);
+        final Path targetPath = resolve(target.getPath(), true);
         
-        if (AssetType.FOLDER == typeOf(container, AbsolutePath.of(path))) {
+        if (AssetType.FOLDER == typeOf(AbsolutePath.of(path))) {
             FileUtils.moveDirectoryToDirectory(sourcePath.toFile(), targetPath.toFile(), false);  
         } else {
             FileUtils.moveFileToDirectory(sourcePath.toFile(), targetPath.toFile(), false);  
@@ -176,16 +183,18 @@ public class FileSystemStorage implements Storage {
         return extractSubpath(targetPath, container);
     }
 
+    /*
     @Override
     public boolean exist(UUID container) {
         try{
-            resolve(container, "", false);
+            resolve("", false);
         } catch (Exception e) {
             return false;
         }
 
         return true;
-    }    
+    } 
+    */   
     
     private String extractSubpath(Path path, UUID container) {
         return StringUtils.substringAfter(path.toFile().getAbsolutePath(), container.toString());
@@ -195,7 +204,7 @@ public class FileSystemStorage implements Storage {
         return StringUtils.substringAfter(path.getParent().toFile().getAbsolutePath(), container.toString());
     }
 
-    private Path resolve(UUID container, String path, boolean flag) {
+    private Path resolve(String path, boolean flag) {
         final Path realPath = rfs.containerPath(container, path);        
         final File realFile = realPath.toFile();        
         

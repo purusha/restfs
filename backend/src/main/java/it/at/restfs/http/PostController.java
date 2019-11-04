@@ -24,18 +24,18 @@ public class PostController implements Controller {
     //operation = MKDIRS
     public Route mkdirs(Request t) {
         return x.withFuture(() -> {        
-        	x.getStorage().make(t.getContainer(), t.getPath(), AssetType.FOLDER);
+        	x.getStorage().make(t.getPath(), AssetType.FOLDER);
             
-            return x.getStorage().listStatus(t.getContainer(), t.getPath());
+            return x.getStorage().listStatus(t.getPath());
         });
     }
 
     //operation = CREATE
     public Route create(Request t) {
         return x.withFuture(() -> {        
-        	x.getStorage().make(t.getContainer(), t.getPath(), AssetType.FILE);
+        	x.getStorage().make(t.getPath(), AssetType.FILE);
             
-            return x.getStorage().getStatus(t.getContainer(), t.getPath());        
+            return x.getStorage().getStatus(t.getPath());        
         });
     }
 
@@ -44,9 +44,9 @@ public class PostController implements Controller {
         return decodeRequest(() -> //gzipped body content is decoded by this ... when text do nothing !
             extractRequestEntity(request -> {
                 return x.withFuture(() -> {
-                	x.getStorage().append(t.getContainer(), t.getPath(), getBody(request.getDataBytes()));
+                	x.getStorage().append(t.getPath(), getBody(request.getDataBytes()));
                     
-                    return x.getStorage().getStatus(t.getContainer(), t.getPath());                                        
+                    return x.getStorage().getStatus(t.getPath());                                        
                 });
             })
         );            

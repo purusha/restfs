@@ -32,12 +32,12 @@ public class PutController implements Controller {
             }
             
             return x.withFuture(() -> {
-                final String result = x.getStorage().rename(t.getContainer(), t.getPath(), target);
-                final AssetType typeOf = x.getStorage().typeOf(t.getContainer(), AbsolutePath.of(result));
+                final String result = x.getStorage().rename(t.getPath(), target);
+                final AssetType typeOf = x.getStorage().typeOf(AbsolutePath.of(result));
                 
                 return AssetType.FILE == typeOf ? 
-            		x.getStorage().getStatus(t.getContainer(), result) :
-        			x.getStorage().listStatus(t.getContainer(), result);                    
+            		x.getStorage().getStatus(result) :
+        			x.getStorage().listStatus(result);                    
             });
         });
     }    
@@ -50,22 +50,22 @@ public class PutController implements Controller {
         
         return parameter("target", target -> {
             final AbsolutePath targetPath = AbsolutePath.of(target);
-            final AssetType targetType = x.getStorage().typeOf(t.getContainer(), targetPath);
+            final AssetType targetType = x.getStorage().typeOf(targetPath);
             
             if(AssetType.FILE == targetType) {
                 return complete(StatusCodes.BAD_REQUEST, "target must be a directory");
             }
             
-            final AssetType currentType = x.getStorage().typeOf(t.getContainer(), AbsolutePath.of(t.getPath()));
+            final AssetType currentType = x.getStorage().typeOf(AbsolutePath.of(t.getPath()));
             
             if (AssetType.FOLDER == currentType && ! StringUtils.startsWith(t.getPath(), targetPath.getPath())) {
                 return complete(StatusCodes.BAD_REQUEST, "target cannot start with currentPath");
             }
             
             return x.withFuture(() -> {
-                final String result = x.getStorage().move(t.getContainer(), t.getPath(), targetPath);
+                final String result = x.getStorage().move(t.getPath(), targetPath);
 
-                return x.getStorage().listStatus(t.getContainer(), result);
+                return x.getStorage().listStatus(result);
             });
         });                
     }
