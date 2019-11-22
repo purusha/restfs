@@ -44,6 +44,7 @@ import com.github.jknack.handlebars.Options;
 import com.github.jknack.handlebars.TagType;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.typesafe.config.Config;
@@ -218,8 +219,9 @@ public class AdminHTTPListener {
         	START Provisioning actions: please extract a service !!?
          */
                 
-        //XXX do u rember Open-Close principle ???
+        //XXX do u remember Open-Close principle ???
         switch(AuthorizationChecker.Implementation.valueOf(authorization)) {
+        
 			case MASTER_PWD: {
 				
 				final String pwd = params.get(AuthorizationChecker.Implementation.MASTER_PWD.k);
@@ -228,9 +230,27 @@ public class AdminHTTPListener {
 					throw new RuntimeException("mandatory field not resolved for container: " + id);
 				}
 				
-				configResolver.save(container, Collections.singletonMap("masterPwd", pwd));
+				configResolver.save(
+					container, 
+					Collections.singletonMap(AuthorizationChecker.Implementation.MASTER_PWD.k, pwd)
+				);
 				
 			}break;
+			
+			case BASIC_AUTH: {
+				
+				final String user = params.get("user");
+				final String pwd = params.get("pwd");
+				
+				//XXX: user/pwd values are available
+				
+				final Map<String, String> data = Maps.newHashMap();
+				data.put("user", user);
+				data.put("pwd", pwd);
+				
+				configResolver.save(container, data);
+				
+			}
 			
 			case NO_AUTH:
 				break;
@@ -239,7 +259,8 @@ public class AdminHTTPListener {
 				break;
 				
 			default:
-				break;        
+				break;    
+				
         }
         
         cRepo.save(container);     

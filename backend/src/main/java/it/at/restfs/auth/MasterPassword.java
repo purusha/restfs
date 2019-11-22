@@ -43,17 +43,15 @@ public class MasterPassword implements AuthorizationChecker, AuthorizationMaker 
 	public String creteToken(Container container) {
 		final String token = UUID.randomUUID().toString();
 		
-		final Path repository = buildRepository(container.getId());
-				
+		final Path repository = buildRepository(container.getId());				
 		repository.toFile().mkdir(); //create folder
-		
 		repository.resolve(token).toFile().createNewFile(); //create file
 		
 		return token;
 	}
 	
 	private Path buildRepository(UUID container) { 
-    	return rfs.pathOf("AUTH-REPO-", container);
+    	return rfs.pathOf(REPO_PREFIX, container);
     }	
 	
 }

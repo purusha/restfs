@@ -67,7 +67,7 @@ public class MangementController implements Controller {
 		final Config authConf = configResolver.get(c);
 		
 		if (ctx.getAuthorization().isPresent() && StringUtils.equals(
-			authConf.getString("masterPwd"), ctx.getAuthorization().get()
+			authConf.getString(Implementation.MASTER_PWD.k), ctx.getAuthorization().get()
 		)) {				
 			return withFuture(() -> token(authManager.generateTokenFor(c), Implementation.MASTER_PWD));
 		} else {

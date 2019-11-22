@@ -2,6 +2,7 @@ package it.at.restfs.auth;
 
 import java.io.File;
 import java.util.Map;
+import java.util.UUID;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,5 +42,14 @@ public class AuthorizationConfigHandler {
 	
 	private File buildAuth(Container c) {
 		return rfs.pathOf("AUTH-", c.getId()).toFile();
+	}
+	
+	//XXX this is a trick !!? because i know what call on Container instance
+	@SneakyThrows
+	public Config get(UUID container) {
+		final Container c = new Container(); 
+		c.setId(container);
+		
+		return get(c);
 	}
 }

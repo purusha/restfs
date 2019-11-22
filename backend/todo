@@ -4,7 +4,7 @@
     
     ----------------------    
     
-    how to run tests ?
+    build, run ed execute test on win32 or mac machines ?
     
     ----------------------    
 	
@@ -27,7 +27,7 @@
         
     ----------------------
             
-    esporre lo swagger file per gli endpoint esposti
+    esporre lo swagger file per gli endpoint esposti (in modo automatico o statico?)
     
     ----------------------
     
@@ -113,3 +113,10 @@
     https://github.com/akka/akka-http/blob/master/akka-http-tests/src/main/java/akka/http/javadsl/server/examples/simple/SimpleServerHttpHttpsApp.java
     
     -------------------------------    
+    
+    ogni volta che nelle classi si fà un uso esplicito dell'Injector, potrebbe esserci un problema di design ??
+    
+    -------------------------------
+        
+    
+    

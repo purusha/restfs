@@ -14,7 +14,9 @@ import com.google.inject.Inject;
 import it.at.restfs.http.services.PathHelper;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class RootFileSystem {
 	
 	//XXX get value from System Property or Configuration File
@@ -30,6 +32,8 @@ public class RootFileSystem {
 		} else {
 			root = createRootUnix();
 		}
+		
+		LOGGER.info("RestFS started on {} as root file system", root);
 	}
 
 	@SneakyThrows

@@ -6,7 +6,7 @@ import java.util.UUID;
 public interface AuthorizationChecker {	
 	
 	/*
-	 * TODO if classes get to construction method will be always the same ... make it ones !!?
+	 * TODO if classes in construction method will be always the same ... make it ones !!?
 	 */
 	
 	public enum Implementation {

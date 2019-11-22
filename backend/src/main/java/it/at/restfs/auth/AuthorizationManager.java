@@ -4,7 +4,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 
 import it.at.restfs.storage.ContainerRepository;
 import it.at.restfs.storage.dto.Container;
@@ -15,7 +14,7 @@ public class AuthorizationManager {
 	private final AuthorizationResolver authResolver;    
     
     @Inject
-    public AuthorizationManager(Injector injector, ContainerRepository cRepo, AuthorizationResolver authResolver) {
+    public AuthorizationManager(ContainerRepository cRepo, AuthorizationResolver authResolver) {
     	this.cRepo = cRepo;
 		this.authResolver = authResolver;
     }
