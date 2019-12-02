@@ -30,6 +30,7 @@ import it.at.restfs.auth.AuthorizationChecker.Implementation;
 import it.at.restfs.http.AdminHTTPListener;
 import it.at.restfs.http.services.PathHelper;
 import it.at.restfs.storage.RootFileSystem;
+import it.at.restfs.storage.dto.AbsolutePath;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -181,7 +182,7 @@ public abstract class Stage {
 
     //XXX this code know's which is the real implementation ... is stupid
     private File getContainer(UUID container) {
-        return rfs.containerPath(container, "").toFile();
+        return rfs.containerPath(container, AbsolutePath.EMPTY).toFile();
     }
     
     @SneakyThrows(value = {IOException.class, InterruptedException.class, URISyntaxException.class})

@@ -8,7 +8,6 @@ import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.Route;
 import it.at.restfs.http.services.PathHelper.Request;
 import it.at.restfs.http.services.PerRequestContext;
-import it.at.restfs.storage.dto.AbsolutePath;
 import it.at.restfs.storage.dto.AssetType;
 import lombok.RequiredArgsConstructor;
 
@@ -19,7 +18,7 @@ public class GetController implements Controller {
 
     //operation = OPEN (this is download)
     public Route open(Request t) {                
-        if(AssetType.FOLDER == x.getStorage().typeOf(AbsolutePath.of(t.getPath()))) {
+        if(AssetType.FOLDER == x.getStorage().typeOf(t.getPath())) {
             return complete(StatusCodes.BAD_REQUEST, "dowload is available only for file objects");
         }
         

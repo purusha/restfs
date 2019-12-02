@@ -5,7 +5,6 @@ import com.google.inject.Inject;
 import akka.http.javadsl.server.Route;
 import it.at.restfs.http.services.PathHelper.Request;
 import it.at.restfs.http.services.PerRequestContext;
-import it.at.restfs.storage.dto.AbsolutePath;
 import it.at.restfs.storage.dto.AssetType;
 import it.at.restfs.storage.dto.FileStatus;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,7 @@ public class DeleteController implements Controller {
     //operation = DELETE
     public Route delete(Request t) {
         return x.withFuture(() -> {
-            final AssetType typeOf = x.getStorage().typeOf(AbsolutePath.of(t.getPath()));        
+            final AssetType typeOf = x.getStorage().typeOf(t.getPath());        
             
             final FileStatus result = AssetType.FILE == typeOf ? 
                 x.getStorage().getStatus(t.getPath()) :

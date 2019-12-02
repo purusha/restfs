@@ -19,6 +19,7 @@ import akka.http.javadsl.server.directives.LogEntry;
 import it.at.restfs.actor.EventHandlerActor;
 import it.at.restfs.event.Event;
 import it.at.restfs.http.HTTPListener;
+import it.at.restfs.storage.dto.AbsolutePath;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -36,7 +37,7 @@ public class Filter implements BiFunction<HttpRequest, HttpResponse, LogEntry> {
     	LOGGER.info("{}", new Date());
     	
         final String containerId = request.getHeader(HTTPListener.X_CONTAINER).get().value();
-        final String path = getPathString(request.getUri());
+        final AbsolutePath path = getPathString(request.getUri());
         final String operation = request.getUri().query().get(HTTPListener.OP).orElse(null);   
                 
         eventHandler.tell(        

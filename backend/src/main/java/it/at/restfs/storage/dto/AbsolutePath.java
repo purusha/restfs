@@ -4,6 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import lombok.Getter;
 
 public final class AbsolutePath {
+	
+	public static final AbsolutePath EMPTY = AbsolutePath.of("");
 
     @Getter
     private final String path;

@@ -67,6 +67,7 @@ import it.at.restfs.auth.AuthorizationConfigHandler;
 import it.at.restfs.storage.ContainerRepository;
 import it.at.restfs.storage.RootFileSystem;
 import it.at.restfs.storage.Storage;
+import it.at.restfs.storage.dto.AbsolutePath;
 import it.at.restfs.storage.dto.Container;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -266,7 +267,7 @@ public class AdminHTTPListener {
         cRepo.save(container);     
         
         //XXX call this only if container storage is FS
-        rfs.containerPath(id, "").toFile().mkdir();
+        rfs.containerPath(id, AbsolutePath.EMPTY).toFile().mkdir();
         
         /*
 	    	END Provisioning actions: please extract a service !!?

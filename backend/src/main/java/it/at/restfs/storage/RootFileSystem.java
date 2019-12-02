@@ -12,6 +12,7 @@ import com.google.common.io.Files;
 import com.google.inject.Inject;
 
 import it.at.restfs.http.services.PathHelper;
+import it.at.restfs.storage.dto.AbsolutePath;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -51,8 +52,8 @@ public class RootFileSystem {
 		return Objects.nonNull(root);
 	}
 	
-	public Path containerPath(UUID container, String path) {
-		return Paths.get(root + File.separator + container + path);
+	public Path containerPath(UUID container, AbsolutePath path) {
+		return Paths.get(root + File.separator + container + path.getPath());
 	}
 		
 	public File fileOf(String prefix, UUID container) {

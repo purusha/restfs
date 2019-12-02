@@ -9,8 +9,8 @@ import it.at.restfs.storage.dto.OpenFile;
 public interface Storage {
 	
 	public enum Implementation {
-		FS("fs", FileSystemStorage.Factory.class),
-		HFS("hdfs", HdfsStorage.Factory.class);
+		FS("fs", FileSystemStorage.Factory.class), 
+		HDFS("hdfs", HdfsStorage.Factory.class); 
 		
 		public String key; 
 		public Class<? extends StorageFactory<?>> factory;
@@ -21,32 +21,22 @@ public interface Storage {
 		}
 	}	
 	
-	/*
-		
-		TODO
-		
-		1) tutti i path dovrebero essere di tipo AbsolutePath e non String
-		
-	 */
+    FolderStatus listStatus(AbsolutePath path);
+
+    FileStatus getStatus(AbsolutePath path);
+
+    OpenFile open(AbsolutePath path);
+
+    void make(AbsolutePath path, AssetType folder);
+
+    void append(AbsolutePath path, String body);
     
-    //boolean exist(UUID container);
-
-    FolderStatus listStatus(String path);
-
-    FileStatus getStatus(String path);
-
-    OpenFile open(String path);
-
-    void make(String path, AssetType folder);
-
-    void append(String path, String body);
-    
-    void delete(String path);
+    void delete(AbsolutePath path);
     
     AssetType typeOf(AbsolutePath path);
 
-    String rename(String path, String target);
+    String rename(AbsolutePath path, AbsolutePath target);
 
-    String move(String path, AbsolutePath target);
+    String move(AbsolutePath path, AbsolutePath target);
 
 }

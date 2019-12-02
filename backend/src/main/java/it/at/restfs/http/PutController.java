@@ -32,8 +32,8 @@ public class PutController implements Controller {
             }
             
             return x.withFuture(() -> {
-                final String result = x.getStorage().rename(t.getPath(), target);
-                final AssetType typeOf = x.getStorage().typeOf(AbsolutePath.of(result));
+                final AbsolutePath result = AbsolutePath.of(x.getStorage().rename(t.getPath(), AbsolutePath.of(target)));
+                final AssetType typeOf = x.getStorage().typeOf(result);
                 
                 return AssetType.FILE == typeOf ? 
             		x.getStorage().getStatus(result) :
@@ -56,16 +56,16 @@ public class PutController implements Controller {
                 return complete(StatusCodes.BAD_REQUEST, "target must be a directory");
             }
             
-            final AssetType currentType = x.getStorage().typeOf(AbsolutePath.of(t.getPath()));
+            final AssetType currentType = x.getStorage().typeOf(t.getPath());
             
-            if (AssetType.FOLDER == currentType && ! StringUtils.startsWith(t.getPath(), targetPath.getPath())) {
+            if (AssetType.FOLDER == currentType && ! StringUtils.startsWith(t.getPath().getPath(), targetPath.getPath())) {
                 return complete(StatusCodes.BAD_REQUEST, "target cannot start with currentPath");
             }
             
             return x.withFuture(() -> {
                 final String result = x.getStorage().move(t.getPath(), targetPath);
 
-                return x.getStorage().listStatus(result);
+                return x.getStorage().listStatus(AbsolutePath.of(result));
             });
         });                
     }

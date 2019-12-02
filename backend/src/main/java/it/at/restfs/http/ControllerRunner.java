@@ -30,6 +30,7 @@ import it.at.restfs.auth.Authorized;
 import it.at.restfs.auth.NotAuthorized;
 import it.at.restfs.http.services.PathHelper.ContainerAuth;
 import it.at.restfs.http.services.PathHelper.Request;
+import it.at.restfs.storage.dto.AbsolutePath;
 import it.at.restfs.http.services.PerRequestContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -46,12 +47,12 @@ public class ControllerRunner {
     
 	@Authorized
     public Route stats(ContainerAuth ctx) {        
-		return mController.stats(build(ctx.getContainer(), "stats", null));
+		return mController.stats(build(ctx.getContainer(), AbsolutePath.of("stats"), null));
     }
 
 	@Authorized	
     public Route last(ContainerAuth ctx) {  
-		return mController.last(build(ctx.getContainer(), "last", null));
+		return mController.last(build(ctx.getContainer(), AbsolutePath.of("last"), null));
     }
 
 	@NotAuthorized
