@@ -1,0 +1,4 @@
+my-http-listener:
+    image: mendhak/http-https-echo
+    ports:
+        - "8080:80"
