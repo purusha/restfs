@@ -94,7 +94,7 @@ public class MasterPwdBaseTest extends Stage {
 
 	//XXX this is not good ... !!?
 	private String extractToken(JsonParser parser) throws IOException {		
-		while(!parser.isClosed()){
+		while(! parser.isClosed()){
 		    JsonToken jsonToken = parser.nextToken();
 
 		    if(JsonToken.FIELD_NAME.equals(jsonToken)){

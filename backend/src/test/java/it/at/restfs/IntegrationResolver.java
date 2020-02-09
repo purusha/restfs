@@ -11,7 +11,7 @@ import lombok.Getter;
 
 public class IntegrationResolver {
 
-    private static final Config TEST_CONF = ConfigFactory.parseFile(new File(Stage.class.getResource("/test.conf").getPath()));
+    private static final Config TEST_CONF = ConfigFactory.parseFile(new File(IntegrationResolver.class.getResource("/test.conf").getPath()));
     
     @Getter
     private final OSFeatures features;
