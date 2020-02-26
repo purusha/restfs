@@ -1,0 +1,11 @@
+version: '3'
+services:
+
+  simple-hadoop:
+    build: ./hadoop
+    container_name: restfs-hadoop
+    ports:
+      - 9000
+      - 50070
+      - 50075
+      - 14000
