@@ -23,8 +23,8 @@
 	<description>The module that ???</description>
 
 	<properties>
-		<akka.version>2.5.16</akka.version>
-		<akka.http.version>10.1.4</akka.http.version>
+		<akka.version>2.6.4</akka.version>
+		<akka.http.version>10.1.11</akka.http.version>
 		<buildTimestamp>${maven.build.timestamp}</buildTimestamp>
 		<maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss'Z'</maven.build.timestamp.format>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -45,7 +45,7 @@
 		<!-- logging -->
 		<dependency>
 			<groupId>com.typesafe.akka</groupId>
-			<artifactId>akka-slf4j_2.11</artifactId>
+			<artifactId>akka-slf4j_2.12</artifactId>
 			<version>${akka.version}</version>
 		</dependency>
 		<dependency>
@@ -57,40 +57,40 @@
 		<!-- akka -->
 		<dependency>
 			<groupId>com.typesafe.akka</groupId>
-			<artifactId>akka-actor_2.11</artifactId>
+			<artifactId>akka-actor_2.12</artifactId>
 			<version>${akka.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.typesafe.akka</groupId>
-			<artifactId>akka-stream_2.11</artifactId>
+			<artifactId>akka-stream_2.12</artifactId>
 			<version>${akka.version}</version>
 		</dependency>
 
 		<!-- akka http -->
 		<dependency>
 			<groupId>com.typesafe.akka</groupId>
-			<artifactId>akka-http-core_2.11</artifactId>
+			<artifactId>akka-http-core_2.12</artifactId>
 			<version>${akka.http.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.typesafe.akka</groupId>
-			<artifactId>akka-http_2.11</artifactId>
+			<artifactId>akka-http_2.12</artifactId>
 			<version>${akka.http.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.typesafe.akka</groupId>
-			<artifactId>akka-http-jackson_2.11</artifactId>
+			<artifactId>akka-http-jackson_2.12</artifactId>
 			<version>${akka.http.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.typesafe.akka</groupId>
-			<artifactId>akka-stream-kafka_2.11</artifactId>
+			<artifactId>akka-stream-kafka_2.12</artifactId>
 			<version>0.16</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.typesafe.akka</groupId>
-			<artifactId>akka-slf4j_2.11</artifactId>
+			<artifactId>akka-slf4j_2.12</artifactId>
 			<version>${akka.version}</version>
 		</dependency>
 
@@ -132,12 +132,12 @@
 		<dependency>
 		    <groupId>com.fasterxml.jackson.core</groupId>
 		    <artifactId>jackson-core</artifactId>
-		    <version>2.9.9</version>
+		    <version>2.10.0</version>
 		</dependency>
 	    <dependency>
 	        <groupId>com.fasterxml.jackson.dataformat</groupId>
 	        <artifactId>jackson-dataformat-yaml</artifactId>
-	        <version>2.9.9</version>
+	        <version>2.10.0</version>
 	    </dependency>
  		
 		<!-- template engine -->
@@ -199,7 +199,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.typesafe.akka</groupId>
-			<artifactId>akka-testkit_2.11</artifactId>
+			<artifactId>akka-testkit_2.12</artifactId>
 			<version>${akka.version}</version>
 			<scope>test</scope>
 		</dependency>
@@ -266,7 +266,7 @@
 									<exclude>junit:*</exclude>
 									<exclude>org.hamcrest:*</exclude>
 									<exclude>org.mockito:*</exclude>
-									<exclude>com.typesafe.akka:akka-testkit_2.11</exclude>
+									<exclude>com.typesafe.akka:akka-testkit_2.12</exclude>
 								</excludes>
 							</artifactSet>
 

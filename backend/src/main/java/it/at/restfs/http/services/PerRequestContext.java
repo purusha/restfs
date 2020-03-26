@@ -11,7 +11,7 @@ import com.google.inject.assistedinject.Assisted;
 import akka.dispatch.MessageDispatcher;
 import akka.http.javadsl.marshallers.jackson.Jackson;
 import akka.http.javadsl.server.Route;
-import akka.stream.ActorMaterializer;
+import akka.stream.Materializer;
 import it.at.restfs.http.services.PathHelper.Request;
 import it.at.restfs.storage.Storage;
 import it.at.restfs.storage.StorageResolver;
@@ -26,11 +26,11 @@ public class PerRequestContext {
 	}
     
     private final Storage storage;
-    private final ActorMaterializer materializer;
+    private final Materializer materializer;
     private final MessageDispatcher dispatcher;    
     
     @Inject
-    private PerRequestContext(ActorMaterializer materializer, StorageResolver resolver, MessageDispatcher dispatcher, @Assisted Request request) {    	
+    private PerRequestContext(Materializer materializer, StorageResolver resolver, MessageDispatcher dispatcher, @Assisted Request request) {    	
 		this.storage = resolver.get(request.getContainer()); //XXX this is the "per request" scope handmade
     	this.dispatcher = dispatcher;
     	this.materializer = materializer;

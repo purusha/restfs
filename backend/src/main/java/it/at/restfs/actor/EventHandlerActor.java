@@ -36,7 +36,7 @@ public class EventHandlerActor extends GuiceAbstractActor {
             ShortTimeInMemory.expireData() + 1, ShortTimeInMemory.expireUnit()
         );
         
-        getContext().system().scheduler().schedule(
+        getContext().system().scheduler().scheduleWithFixedDelay(
             apply, apply, getSelf(), CLEAN_UP, getContext().system().dispatcher(), ActorRef.noSender()
         );
     }

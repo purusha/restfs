@@ -42,7 +42,7 @@ import akka.http.javadsl.server.ExceptionHandler;
 import akka.http.javadsl.server.Rejection;
 import akka.http.javadsl.server.Route;
 import akka.http.javadsl.server.directives.LogEntry;
-import akka.stream.ActorMaterializer;
+import akka.stream.Materializer;
 import it.at.restfs.http.services.Filter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -73,7 +73,7 @@ public class HTTPListener {
         Config config,
         Http http, 
         ActorSystem system, 
-        ActorMaterializer materializer,
+        Materializer materializer,
         ExceptionHandler handler,
         Filter filter,
         ControllerRunner runner

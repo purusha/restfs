@@ -22,7 +22,7 @@ import akka.dispatch.MessageDispatcher;
 import akka.http.javadsl.Http;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.ExceptionHandler;
-import akka.stream.ActorMaterializer;
+import akka.stream.Materializer;
 import it.at.restfs.auth.AuthorizationChecker;
 import it.at.restfs.auth.AuthorizationMaker;
 import it.at.restfs.auth.AuthorizationManager;
@@ -71,8 +71,8 @@ public class AkkaModule implements Module {
             .toInstance(actorSystem.dispatchers().lookup("my-blocking-dispatcher"));
     
         binder
-            .bind(ActorMaterializer.class)
-            .toInstance(ActorMaterializer.create(actorSystem));
+            .bind(Materializer.class)
+            .toInstance(Materializer.createMaterializer(actorSystem));
     
         binder
             .bind(Http.class)

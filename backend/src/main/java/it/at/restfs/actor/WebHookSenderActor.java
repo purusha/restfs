@@ -13,7 +13,7 @@ import akka.http.javadsl.model.ContentTypes;
 import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.HttpResponse;
 import akka.pattern.PatternsCS;
-import akka.stream.ActorMaterializer;
+import akka.stream.Materializer;
 import it.at.restfs.guice.GuiceAbstractActor;
 import it.at.restfs.storage.ContainerRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -26,19 +26,19 @@ public class WebHookSenderActor extends GuiceAbstractActor {
     private static final String UP = "clean-up";
     private static final FiniteDuration SCHEDULE = FiniteDuration.apply(1, TimeUnit.MINUTES);
     
-    private final ActorMaterializer materializer;
+    private final Materializer materializer;
     private final ContainerRepository cRepo;
     private final Http http;
     private final ActorSelection cleanUp;
     
     @Inject
-    public WebHookSenderActor(ActorMaterializer materializer, Http http, ContainerRepository cRepo) {    
+    public WebHookSenderActor(Materializer materializer, Http http, ContainerRepository cRepo) {    
     	this.materializer = materializer;
         this.http = http;
         this.cRepo = cRepo;
         this.cleanUp = getContext().system().actorSelection("/user/" + CleanupActor.ACTOR);
         
-        getContext().system().scheduler().schedule(
+        getContext().system().scheduler().scheduleWithFixedDelay(
             SCHEDULE, SCHEDULE, getSelf(), UP, getContext().system().dispatcher(), ActorRef.noSender()
         );
     }
@@ -63,7 +63,8 @@ public class WebHookSenderActor extends GuiceAbstractActor {
             .build();
     }
 
-    private void makeRequest(Path p) {
+    @SuppressWarnings("deprecation")
+	private void makeRequest(Path p) {
         final HttpRequest request = HttpRequest
             .POST("http://requestbin.net/r/166so941") //XXX extract this from container config
             .withEntity(ContentTypes.parse("text/vnd.yaml"), p);

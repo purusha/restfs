@@ -61,7 +61,7 @@ import akka.http.javadsl.server.ExceptionHandler;
 import akka.http.javadsl.server.Rejection;
 import akka.http.javadsl.server.Route;
 import akka.http.javadsl.server.directives.LogEntry;
-import akka.stream.ActorMaterializer;
+import akka.stream.Materializer;
 import it.at.restfs.auth.AuthorizationChecker;
 import it.at.restfs.auth.AuthorizationConfigHandler;
 import it.at.restfs.storage.ContainerRepository;
@@ -117,7 +117,7 @@ public class AdminHTTPListener {
         Config config,
         Http http, 
         ActorSystem system, 
-        ActorMaterializer materializer,
+        Materializer materializer,
         ExceptionHandler handler,
         ContainerRepository cRepo,
         PageResolver pageResolver,

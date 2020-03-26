@@ -24,7 +24,7 @@ public class MachineStatusInfoActor extends GuiceAbstractActor {
 		this.osBean = ManagementFactory.getOperatingSystemMXBean();
 		this.runtime = Runtime.getRuntime();
 		
-		getContext().system().scheduler().schedule(
+		getContext().system().scheduler().scheduleWithFixedDelay(
 			FiniteDuration.apply(10, TimeUnit.SECONDS),
 			FiniteDuration.apply(120, TimeUnit.SECONDS),
 			getSelf(), MACHINE_STATUS, getContext().system().dispatcher(), ActorRef.noSender()
