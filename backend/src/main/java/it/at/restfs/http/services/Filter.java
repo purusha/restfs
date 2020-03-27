@@ -4,7 +4,6 @@ import static akka.event.Logging.InfoLevel;
 import static it.at.restfs.http.services.PathHelper.build;
 import static it.at.restfs.http.services.PathHelper.getPathString;
 
-import java.util.Date;
 import java.util.UUID;
 import java.util.function.BiFunction;
 
@@ -20,9 +19,7 @@ import it.at.restfs.actor.EventHandlerActor;
 import it.at.restfs.event.Event;
 import it.at.restfs.http.HTTPListener;
 import it.at.restfs.storage.dto.AbsolutePath;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class Filter implements BiFunction<HttpRequest, HttpResponse, LogEntry> {
 	
     private final ActorSelection eventHandler;
@@ -34,8 +31,6 @@ public class Filter implements BiFunction<HttpRequest, HttpResponse, LogEntry> {
 
     @Override
     public LogEntry apply(HttpRequest request, HttpResponse response) {
-    	LOGGER.info("{}", new Date());
-    	
         final String containerId = request.getHeader(HTTPListener.X_CONTAINER).get().value();
         final AbsolutePath path = getPathString(request.getUri());
         final String operation = request.getUri().query().get(HTTPListener.OP).orElse(null);   
@@ -46,7 +41,7 @@ public class Filter implements BiFunction<HttpRequest, HttpResponse, LogEntry> {
         		response.status().intValue()
     		), 
     		ActorRef.noSender()
-		);            
+		);     
         
         return LogEntry.create(
             request.method().name() + ":" + response.status().intValue() +  " " + request.getUri().getPathString(), 

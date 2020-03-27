@@ -12,25 +12,26 @@ import it.at.restfs.event.Event;
 import it.at.restfs.event.EventRepository;
 import it.at.restfs.event.ShortTimeInMemory;
 import it.at.restfs.guice.GuiceAbstractActor;
+import it.at.restfs.http.services.PrometheusCollector;
 import it.at.restfs.storage.ContainerRepository;
 import it.at.restfs.storage.dto.Container;
-import lombok.extern.slf4j.Slf4j;
 import scala.concurrent.duration.FiniteDuration;
 
-@Slf4j
 public class EventHandlerActor extends GuiceAbstractActor {
     
     public static final String ACTOR = "EventHandler";
     private final static String CLEAN_UP = "clean-up";
     private final static Function<Event, Integer> EVENT_TO_HTTP_STATUS = (Event event) -> event.getResponseCode();
-
+	
     private final EventRepository eRepo;    
     private final ContainerRepository cRepo;
-
+    private final PrometheusCollector collector;
+    
     @Inject
-    public EventHandlerActor(EventRepository eRepo, ContainerRepository cRepo) {
+    public EventHandlerActor(EventRepository eRepo, ContainerRepository cRepo, PrometheusCollector collector) {
         this.eRepo = eRepo;
         this.cRepo = cRepo;
+        this.collector = collector;
         
         final FiniteDuration apply = FiniteDuration.apply(
             ShortTimeInMemory.expireData() + 1, ShortTimeInMemory.expireUnit()
@@ -63,27 +64,31 @@ public class EventHandlerActor extends GuiceAbstractActor {
                 */    
 
                 final Container container = cRepo.load(c.getContainer());                
-                LOGGER.debug("load container {}", container);
+                final Map<Integer, Long> statistics = cRepo.getStatistics(c.getContainer());
                 
-                if (container.isStatsEnabled()) {
-                    final Map<Integer, Long> statistics = cRepo.getStatistics(c.getContainer());
-
-                    c.getEvents().stream()
-                        .collect(Collectors.groupingBy(
-                            EVENT_TO_HTTP_STATUS
+                c.getEvents().stream()
+                    .collect(Collectors.groupingBy(
+                        EVENT_TO_HTTP_STATUS
+                    ))
+                    .entrySet().stream()
+                        .collect(Collectors.toMap(
+                            Map.Entry::getKey, entry -> entry.getValue().size()
                         ))
                         .entrySet().stream()
-                            .collect(Collectors.toMap(
-                                Map.Entry::getKey, entry -> entry.getValue().size()
-                            ))
-                            .entrySet().stream()
-	                            .forEach(entry -> {                    
-	                                final Long sum = statistics.getOrDefault(entry.getKey(), 0L).longValue() + entry.getValue().longValue();
-	                                
-	                                statistics.put(entry.getKey(), sum);
-	                            });
+                            .forEach(entry -> {
+
+                            	final Integer key = entry.getKey();
+                            	final Integer value = entry.getValue();
+                            	
+                                final Long sum = statistics.getOrDefault(key, 0L).longValue() + value.longValue();	                                
+                                statistics.put(key, sum); 
+                                
+                                collector.metrics(c.getContainer(), key, value);
+                            	
+                            });
                     
-                    cRepo.saveStatistics(c.getContainer(), statistics);
+                if (container.isStatsEnabled()) {                        
+                    cRepo.saveStatistics(c.getContainer(), statistics);                                                                               
                 }
                 
                 if (container.isWebHookEnabled()) {

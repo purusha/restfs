@@ -1,0 +1,10 @@
+
+	1. avvia restfs
+	
+	2. docker-compose up
+	
+	3. http://localhost:8087/metrics (restfs)
+	
+	4. http://localhost:9090/graph (prometheus)
+	
+	5. http://localhost:3000 (grafana)

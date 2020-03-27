@@ -178,6 +178,23 @@
 		    <version>0.9.10</version> <!-- cannot use 0.9.11 for cincopatible issue with google guava that we use -->
 		</dependency>		
 
+		<!-- Prometheus -->
+		<dependency>
+		  <groupId>io.prometheus</groupId>
+		  <artifactId>simpleclient</artifactId>
+		  <version>0.8.1</version>
+		</dependency>
+		<dependency>
+		  <groupId>io.prometheus</groupId>
+		  <artifactId>simpleclient_hotspot</artifactId>
+		  <version>0.8.1</version>
+		</dependency>
+		<dependency>
+		  <groupId>io.prometheus</groupId>
+		  <artifactId>simpleclient_httpserver</artifactId>
+		  <version>0.8.1</version>
+		</dependency>
+
 		<!-- testing -->
 		<dependency>
 			<groupId>junit</groupId>

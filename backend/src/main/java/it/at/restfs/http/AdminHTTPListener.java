@@ -137,7 +137,7 @@ public class AdminHTTPListener {
         LOGGER.info("Expose following Admin endpoint");
         LOGGER.info("http://" + host + ":" + port + "/" + APP_NAME + "/" + VERSION + "/...");
         LOGGER.info("");
-                
+                                
         this.bindAndHandle = http.bindAndHandle(
             createRoute().flow(system, materializer), ConnectHttp.toHost(host, port), materializer
         );
@@ -210,7 +210,7 @@ public class AdminHTTPListener {
         
         final Container container = new Container();
         container.setName(name);
-        container.setId(id);
+        container.setId(id); //XXX check for not existing container with id when params.get("id") is filled
         container.setStatsEnabled(statsEnabled);
         container.setWebHookEnabled(webHookEnabled);
         container.setStorage(storage);
@@ -243,7 +243,9 @@ public class AdminHTTPListener {
 				final String user = params.get("user");
 				final String pwd = params.get("pwd");
 				
-				//XXX: user/pwd values are available
+				if (StringUtils.isBlank(user) || StringUtils.isBlank(pwd)) {
+					throw new RuntimeException("mandatory field not resolved for container: " + id);
+				}
 				
 				final Map<String, String> data = Maps.newHashMap();
 				data.put("user", user);

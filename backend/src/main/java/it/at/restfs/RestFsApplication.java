@@ -49,7 +49,7 @@ public class RestFsApplication {
             
             //start http endpoint        
             injector.getInstance(AdminHTTPListener.class);        
-            injector.getInstance(HTTPListener.class);        
+            injector.getInstance(HTTPListener.class);
             
             LOGGER.info("-------------------------------------------------");
             LOGGER.info("   >    RestFS STARTED                           ");
