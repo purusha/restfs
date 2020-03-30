@@ -50,7 +50,6 @@ public class WebHookSenderActor extends GuiceAbstractActor {
 
                 cRepo.findAll()	
                 	.stream()
-                	.map(container -> cRepo.load(container))
                 	.filter(container -> container.isWebHookEnabled())                
                     .forEach(
                         container -> cRepo.getWebhook(container.getId()).forEach(this::makeRequest)

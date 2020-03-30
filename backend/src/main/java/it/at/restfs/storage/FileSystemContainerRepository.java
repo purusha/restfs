@@ -95,7 +95,7 @@ public class FileSystemContainerRepository implements ContainerRepository {
 
     @SneakyThrows
     @Override
-    public List<UUID> findAll() {
+    public List<Container> findAll() {
         final Path source = Paths.get(rfs.getRoot());
         
         try(Stream<Path> stream = Files.list(source)) {
@@ -104,6 +104,7 @@ public class FileSystemContainerRepository implements ContainerRepository {
                 .filter(folder -> ! StringUtils.startsWith(folder.toFile().getName(), WEBHOOK_PREFIX))
                 .filter(folder -> ! StringUtils.startsWith(folder.toFile().getName(), MasterPassword.REPO_PREFIX))
                 .map(folder -> UUID.fromString(folder.toFile().getName()))
+                .map(this::load)
                 .collect(Collectors.toList());                
         }
     }

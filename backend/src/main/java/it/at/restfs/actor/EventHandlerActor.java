@@ -80,9 +80,11 @@ public class EventHandlerActor extends GuiceAbstractActor {
                             	final Integer key = entry.getKey();
                             	final Integer value = entry.getValue();
                             	
+                            	//update local stas file
                                 final Long sum = statistics.getOrDefault(key, 0L).longValue() + value.longValue();	                                
                                 statistics.put(key, sum); 
                                 
+                                //update prometheus 
                                 collector.metrics(c.getContainer(), key, value);
                             	
                             });

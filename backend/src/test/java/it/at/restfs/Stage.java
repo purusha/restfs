@@ -225,6 +225,9 @@ public abstract class Stage {
     		case TOKEN: 
     			return new TokenExecutionCommand();
     			
+    		case LAST:
+    			return new LastCallExecutionCommand();
+    			
     		default: 
     			return null; //XXX eheheh ???
     	}
@@ -382,6 +385,29 @@ public abstract class Stage {
             return "call TOKEN";
         }        
     }    
+    
+    private static class LastCallExecutionCommand implements ExecutionCommand {
+
+		@Override
+		public Operation getOperation() {
+			return Operation.LAST;
+		}
+
+		@Override
+		public Object[] callParams(String authorization, UUID container) {
+			final List<Object> result = Lists.newArrayList();
+			
+            result.add(authorization);
+            result.add(container);
+
+            return result.toArray(new Object[result.size()]);
+		}
+    	
+		@Override
+        public String toString() {
+            return "call LAST";
+        } 		
+    }
 
     @Getter
     @RequiredArgsConstructor

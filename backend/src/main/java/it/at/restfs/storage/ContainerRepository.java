@@ -9,8 +9,7 @@ import it.at.restfs.storage.dto.Container;
 
 public interface ContainerRepository {
 
-    List<UUID> findAll();
-    //XXX expose: List<Container> findAll();
+    List<Container> findAll();
 
     boolean exist(UUID container);
     

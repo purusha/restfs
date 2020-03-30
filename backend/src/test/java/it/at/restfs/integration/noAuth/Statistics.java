@@ -55,6 +55,16 @@ public class Statistics extends NoAuthBaseTest {
         
         expected("{\"200\":13}", Iterables.get(r2, 0).string());
         
+        wait(10);
+
+        final List<ResponseBody> r3 = runCommands(
+            ctx, buildMgmtCommand(Operation.LAST)
+        );
+        
+        for (ResponseBody c : r3) {
+        	System.out.println(c.string());
+		}
+        
     }
     
 }

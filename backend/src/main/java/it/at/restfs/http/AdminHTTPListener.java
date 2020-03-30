@@ -292,14 +292,16 @@ public class AdminHTTPListener {
         public Route allContainer(String uri) {
             return inner(
                 "all-container", uri,
-                "containers", cRepo.findAll()
+                "containers", cRepo.findAll().stream().map(c -> c.getId()).collect(Collectors.toList())
             );
         }
     
         public Route getContainer(String uri, UUID containerId) {
             return inner(
                 "get-container", uri,
-                "container", cRepo.load(containerId)
+                "container", cRepo.load(containerId),
+                "containerStatistics", cRepo.getStatistics(containerId),
+                "containerCalls", cRepo.getCalls(containerId)
             );
         }
         
@@ -335,7 +337,7 @@ public class AdminHTTPListener {
         private final Handlebars handlebars = handlebars();
         
         public Template get(String name) throws IOException {
-            //XXX NOT Recompile mode
+            //XXX NOT Recompile mode        	
             return mapping.computeIfAbsent(name, s -> {
                 try {
                     return handlebars.compile(s);
@@ -346,7 +348,7 @@ public class AdminHTTPListener {
             });
             
             //XXX Recompile mode
-//            return handlebars().compile(name); 
+            //return handlebars().compile(name); 
         }
         
         /*

@@ -71,15 +71,17 @@ public class PrometheusCollector {
     }
     
     public void metrics(UUID container, int httpStatus, int reqNumber) {
-    	requestsTotals.inc(reqNumber);
-    	
-    	if (httpStatus >= 200 && httpStatus < 300) {
-    		containerRequests2xx.labels(container.toString()).inc(reqNumber);
-    	} else if (httpStatus >= 400 && httpStatus < 500) {
-    		containerRequests4xx.labels(container.toString()).inc(reqNumber);
-    	} else if (httpStatus >= 500 && httpStatus < 600) {
-    		containerRequests5xx.labels(container.toString()).inc(reqNumber);
-    	}                    	    	
+    	server.ifPresent(s -> {
+	    	requestsTotals.inc(reqNumber);
+	    	
+	    	if (httpStatus >= 200 && httpStatus < 300) {
+	    		containerRequests2xx.labels(container.toString()).inc(reqNumber);
+	    	} else if (httpStatus >= 400 && httpStatus < 500) {
+	    		containerRequests4xx.labels(container.toString()).inc(reqNumber);
+	    	} else if (httpStatus >= 500 && httpStatus < 600) {
+	    		containerRequests5xx.labels(container.toString()).inc(reqNumber);
+	    	}
+    	});
     }
     
 }

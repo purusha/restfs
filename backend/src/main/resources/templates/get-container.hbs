@@ -3,7 +3,10 @@
 <head>
     <meta charset="utf-8">    
     <title>RestFs</title>
-
+    
+	<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/pretty-print-json@0.2/dist/pretty-print-json.css>
+	<script src=https://cdn.jsdelivr.net/npm/pretty-print-json@0.2/dist/pretty-print-json.min.js></script>
+    
 	<style media="screen" type="text/css">
 	
 		a, u {
@@ -12,33 +15,49 @@
 		
 		body {
 			padding: 50px;
-		}			
+		}				
 	
-	</style>            
+	</style>    
+	
+	<script>	
+		
+		window.addEventListener('load', function(){
+		    document.querySelectorAll("pre > code").forEach(function(x) { 
+		    	console.log(x);
+		    	
+		    	x.innerHTML = prettyPrintJson.toHtml(JSON.parse(x.innerHTML));		    	
+			});
+		});		
+		
+	</script>        
 </head> 
 <body>
 
 	<a href="{{baseUri}}containers">&lArr;</a>
 
 	<p>
-		<b>id</b>: {{this.container.id}}
+		<b>id</b>: <pre>{{this.container.id}}</pre>
 	</p>
 			
 	<p>
-		<b>name</b>: {{this.container.name}}
+		<b>name</b>: <pre>{{this.container.name}}</pre>
 	</p>
 		
 	<p>
-		<b>stats</b>: {{this.container.statsEnabled}}
+		<b>stats</b>: <pre>{{this.container.statsEnabled}}</pre>
 	</p>
 		
 	<p>
-		<b>webHook</b>: {{this.container.webHookEnabled}}
+		<b>webHook</b>: <pre>{{this.container.webHookEnabled}}</pre>
 	</p>
 		
 	<p>
-		<b>actual statistics</b>: <pre><code>{{json this.container.statistics}}</code></pre>
+		<b>actual statistics</b>: <pre><code>{{json this.containerStatistics}}</code></pre>
 	</p>
 
+	<p>
+		<b>last calls</b>: <pre><code>{{json this.containerCalls}}</code></pre>
+	</p>	
+	
 </body>
 </html>

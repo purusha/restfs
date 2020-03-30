@@ -12,7 +12,6 @@ import akka.http.javadsl.model.Uri;
 import it.at.restfs.storage.dto.AbsolutePath;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.SneakyThrows;
 
 public class PathHelper {
@@ -28,7 +27,7 @@ public class PathHelper {
         return AbsolutePath.of(decode);
     }
     
-    //XXX if /stats (all managements) endpoint is called ... operation is NULL
+    //XXX if /stats endpoint is called ... operation is NULL (like all managements operation) 
     public static Request build(UUID container, AbsolutePath uri, String operation) {
 		return new Request(container, uri , operation);
 	}
@@ -45,7 +44,6 @@ public class PathHelper {
 	}
     
 	@Getter 
-    @Setter
     public static class Request {
         private final UUID container; //XXX is usefull only for future development ??
         private final AbsolutePath path;
@@ -53,19 +51,9 @@ public class PathHelper {
         
         @JsonCreator
         public Request(
-            @JsonProperty("container") UUID container, 
-            @JsonProperty("path") String path, 
-            @JsonProperty("operation") String operation
-        ) {
-            this.container = container;
-            this.path = AbsolutePath.of(path);
-            this.operation = operation;
-        }
-        
-        public Request(
-            UUID container, 
-        	AbsolutePath path, 
-            String operation
+    		@JsonProperty("container") UUID container, 
+    		@JsonProperty("path") AbsolutePath path, 
+    		@JsonProperty("operation") String operation
         ) {
             this.container = container;
             this.path = path;

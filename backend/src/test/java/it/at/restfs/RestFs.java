@@ -101,6 +101,13 @@ public interface RestFs {
         @Header(HTTPListener.AUTHORIZATION) String authorization,
         @Header(HTTPListener.X_CONTAINER) UUID container
     );
+
+    @Headers("Accept: application/json")
+    @GET("last")
+    Call<ResponseBody> last(
+        @Header(HTTPListener.AUTHORIZATION) String authorization,
+        @Header(HTTPListener.X_CONTAINER) UUID container
+    );
     
     @Headers("Accept: application/json")
     @POST("token")

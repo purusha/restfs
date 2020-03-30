@@ -11,10 +11,10 @@ public enum Operation {
     
     //Management call from here
     STATS,
-    LAST_N_CALL,
+    LAST,
     TOKEN;
     
     public static boolean isManagement(Operation o) {
-    	return Lists.newArrayList(STATS, LAST_N_CALL, TOKEN).contains(o);
+    	return Lists.newArrayList(STATS, LAST, TOKEN).contains(o);
     }
 }    

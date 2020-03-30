@@ -79,19 +79,19 @@ public class RandomGenerator extends NoAuthBaseTest {
         
         final List<String> folders = createFolders(ctx, 120);
         
-        wait(3);        
+        wait(1);        
         final List<String> files = createFiles(ctx, 250, folders);
         
-        wait(3);        
+        wait(1);        
         getStatus(ctx, folders, Operation.LISTSTATUS);
         
-        wait(3);        
+        wait(1);        
         getStatus(ctx, files, Operation.GETSTATUS);
         
-        wait(3);
+        wait(1);
         final List<String> filesWithContent = append(ctx, files);
         
-        wait(3);
+        wait(1);
         open(ctx, filesWithContent);
         
         wait(10);        
