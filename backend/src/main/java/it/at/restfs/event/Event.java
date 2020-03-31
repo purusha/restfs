@@ -11,6 +11,7 @@ public class Event {
 
     private final Request request;
     private final Integer responseCode;
+    private final Long occurred;
     
     @JsonCreator
     public Event(
@@ -19,6 +20,7 @@ public class Event {
     ) {
         this.request = request;
         this.responseCode = responseCode;
+        this.occurred = System.currentTimeMillis();
     }
     
     @Override

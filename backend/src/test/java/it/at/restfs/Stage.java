@@ -98,13 +98,11 @@ public abstract class Stage {
             return Paths.get(root.getAbsolutePath(), container + ".tree");
         } else {
             System.out.println("generate tree file: Failure!");
-            throw new RuntimeException("no file create for printHierarchy");
+            throw new RuntimeException("cannot create file for printHierarchy");
         }
     }
-    
-    /*
-        XXX break test dependency from lib: return our ResponseBody 
-     */
+
+    //XXX break test dependency from lib: return our ResponseBody 
     @SuppressWarnings("deprecation")
     protected List<ResponseBody> runCommands(ExecutionContext context, ExecutionCommand ... cmds) {
         return Arrays
@@ -116,8 +114,7 @@ public abstract class Stage {
 
     @SneakyThrows(value = {IllegalAccessException.class, InvocationTargetException.class, IOException.class})
     private ResponseBody remoteCall(ExecutionContext context, ExecutionCommand cmd) {
-        System.out.println("$> " + cmd);
-                        
+        System.out.println("$> " + cmd);                        
         final Object[] callParams = cmd.callParams(context.getAuthHeader(), context.getContainer());
                 
         @SuppressWarnings("unchecked")
@@ -153,9 +150,8 @@ public abstract class Stage {
     }
     
     @SneakyThrows
-    protected void createContainer(ExecutionContext ctx) {
-    	
-    	final Map<String, String> fields = new HashMap<String, String>();
+    protected void createContainer(ExecutionContext ctx) {    	
+    	final Map<String, String> fields = new HashMap<String, String>(); //XXX create bean for this purpose and use here
     	fields.put("id", ctx.getContainer().toString());
     	fields.put("statsEnabled", Boolean.TRUE.toString());
     	fields.put("webHookEnabled", Boolean.TRUE.toString());
@@ -165,9 +161,7 @@ public abstract class Stage {
     		fields.put("masterPwd", ctx.getAuthHeader());
     	}
     	
-        final Call<ResponseBody> create = admin.create(AdminHTTPListener.CONTAINERS, fields);
-        
-        final Response<ResponseBody> execute = create.execute();
+        final Response<ResponseBody> execute = admin.create(AdminHTTPListener.CONTAINERS, fields).execute();
         
         if (execute.isSuccessful()) {
             //close the stream before return !!?
@@ -213,36 +207,20 @@ public abstract class Stage {
         }        
     }
     
-    protected ExecutionCommand buildMgmtCommand(Operation o) {    	
-    	if (! Operation.isManagement(o)) {
+    protected ExecutionCommand buildMgmtCommand(Operation op) {    	
+    	if (! Operation.isManagement(op)) {
     		throw new RuntimeException("Use this api only for management operations");
     	}
     	
-    	switch(o) {
-    		case STATS: 
-    			return new StatsExecutionCommand();
-    			
-    		case TOKEN: 
-    			return new TokenExecutionCommand();
-    			
-    		case LAST:
-    			return new LastCallExecutionCommand();
-    			
-    		default: 
-    			return null; //XXX eheheh ???
-    	}
+    	return new OperationExecutionCommand(op);
     }
     
     protected ExecutionCommand buildCommand(String data, Operation op) {
         return new SimpleExecutionCommand(data, op, null);
     }    
 
-    protected ExecutionCommand buildCommand(String data, Operation op, Map<String, String> query) {       
-        return new SimpleExecutionCommand(data, op, query);
-    }    
-
-    protected ExecutionCommand buildCommand(String data, Operation op, String body) {                                
-        return new SimpleExecutionCommand(data, op, body);
+    protected ExecutionCommand buildCommand(String data, Operation op, Object o) {       
+        return new SimpleExecutionCommand(data, op, o);
     }    
         
     protected Map<String, String> queryBuilder(String key, String value) {
@@ -290,7 +268,7 @@ public abstract class Stage {
         @Getter
         private final Operation operation;
         
-        private final String resouce;          
+        private final String resouce;    
         private final Map<String, String> query;
         private final String body;
         
@@ -334,81 +312,33 @@ public abstract class Stage {
         
         @Override
         public String toString() {
-            return "call " + operation + " on " + resouce + " with query=" + query + " and body=" + body;
+            return "call " + operation + " on /" + resouce + " with query=" + query + " and body=" + body;
         }
     }
-        
-    private static class StatsExecutionCommand implements ExecutionCommand {
-
-        @Override
-        public Operation getOperation() {
-            return Operation.STATS;
-        }
-
-        //XXX this implementation is coupled to RestFs methods signature
-        @Override
-        public Object[] callParams(String authorization, UUID container) {
-            final List<Object> result = Lists.newArrayList();
-
-            result.add(authorization);
-            result.add(container);
-            
-            return result.toArray(new Object[result.size()]);
-        }
-
-        @Override
-        public String toString() {
-            return "call STATS";
-        }        
-    }
     
-    private static class TokenExecutionCommand implements ExecutionCommand {
-
-        @Override
-        public Operation getOperation() {
-            return Operation.TOKEN;
-        }
-
-        //XXX this implementation is coupled to RestFs methods signature
-        @Override
-        public Object[] callParams(String authorization, UUID container) {
-            final List<Object> result = Lists.newArrayList();
-
-            result.add(authorization);
-            result.add(container);
-            
-            return result.toArray(new Object[result.size()]);
-        }
-
-        @Override
-        public String toString() {
-            return "call TOKEN";
-        }        
-    }    
-    
-    private static class LastCallExecutionCommand implements ExecutionCommand {
-
-		@Override
-		public Operation getOperation() {
-			return Operation.LAST;
-		}
-
-		@Override
-		public Object[] callParams(String authorization, UUID container) {
-			final List<Object> result = Lists.newArrayList();
-			
-            result.add(authorization);
-            result.add(container);
-
-            return result.toArray(new Object[result.size()]);
-		}
+    @RequiredArgsConstructor
+    private static class OperationExecutionCommand implements ExecutionCommand {
     	
-		@Override
-        public String toString() {
-            return "call LAST";
-        } 		
-    }
+    	@Getter
+    	private final Operation operation;    	
+    	
+        //XXX this implementation is coupled to RestFs methods signature
+        @Override
+        public Object[] callParams(String authorization, UUID container) {
+            final List<Object> result = Lists.newArrayList();
 
+            result.add(authorization);
+            result.add(container);
+            
+            return result.toArray(new Object[result.size()]);
+        }
+    	
+        @Override
+        public String toString() {
+            return "call " + operation;
+        }            	
+    }        
+    
     @Getter
     @RequiredArgsConstructor
     public class NotSuccessfullResult extends RuntimeException {

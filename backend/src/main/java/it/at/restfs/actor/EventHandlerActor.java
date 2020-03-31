@@ -1,5 +1,7 @@
 package it.at.restfs.actor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -62,11 +64,11 @@ public class EventHandlerActor extends GuiceAbstractActor {
                     3) write last N call available 
                     
                 */    
-
-                final Container container = cRepo.load(c.getContainer());                
+                              
                 final Map<Integer, Long> statistics = cRepo.getStatistics(c.getContainer());
+                final List<Event> newEvents = new ArrayList<Event>(c.getEvents());
                 
-                c.getEvents().stream()
+                newEvents.stream()
                     .collect(Collectors.groupingBy(
                         EVENT_TO_HTTP_STATUS
                     ))
@@ -88,16 +90,22 @@ public class EventHandlerActor extends GuiceAbstractActor {
                                 collector.metrics(c.getContainer(), key, value);
                             	
                             });
+                
+                final Container container = cRepo.load(c.getContainer()); 
                     
                 if (container.isStatsEnabled()) {                        
                     cRepo.saveStatistics(c.getContainer(), statistics);                                                                               
                 }
                 
                 if (container.isWebHookEnabled()) {
-                    cRepo.saveWebhook(c.getContainer(), c.getEvents());
+                    cRepo.saveWebhook(c.getContainer(), newEvents);
                 }
                 
-                cRepo.saveCalls(c.getContainer(), c.getEvents());
+                //append actual events
+                newEvents.addAll(cRepo.getCalls(c.getContainer()));                                
+                
+                //write only first N elements
+                cRepo.saveCalls(c.getContainer(), newEvents.subList(0, Math.min(newEvents.size(), 30)));  
                                                 
             })
             .matchAny(this::unhandled)

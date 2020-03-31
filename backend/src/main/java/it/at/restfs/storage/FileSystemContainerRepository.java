@@ -84,13 +84,7 @@ public class FileSystemContainerRepository implements ContainerRepository {
     @SneakyThrows
     @Override
     public void saveCalls(UUID container, List<Event> events) {
-        
-        //append
         mapper.writeValue(buildLastCalls(container), events);
-        
-        //XXX optimize file content removing lines from the top
-        //until lines count should be XXX (from container config)
-                
     }
 
     @SneakyThrows
