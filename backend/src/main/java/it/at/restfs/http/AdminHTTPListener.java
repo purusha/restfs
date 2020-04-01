@@ -4,6 +4,7 @@ import static akka.event.Logging.InfoLevel;
 import static akka.http.javadsl.server.Directives.extractUri;
 import static akka.http.javadsl.server.Directives.formFieldMap;
 import static akka.http.javadsl.server.Directives.get;
+import static akka.http.javadsl.server.Directives.getFromResourceDirectory;
 import static akka.http.javadsl.server.Directives.handleExceptions;
 import static akka.http.javadsl.server.Directives.logRequestResult;
 import static akka.http.javadsl.server.Directives.pathEndOrSingleSlash;
@@ -178,7 +179,26 @@ public class AdminHTTPListener {
                                     )
                                 )
                             )
-                        ),                    
+                        ),      
+                        
+                        //static content
+                        pathPrefix("css", () ->                        	
+                    		get(() ->
+                    			getFromResourceDirectory("css")
+                    		)                        	
+                        ),
+                        //static content
+                        pathPrefix("js", () ->                        	
+                    		get(() ->
+                    			getFromResourceDirectory("js")
+                    		)                        	
+                        ),
+                        //static content
+                        pathPrefix("assets", () ->                        	
+                    		get(() ->
+                    			getFromResourceDirectory("assets")
+                    		)                        	
+                        ),
                         
                         //api
                         pathPrefix(segment(APP_NAME), () ->
@@ -253,7 +273,7 @@ public class AdminHTTPListener {
 				
 				configResolver.save(container, data);
 				
-			}
+			}break;
 			
 			case NO_AUTH:
 				break;
@@ -292,7 +312,7 @@ public class AdminHTTPListener {
         public Route allContainer(String uri) {
             return inner(
                 "all-container", uri,
-                "containers", cRepo.findAll().stream().map(c -> c.getId()).collect(Collectors.toList())
+                "containers", cRepo.findAll().stream().collect(Collectors.toMap(Container::getId, Container::getName))
             );
         }
     
@@ -337,7 +357,8 @@ public class AdminHTTPListener {
         private final Handlebars handlebars = handlebars();
         
         public Template get(String name) throws IOException {
-            //XXX NOT Recompile mode        	
+            //XXX NOT Recompile mode    
+        	
             return mapping.computeIfAbsent(name, s -> {
                 try {
                     return handlebars.compile(s);
@@ -346,7 +367,7 @@ public class AdminHTTPListener {
                     return null;
                 }
             });
-            
+        	
             //XXX Recompile mode
             //return handlebars().compile(name); 
         }
