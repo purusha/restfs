@@ -44,21 +44,25 @@ public class PathHelper {
 	}
     
 	@Getter 
+	@RequiredArgsConstructor	
     public static class Request {
         private final UUID container; //XXX is usefull only for future development ??
         private final AbsolutePath path;
         private final String operation; //should be Optional<String>
+    }	
+
+	@Getter 
+	public static class RequestView {		
+        private final String path;
+        private final String operation;
         
         @JsonCreator
-        public Request(
-    		@JsonProperty("container") UUID container, 
-    		@JsonProperty("path") AbsolutePath path, 
+        public RequestView(
+    		@JsonProperty("path") String path,
     		@JsonProperty("operation") String operation
-        ) {
-            this.container = container;
+		) {
             this.path = path;
-            this.operation = operation;
-        }        
-    }	
-	
+            this.operation = operation;        	
+        }        			
+	}
 }

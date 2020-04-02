@@ -12,7 +12,7 @@ import akka.http.javadsl.Http;
 import akka.http.javadsl.model.ContentTypes;
 import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.HttpResponse;
-import akka.pattern.PatternsCS;
+import akka.pattern.Patterns;
 import akka.stream.Materializer;
 import it.at.restfs.guice.GuiceAbstractActor;
 import it.at.restfs.storage.ContainerRepository;
@@ -53,16 +53,13 @@ public class WebHookSenderActor extends GuiceAbstractActor {
                 	.filter(container -> container.isWebHookEnabled())                
                     .forEach(
                         container -> cRepo.getWebhook(container.getId()).forEach(this::makeRequest)
-                    ); 
-                
-                //XXX ri-schedule from here when all request are satisfied
+                    );                 
                 
             })
             .matchAny(this::unhandled)
             .build();
     }
 
-    @SuppressWarnings("deprecation")
 	private void makeRequest(Path p) {
         final HttpRequest request = HttpRequest
             .POST("http://requestbin.net/r/166so941") //XXX extract this from container config
@@ -79,7 +76,7 @@ public class WebHookSenderActor extends GuiceAbstractActor {
                 return p;
             });
         
-        PatternsCS
+        Patterns
             .pipe(stage, getContext().dispatcher())
             .to(cleanUp);            
         

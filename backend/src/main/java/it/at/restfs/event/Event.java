@@ -1,8 +1,5 @@
 package it.at.restfs.event;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import it.at.restfs.http.services.PathHelper.Request;
 import lombok.Getter;
 
@@ -13,10 +10,9 @@ public class Event {
     private final Integer responseCode;
     private final Long occurred;
     
-    @JsonCreator
     public Event(
-        @JsonProperty("request") Request request, 
-        @JsonProperty("responseCode") Integer responseCode
+        Request request, 
+        Integer responseCode
     ) {
         this.request = request;
         this.responseCode = responseCode;

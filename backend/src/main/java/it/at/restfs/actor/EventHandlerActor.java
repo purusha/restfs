@@ -12,8 +12,10 @@ import akka.actor.ActorRef;
 import it.at.restfs.event.ContainerEvents;
 import it.at.restfs.event.Event;
 import it.at.restfs.event.EventRepository;
+import it.at.restfs.event.EventView;
 import it.at.restfs.event.ShortTimeInMemory;
 import it.at.restfs.guice.GuiceAbstractActor;
+import it.at.restfs.http.services.PathHelper.RequestView;
 import it.at.restfs.http.services.PrometheusCollector;
 import it.at.restfs.storage.ContainerRepository;
 import it.at.restfs.storage.dto.Container;
@@ -66,7 +68,7 @@ public class EventHandlerActor extends GuiceAbstractActor {
                 */    
                               
                 final Map<Integer, Long> statistics = cRepo.getStatistics(c.getContainer());
-                final List<Event> newEvents = new ArrayList<Event>(c.getEvents());
+                final List<Event> newEvents = c.getEvents();
                 
                 newEvents.stream()
                     .collect(Collectors.groupingBy(
@@ -74,7 +76,7 @@ public class EventHandlerActor extends GuiceAbstractActor {
                     ))
                     .entrySet().stream()
                         .collect(Collectors.toMap(
-                            Map.Entry::getKey, entry -> entry.getValue().size()
+                            Map.Entry::getKey, entry -> entry.getValue().size() //count for each key
                         ))
                         .entrySet().stream()
                             .forEach(entry -> {
@@ -97,18 +99,34 @@ public class EventHandlerActor extends GuiceAbstractActor {
                     cRepo.saveStatistics(c.getContainer(), statistics);                                                                               
                 }
                 
+                //must be an explicit order data structure
+                final List<EventView> actualEvents = new ArrayList<>(newEvents.stream().map(this::of).collect(Collectors.toList()));
+                
                 if (container.isWebHookEnabled()) {
-                    cRepo.saveWebhook(c.getContainer(), newEvents);
+                    cRepo.saveWebhook(c.getContainer(), actualEvents);
                 }
                 
                 //append actual events
-                newEvents.addAll(cRepo.getCalls(c.getContainer()));                                
+                actualEvents.addAll(cRepo.getCalls(c.getContainer()));                                
                 
                 //write only first N elements
-                cRepo.saveCalls(c.getContainer(), newEvents.subList(0, Math.min(newEvents.size(), 30)));  
+                cRepo.saveCalls(
+            		c.getContainer(), 
+            		actualEvents.subList(0, Math.min(actualEvents.size(), 30))
+        		);  
                                                 
             })
             .matchAny(this::unhandled)
             .build();
     }
+
+	private EventView of(Event e) {
+		return new EventView(
+			new RequestView(
+				e.getRequest().getPath().getPath(), e.getRequest().getOperation()
+			), 
+			e.getResponseCode(), 
+			e.getOccurred()
+		);
+	}
 }

@@ -20,7 +20,7 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 
 import it.at.restfs.auth.MasterPassword;
-import it.at.restfs.event.Event;
+import it.at.restfs.event.EventView;
 import it.at.restfs.storage.dto.Container;
 import lombok.SneakyThrows;
 
@@ -36,8 +36,6 @@ public class FileSystemContainerRepository implements ContainerRepository {
 	    TODO
 	    
 	    - try to use the same strategy when persist LC && WH: in the first case append on a file, in the second append a file in folder 
-
-	    - this class does NOT work under win32 SO
 	
 	 */
     
@@ -75,7 +73,7 @@ public class FileSystemContainerRepository implements ContainerRepository {
 
     @SneakyThrows
     @Override
-    public void saveWebhook(UUID container, List<Event> events) {
+    public void saveWebhook(UUID container, List<EventView> events) {
     	final File webHook = buildWebHook(container).resolve(String.valueOf(System.currentTimeMillis())).toFile();
     	
         mapper.writeValue(webHook, events);
@@ -83,7 +81,7 @@ public class FileSystemContainerRepository implements ContainerRepository {
     
     @SneakyThrows
     @Override
-    public void saveCalls(UUID container, List<Event> events) {
+    public void saveCalls(UUID container, List<EventView> events) {
         mapper.writeValue(buildLastCalls(container), events);
     }
 
@@ -140,14 +138,14 @@ public class FileSystemContainerRepository implements ContainerRepository {
 
     @SneakyThrows
     @Override
-    public List<Event> getCalls(UUID container) {
+    public List<EventView> getCalls(UUID container) {
         final File lastCalls = buildLastCalls(container);
         
         if (! lastCalls.exists()) {
             return Lists.newArrayList();            
         }
         
-        return mapper.<List<Event>>readValue(lastCalls, new TypeReference<List<Event>>() { });
+        return mapper.<List<EventView>>readValue(lastCalls, new TypeReference<List<EventView>>() { });
     }    
     
 //    @SneakyThrows

@@ -4,7 +4,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import it.at.restfs.event.Event;
+
+import it.at.restfs.event.EventView;
 import it.at.restfs.storage.dto.Container;
 
 public interface ContainerRepository {
@@ -17,12 +18,13 @@ public interface ContainerRepository {
 
     void save(Container container);
 
-    void saveCalls(UUID container, List<Event> events);
+    void saveCalls(UUID container, List<EventView> events);
     
-    List<Event> getCalls(UUID container);
+    List<EventView> getCalls(UUID container);
 
-    void saveWebhook(UUID container, List<Event> events);
+    void saveWebhook(UUID container, List<EventView> events);
 
+    //XXX this api should be return a List<EventView>
     List<Path> getWebhook(UUID container);
     
     //HttpStatusCode => NumberOf
