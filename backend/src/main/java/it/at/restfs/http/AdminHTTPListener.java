@@ -309,29 +309,29 @@ public class AdminHTTPListener {
         private final TemplateResover resolver;
         private final ContainerRepository cRepo;
         
-        public Route allContainer(String uri) {
+        public Route allContainer(String baseUri) {
             return inner(
-                "all-container", uri,
+                "all-container", baseUri,
                 "containers", cRepo.findAll().stream().collect(Collectors.toMap(Container::getId, Container::getName))
             );
         }
     
-        public Route getContainer(String uri, UUID containerId) {
+        public Route getContainer(String baseUri, UUID containerId) {
             return inner(
-                "get-container", uri,
+                "get-container", baseUri,
                 "container", cRepo.load(containerId),
                 "containerStatistics", cRepo.getStatistics(containerId),
                 "containerCalls", cRepo.getCalls(containerId)
             );
         }
         
-        private Route inner(String templateName, String uri, Object... kv) {
+        private Route inner(String templateName, String baseUri, Object... kv) {
             final Map<String, Object> map = new HashMap<String, Object>();        
             for(int i = 0; i < kv.length; i += 2) {
                 map.put(String.valueOf(kv[i]), kv[i+1]);
             }
             
-            final Context context = context(uri, map);
+            final Context context = context(baseUri, map);
             
             try {            
                 return textHtml(resolver.get(templateName).apply(context));                    
@@ -357,8 +357,8 @@ public class AdminHTTPListener {
         private final Handlebars handlebars = handlebars();
         
         public Template get(String name) throws IOException {
-            //XXX NOT Recompile mode    
-        	
+            //XXX NOT Recompile mode            	
+
             return mapping.computeIfAbsent(name, s -> {
                 try {
                     return handlebars.compile(s);
@@ -436,6 +436,7 @@ public class AdminHTTPListener {
             handlebars.registerHelper("sum", (o, options) -> {
                 final Integer a = Integer.valueOf(o.toString());
                 final Integer b = options.param(0);
+                
                 return  a + b;
             });
 
