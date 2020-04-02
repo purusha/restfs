@@ -42,30 +42,11 @@
         7) hbase  
         
     ----------------------
+
+    add also unit test (now only interation are availabl 
     
-    come autenticare le call rest ??
-    
-        1) http base auth (static mapping on container conf)
-        2) oAuth
-        3) generate temporary token from master username:password
-        4) ???
+    -------------------------------
         
-    -------------------------------
-    
-    Storage Interface:
-    
-    use AbsolutePath instead of "/" + XXX
-    
-    -------------------------------
-    
-    add unit test 
-    
-    -------------------------------
-    
-    https://docs.beefree.io/connect-your-own-file-storage/
-    
-    -------------------------------
-    
     when response is an error ... return always a json like:
     
     {
@@ -114,7 +95,7 @@
     
     -------------------------------    
     
-    ogni volta che nelle classi si fà un uso esplicito dell'Injector, potrebbe esserci un problema di design ??
+    ogni volta che nelle classi si fà un uso esplicito dell'Injector ... potrebbe esserci un problema di design ??
     
     -------------------------------
         
