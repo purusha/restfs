@@ -156,30 +156,52 @@ public class AdminHTTPListener {
             handleExceptions(handler, () ->
                 extractUri(uri ->
                     route(
-                        
+
                         //page complete
-                        pathPrefix(segment(CONTAINERS), () ->
+                        pathPrefix(segment("dashboard"), () ->
                             pathEndOrSingleSlash(() ->
                                 get(() ->
                                     route(
-                                        pageResolver.allContainer(uriResolver(uri))
+                                        pageResolver.dashboard(uriResolver(uri))
                                     )
                                 )
                             )
                         ),
-    
+                    		    
                         //page complete
                         pathPrefix(segment(CONTAINERS), () ->
-                            pathPrefix(uuidSegment(), (UUID containerId) ->
+                        	route(
+                        			
                                 pathEndOrSingleSlash(() ->
                                     get(() ->
                                         route(
-                                            pageResolver.getContainer(uriResolver(uri), containerId)
+                                            pageResolver.allContainer(uriResolver(uri))
                                         )
                                     )
-                                )
+                                ),
+                        			
+	                            pathPrefix(uuidSegment(), (UUID containerId) ->
+	                                pathEndOrSingleSlash(() ->
+	                                    get(() ->
+	                                        route(
+	                                            pageResolver.getContainer(uriResolver(uri), containerId)
+	                                        )
+	                                    )
+	                                )
+	                            ),
+	                            
+	                            pathPrefix(segment("new"), () ->
+		                            pathEndOrSingleSlash(() ->
+			                            get(() ->
+			                                route(
+			                                    pageResolver.newContainer(uriResolver(uri))
+			                                )
+			                            )
+	                        		)                            
+	                            )
+	                            
                             )
-                        ),      
+                        ),                                  	                        
                         
                         //static content
                         pathPrefix("css", () ->                        	
@@ -187,12 +209,14 @@ public class AdminHTTPListener {
                     			getFromResourceDirectory("css")
                     		)                        	
                         ),
+                        
                         //static content
                         pathPrefix("js", () ->                        	
                     		get(() ->
                     			getFromResourceDirectory("js")
                     		)                        	
                         ),
+                        
                         //static content
                         pathPrefix("assets", () ->                        	
                     		get(() ->
@@ -309,12 +333,24 @@ public class AdminHTTPListener {
         private final TemplateResover resolver;
         private final ContainerRepository cRepo;
         
+        public Route dashboard(String baseUri) {
+            return inner(
+                "dashboard", baseUri
+            );
+        }
+        
         public Route allContainer(String baseUri) {
             return inner(
                 "all-container", baseUri,
                 "containers", cRepo.findAll().stream().collect(Collectors.toMap(Container::getId, Container::getName))
             );
-        }
+        }       
+        
+        public Route newContainer(String baseUri) {
+            return inner(
+                "new-container", baseUri
+            );
+        }         
     
         public Route getContainer(String baseUri, UUID containerId) {
             return inner(
