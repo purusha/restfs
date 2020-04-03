@@ -1,4 +1,4 @@
-package it.at.restfs.http;
+package it.at.restfs.http.api;
 
 import static it.at.restfs.http.services.Complete.methodNotAllowed;
 import static it.at.restfs.http.services.PathHelper.build;

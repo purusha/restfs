@@ -27,7 +27,7 @@ import com.google.common.collect.Maps;
 
 import it.at.restfs.auth.AuthorizationChecker;
 import it.at.restfs.auth.AuthorizationChecker.Implementation;
-import it.at.restfs.http.AdminHTTPListener;
+import it.at.restfs.http.admin.AdminHTTPListener;
 import it.at.restfs.http.services.PathHelper;
 import it.at.restfs.storage.RootFileSystem;
 import it.at.restfs.storage.dto.AbsolutePath;

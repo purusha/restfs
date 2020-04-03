@@ -15,7 +15,7 @@ import com.google.common.collect.Iterables;
 
 import it.at.restfs.NoAuthBaseTest;
 import it.at.restfs.Operation;
-import it.at.restfs.event.Event;
+import it.at.restfs.event.EventView;
 import it.at.restfs.event.ShortTimeInMemory;
 import okhttp3.ResponseBody;
 
@@ -95,8 +95,8 @@ public class Statistics extends NoAuthBaseTest {
             ctx, buildMgmtCommand(Operation.LAST)
         ).get(0).string();                      
         
-        final String paths = mapper.<List<Event>>readValue(lastCalls, new TypeReference<List<Event>>() { }).stream()
-    		.map(e -> e.getRequest().getPath().getPath())
+        final String paths = mapper.<List<EventView>>readValue(lastCalls, new TypeReference<List<EventView>>() { }).stream()
+    		.map(e -> e.getRequest().getPath())
     		.collect(Collectors.joining(","));
         			
         Assert.assertEquals(

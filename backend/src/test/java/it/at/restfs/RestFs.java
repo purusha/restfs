@@ -2,7 +2,8 @@ package it.at.restfs;
 
 import java.util.Map;
 import java.util.UUID;
-import it.at.restfs.http.HTTPListener;
+
+import it.at.restfs.http.api.HTTPListener;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;

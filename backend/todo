@@ -1,3 +1,7 @@
+
+	for how many size/time is available a new container ? (100MB or 48hours)
+	
+	----------------------  
     
     oltre all'header X-containerId, dovrebbe essere possibile identificare più
     utenti legati alla stessa app android (x esempio)

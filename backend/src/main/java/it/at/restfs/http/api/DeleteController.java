@@ -1,4 +1,4 @@
-package it.at.restfs.http;
+package it.at.restfs.http.api;
 
 import com.google.inject.Inject;
 

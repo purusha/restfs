@@ -17,7 +17,7 @@ import akka.http.javadsl.model.HttpResponse;
 import akka.http.javadsl.server.directives.LogEntry;
 import it.at.restfs.actor.EventHandlerActor;
 import it.at.restfs.event.Event;
-import it.at.restfs.http.HTTPListener;
+import it.at.restfs.http.api.HTTPListener;
 import it.at.restfs.storage.dto.AbsolutePath;
 
 public class Filter implements BiFunction<HttpRequest, HttpResponse, LogEntry> {

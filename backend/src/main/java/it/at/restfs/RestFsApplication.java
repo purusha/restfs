@@ -12,8 +12,8 @@ import it.at.restfs.actor.WebHookSenderActor;
 import it.at.restfs.guice.GuiceActorUtils;
 import it.at.restfs.guice.GuiceExtension;
 import it.at.restfs.guice.GuiceExtensionImpl;
-import it.at.restfs.http.AdminHTTPListener;
-import it.at.restfs.http.HTTPListener;
+import it.at.restfs.http.admin.AdminHTTPListener;
+import it.at.restfs.http.api.HTTPListener;
 import it.at.restfs.storage.RootFileSystem;
 import lombok.extern.slf4j.Slf4j;
 
