@@ -1,7 +1,143 @@
 {{#partial "main"}}
 <div class="container-fluid">
-    <h1 class="mt-4">New container</h1>
+    <h1 class="mt-4">New container</h1>        
+    <div class="row">
+    	<div class="col-md-6">
+            
+            <div class="card card-primary">
+              <form role="form">
+                <div class="card-body">                
+                  <div class="form-group">
+                    <label for="containerName">Name</label>
+                    <input type="text" class="form-control" id="containerName" placeholder="">
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="containerId">Identifier</label>
+                    <input type="text" class="form-control" id="containerId" placeholder="">
+                  </div>                                   
+                  
+                  <div class="row form-group">
+                  	<div class="col">
+	                    <label>Storage type</label>
+	                    <select class="custom-select">
+	                      <option>file system</option>
+	                      <option>hdfs</option>
+	                    </select>
+                    </div>
+                    <div class="col">
+                    	<!-- use another to do the same stuff -->
+                    </div>
+                  </div>                  
+                  
+                  <div class="row form-group">
+                  	<div class="col">
+	                    <label>Authorization type</label>
+	                    <select class="custom-select" id="containerAuthorization">
+	                      <option>noAuth</option>
+	                      <option>oAuth2</option>
+	                      <option>masterPwd</option>
+	                      <option>basicAuth</option>
+	                    </select>
+                    </div>
+                    <div class="col">
+                    	
+                    	  <!-- when masterPwd -->
+		                  <div class="form-group" id="masterPwd">
+		                    <label for="masterPassword">Master password</label>
+		                    <input type="text" class="form-control" id="masterPassword" placeholder="">
+		                  </div>
+		                         
+		                 <!-- basicAuth -->
+		                 <div class="form-group" id="basicAuth-user">
+		                    <label for="user">User</label>
+		                    <input type="text" class="form-control" id="user" placeholder="">
+		                 </div>
+		                 <div class="form-group" id="basicAuth-password">
+		                    <label for="password">Password</label>
+		                    <input type="text" class="form-control" id="password" placeholder="">                    
+		                 </div>
+                    	
+                    </div>
+                  </div>                                             
+                  
+                  <div class="form-group">
+	                  <div class="form-check">
+	                    <input type="checkbox" class="form-check-input" id="containerStats">
+	                    <label class="form-check-label" for="containerStats">Enable stats</label>
+	                  </div>
+                  </div>
+                  
+                  <div class="form-group">
+					  <div class="form-check">
+	                    <input type="checkbox" class="form-check-input" id="containerWebHook">
+	                    <label class="form-check-label" for="containerWebHook">Enable web hook</label>
+	                  </div>    
+                  </div>        
+				</div>  
+                <div class="card-footer">
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+              </form>
+            </div>
+            
+        </div>
+    </div>        
 </div>
+{{/partial}}
+
+{{#partial "script"}}
+<script>
+
+	var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+
+	function name(length) {
+	   var result = '';
+	   
+	   for ( var i = 0; i < length; i++ ) {
+	      result += characters.charAt(Math.floor(Math.random() * characters.length));
+	   }
+	   
+	   return result;
+	}
+
+	function guid() {
+	  function s4() {
+	    return Math.floor((1 + Math.random()) * 0x10000)
+	      .toString(16)
+	      .substring(1);
+	  }
+	  
+	  return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+	}			
+	
+	$("#masterPwd").hide();
+	$("#basicAuth-user").hide();
+	$("#basicAuth-password").hide();
+	
+	$("#containerAuthorization").change(function() {		
+		$("#masterPwd").hide();
+		$("#basicAuth-user").hide();
+		$("#basicAuth-password").hide();
+		
+		if ($(this).val() == "noAuth") {
+			//XXX
+		} else if ($(this).val() == "oAuth2") {
+			//XXX
+		} else if ($(this).val() == "masterPwd") {
+			$('#masterPwd').show();
+		} else if ($(this).val() == "basicAuth") {
+			$("#basicAuth-user").show();
+			$("#basicAuth-password").show();
+		}		
+	});
+	
+	$(document).ready(function() {
+		$("#containerId").val(guid());
+		$("#containerName").val(name(4) + " " + name(6));
+	});	
+
+</script>
 {{/partial}}
 
 {{> base-template}}
