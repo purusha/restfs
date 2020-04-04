@@ -28,7 +28,8 @@ public class PageResolver {
     
     public Route dashboard(String baseUri) {
         return inner(
-            "dashboard", baseUri
+            "dashboard", baseUri,
+            "dashboard-data", cRepo.getDashboardData()
         );
     }
     

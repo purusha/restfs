@@ -19,6 +19,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 
+import it.at.restfs.actor.DashboardDataCollectorActor.ContainerData;
 import it.at.restfs.auth.MasterPassword;
 import it.at.restfs.event.EventView;
 import it.at.restfs.storage.dto.Container;
@@ -30,7 +31,9 @@ public class FileSystemContainerRepository implements ContainerRepository {
     private final static String WEBHOOK_PREFIX = "WH-";		//folder
     private final static String LAST_CALL_PREFIX = "LC-";	//file
     private final static String STATISTICS_PREFIX = "S-";	//file
-        
+       
+    private final static String CONTAINER_DATA = "CONTAINER_DATA";
+    
     /*
 	
 	    TODO
@@ -171,6 +174,24 @@ public class FileSystemContainerRepository implements ContainerRepository {
         
         return mapper.<Map<Integer, Long>>readValue(lastCalls, new TypeReference<Map<Integer, Long>>() { });
 	}
+    
+    @SneakyThrows
+	@Override
+    public void saveDashboardData(List<ContainerData> data) {
+    	mapper.writeValue(buildContainerData(), data);
+    }
+    
+    @SneakyThrows
+	@Override
+    public List<ContainerData> getDashboardData() {
+    	File buildContainerData = buildContainerData();
+    	
+    	if (! buildContainerData.exists()) {
+            return Lists.newArrayList();
+        }    	
+    	
+    	return mapper.<List<ContainerData>>readValue(buildContainerData, new TypeReference<List<ContainerData>>() { });
+    }
 
     private File buildContainer(UUID container) {
     	return rfs.fileOf(CONTAINER_PREFIX, container);
@@ -186,5 +207,10 @@ public class FileSystemContainerRepository implements ContainerRepository {
     
     private File buildStatistics(UUID container) {
     	return rfs.fileOf(STATISTICS_PREFIX, container);
+    }  
+    
+    private File buildContainerData() {
+    	return rfs.fileOf(CONTAINER_DATA);
     }    
+    
 }

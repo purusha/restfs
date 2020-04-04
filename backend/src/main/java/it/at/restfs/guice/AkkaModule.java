@@ -150,7 +150,7 @@ public class AkkaModule implements Module {
                     da quando uso la direttiva completeOKWithFuture negli endpoint http
                     se ricevo un errore ... tutte le exception sono wrappate da una CompletionException
                     
-                    questo mi obbliga a estendere un il normale ExceptionHandler
+                    questo mi obbliga a estendere il normale ExceptionHandler
                     andando a guardare (solo nel caso di CompletionException) la causa vera !!?
                     
                  */

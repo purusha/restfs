@@ -59,7 +59,11 @@ public class RootFileSystem {
 	public File fileOf(String prefix, UUID container) {
         return new File(root + File.separator + prefix + container);
     }
- 
+
+	public File fileOf(String name) {
+        return new File(root + File.separator + name);
+    }
+	
 	public Path pathOf(String prefix, UUID container) {
         return Paths.get(root + File.separator + prefix + container);
     }	

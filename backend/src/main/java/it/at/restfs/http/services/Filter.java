@@ -34,7 +34,7 @@ public class Filter implements BiFunction<HttpRequest, HttpResponse, LogEntry> {
         final String containerId = request.getHeader(HTTPListener.X_CONTAINER).get().value();
         final AbsolutePath path = getPathString(request.getUri());
         final String operation = request.getUri().query().get(HTTPListener.OP).orElse(null);   
-                
+        
         eventHandler.tell(        
     		new Event(
         		build(UUID.fromString(containerId), path, operation), 

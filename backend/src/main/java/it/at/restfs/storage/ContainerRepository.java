@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import it.at.restfs.actor.DashboardDataCollectorActor.ContainerData;
 import it.at.restfs.event.EventView;
 import it.at.restfs.storage.dto.Container;
 
@@ -32,5 +33,9 @@ public interface ContainerRepository {
     
     //HttpStatusCode => NumberOf
     Map<Integer, Long> getStatistics(UUID container); 
+    
+    void saveDashboardData(List<ContainerData> data);
+    
+    List<ContainerData> getDashboardData();
 
 }

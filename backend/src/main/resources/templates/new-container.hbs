@@ -5,7 +5,7 @@
     	<div class="col-md-6">
             
             <div class="card card-primary">
-              <form role="form">
+              <form role="form" action="{{baseUri}}restfs/v1/containers">
                 <div class="card-body">                
                   <div class="form-group">
                     <label for="containerName">Name</label>
@@ -48,7 +48,7 @@
 		                    <input type="text" class="form-control" id="masterPassword" placeholder="">
 		                  </div>
 		                         
-		                 <!-- basicAuth -->
+		                 <!-- when basicAuth -->
 		                 <div class="form-group" id="basicAuth-user">
 		                    <label for="user">User</label>
 		                    <input type="text" class="form-control" id="user" placeholder="">

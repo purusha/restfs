@@ -54,7 +54,7 @@ public class HTTPListener {
     public static final String AUTHORIZATION = "Authorization";
     public static final String OP = "op";
     
-    private final static BiFunction<HttpRequest, List<Rejection>, LogEntry> REJ = (request, rejections) ->             
+    private final static BiFunction<HttpRequest, List<Rejection>, LogEntry> REJ = (request, rejections) ->    
         LogEntry.create(
             rejections
                 .stream()
@@ -162,6 +162,5 @@ public class HTTPListener {
             
         );    	
     }
-            
         
 }
