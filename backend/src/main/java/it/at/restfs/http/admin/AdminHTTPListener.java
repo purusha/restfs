@@ -1,6 +1,7 @@
 package it.at.restfs.http.admin;
 
 import static akka.event.Logging.InfoLevel;
+import static akka.http.javadsl.server.Directives.complete;
 import static akka.http.javadsl.server.Directives.extractUri;
 import static akka.http.javadsl.server.Directives.formFieldMap;
 import static akka.http.javadsl.server.Directives.get;
@@ -10,7 +11,6 @@ import static akka.http.javadsl.server.Directives.logRequestResult;
 import static akka.http.javadsl.server.Directives.pathEndOrSingleSlash;
 import static akka.http.javadsl.server.Directives.pathPrefix;
 import static akka.http.javadsl.server.Directives.post;
-import static akka.http.javadsl.server.Directives.redirect;
 import static akka.http.javadsl.server.Directives.route;
 import static akka.http.javadsl.server.PathMatchers.segment;
 import static akka.http.javadsl.server.PathMatchers.uuidSegment;
@@ -39,10 +39,10 @@ import akka.actor.ActorSystem;
 import akka.http.javadsl.ConnectHttp;
 import akka.http.javadsl.Http;
 import akka.http.javadsl.ServerBinding;
+import akka.http.javadsl.marshallers.jackson.Jackson;
 import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.HttpResponse;
 import akka.http.javadsl.model.StatusCodes;
-import akka.http.javadsl.model.Uri;
 import akka.http.javadsl.server.ExceptionHandler;
 import akka.http.javadsl.server.Rejection;
 import akka.http.javadsl.server.Route;
@@ -60,7 +60,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Singleton
 public class AdminHTTPListener {
-    
+	
     /*
         XXX how are protected this endpoints ?
      */
@@ -297,8 +297,9 @@ public class AdminHTTPListener {
         /*
 	    	END Provisioning actions: please extract a service !!?
 	     */
-        
-        return redirect(Uri.create("http://" + host + ":" + port + "/" + CONTAINERS), StatusCodes.SEE_OTHER);
+                        
+        //return redirect(Uri.create("http://" + host + ":" + port + "/" + CONTAINERS), StatusCodes.SEE_OTHER);
+        return complete(StatusCodes.CREATED, container, Jackson.<Container>marshaller());
     }
         
     private String getOrDefault(String value, String defaultValue) {
