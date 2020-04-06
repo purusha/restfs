@@ -62,9 +62,10 @@
 	</div>		
 											
 </div>
+{{/partial}}
+                    
+{{#partial "script"}}
 
-<script>	
-	
 	window.addEventListener('load', function(){
 	    document.querySelectorAll("pre > code").forEach(function(x) { 
 	    	console.log(x);
@@ -72,9 +73,7 @@
 	    	x.innerHTML = prettyPrintJson.toHtml(JSON.parse(x.innerHTML));		    	
 		});
 	});		
-	
-</script>
+
 {{/partial}}
-                    
 
 {{> base-template}}
