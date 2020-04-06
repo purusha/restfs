@@ -32,8 +32,8 @@ public class FileSystemContainerRepository implements ContainerRepository {
     private final static String LAST_CALL_PREFIX = "LC-";	//file
     private final static String STATISTICS_PREFIX = "S-";	//file
        
-    private final static String CONTAINER_DATA = "CONTAINER_DATA";
-    
+    private final static String CONTAINERS_DASHBOARD = "CONTAINERS_DASHBOARD";
+    	
     /*
 	
 	    TODO
@@ -178,13 +178,13 @@ public class FileSystemContainerRepository implements ContainerRepository {
     @SneakyThrows
 	@Override
     public void saveDashboardData(List<ContainerData> data) {
-    	mapper.writeValue(buildContainerData(), data);
+    	mapper.writeValue(buildContainersData(), data);
     }
     
     @SneakyThrows
 	@Override
     public List<ContainerData> getDashboardData() {
-    	File buildContainerData = buildContainerData();
+    	File buildContainerData = buildContainersData();
     	
     	if (! buildContainerData.exists()) {
             return Lists.newArrayList();
@@ -209,8 +209,8 @@ public class FileSystemContainerRepository implements ContainerRepository {
     	return rfs.fileOf(STATISTICS_PREFIX, container);
     }  
     
-    private File buildContainerData() {
-    	return rfs.fileOf(CONTAINER_DATA);
+    private File buildContainersData() {
+    	return rfs.fileOf(CONTAINERS_DASHBOARD);
     }    
     
 }

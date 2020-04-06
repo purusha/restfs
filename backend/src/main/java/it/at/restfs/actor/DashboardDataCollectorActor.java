@@ -3,10 +3,11 @@ package it.at.restfs.actor;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -17,6 +18,7 @@ import akka.actor.ActorRef;
 import it.at.restfs.guice.GuiceAbstractActor;
 import it.at.restfs.storage.ContainerRepository;
 import it.at.restfs.storage.RootFileSystem;
+import it.at.restfs.storage.Storage;
 import it.at.restfs.storage.dto.AbsolutePath;
 import it.at.restfs.storage.dto.AssetType;
 import lombok.Getter;
@@ -32,7 +34,7 @@ public class DashboardDataCollectorActor extends GuiceAbstractActor {
 	/*
 		XXX this implementation make a count of containers that has been configured with Storage.FS 
 		XXX use a linux command to do its work
-		XXX save last N execution ... for build dashboard with wide range execution data
+		TODO save last N execution ... for build dashboard with wide range execution data
 	 */
 	
 	private final static String DO = "do";
@@ -59,11 +61,12 @@ public class DashboardDataCollectorActor extends GuiceAbstractActor {
             	final Stopwatch stopwatch = Stopwatch.createStarted();            	
             	
             	final List<ContainerData> data = cRepo.findAll().stream()
-            		.map(c -> {
-            			return new ContainerData(
-        					c.getId(), count(c.getId(), AssetType.FILE), count(c.getId(), AssetType.FOLDER), cRepo.getStatistics(c.getId())
-    					);
-            		})
+        			.filter(c -> StringUtils.equals(Storage.Implementation.FS.key, c.getStorage()))
+            		.map(c -> new ContainerData(
+    					c.getId(), 
+    					count(c.getId(), AssetType.FILE), 
+    					count(c.getId(), AssetType.FOLDER)
+					))
             		.collect(Collectors.toList());
             	            	
             	cRepo.saveDashboardData(data);
@@ -103,26 +106,21 @@ public class DashboardDataCollectorActor extends GuiceAbstractActor {
 	}
 
 	@Getter
-	public static class ContainerData {
-		
+	public static class ContainerData {		
 		private final UUID containerId;
 		private final Long files;
 		private final Long folders;
-		private final Map<Integer, Long> stats;		
 		
 	    @JsonCreator
 	    public ContainerData(
 	        @JsonProperty("containerId") UUID containerId, 
 	        @JsonProperty("files") Long files,
-	        @JsonProperty("folders") Long folders,
-	        @JsonProperty("stats") Map<Integer, Long> stats
+	        @JsonProperty("folders") Long folders
 	    ) {
 	    	this.containerId = containerId;
 	    	this.files = files;
 	    	this.folders = folders;
-	    	this.stats = stats;
-	    }    
-		
+	    }    		
 	}
 
 }

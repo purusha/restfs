@@ -74,7 +74,7 @@
                             <th>Container ID</th>
                             <th>Number of files</th>
                             <th>Number of folders</th>
-                            <th>Stats</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tfoot>
@@ -82,16 +82,21 @@
                             <th>Container ID</th>
                             <th>Number of files</th>
                             <th>Number of folders</th>
-                            <th>Stats</th>
+                            <th></th>
                         </tr>
                     </tfoot>
                     <tbody>
                     {{#each dashboard-data}}
                     	<tr>
-                            <td>{{containerId}}</td>
+                            <td>
+                            	<a class="small" href="{{baseUri}}containers/{{containerId}}">{{containerId}}</a>
+                        	</td>
                             <td>{{files}}</td>
                             <td>{{folders}}</td>
-                            <td>{{stats}}</td>                    	
+                            <td>                            
+                            	<button type="button" class="btn btn-warning btn-sm">Disable</button>
+								<button type="button" class="btn btn-danger btn-sm">Purge</button>								                            	                           
+                            </td>                    	
                     	</tr>
                     {{/each}}  
                     </tbody>
