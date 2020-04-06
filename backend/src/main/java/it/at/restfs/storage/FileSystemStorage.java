@@ -1,7 +1,9 @@
 package it.at.restfs.storage;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -183,6 +185,31 @@ public class FileSystemStorage implements Storage {
         return extractSubpath(targetPath, container);
     }
     
+
+	/*
+
+		try using tree command instead of find
+		
+		$ tree <directory>
+		
+		3 directories, 3 files		
+		
+	 */
+	
+	@SneakyThrows
+	@Override	
+	public Long count(UUID id, AssetType asset) {		
+		final String path = rfs.containerPath(id, AbsolutePath.EMPTY).toFile().getAbsolutePath();		
+		final String resourceType =  AssetType.FILE == asset ? "f" : "d";
+	
+		final String[] params = { "/bin/sh", "-c", "find " + path + " -type " + resourceType + " | wc -l" };
+		final Process process = Runtime.getRuntime().exec(params);
+		
+		try(BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+			return Long.valueOf(reader.readLine().trim());
+		}
+	}
+	
     private String extractSubpath(Path path, UUID container) {
         return StringUtils.substringAfter(path.toFile().getAbsolutePath(), container.toString());
     }

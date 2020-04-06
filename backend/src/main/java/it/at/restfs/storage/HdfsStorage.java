@@ -101,4 +101,10 @@ public class HdfsStorage implements Storage {
 		return null;
 	}
 
+	@Override
+	public Long count(UUID id, AssetType asset) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -1,5 +1,7 @@
 package it.at.restfs.storage;
 
+import java.util.UUID;
+
 import it.at.restfs.storage.dto.AbsolutePath;
 import it.at.restfs.storage.dto.AssetType;
 import it.at.restfs.storage.dto.FileStatus;
@@ -38,5 +40,7 @@ public interface Storage {
     String rename(AbsolutePath path, AbsolutePath target);
 
     String move(AbsolutePath path, AbsolutePath target);
+    
+    Long count(UUID id, AssetType asset);
 
 }

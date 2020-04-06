@@ -214,12 +214,13 @@ public class AdminHTTPListener {
         );
     }
 
-    /*
-		START Provisioning actions: please extract a service !!?
-	 */    
     private Route createContainer(Map<String, String> params) {
     	
-        final String name = getOrDefault(params.get("name"), GENERATOR.generate(12));
+        /*
+    		START Provisioning actions: please extract a service !!?
+    	 */    
+
+    	final String name = getOrDefault(params.get("name"), GENERATOR.generate(12));
         final UUID id = UUID.fromString(getOrDefault(params.get("id"), UUID.randomUUID().toString()));
         final Boolean statsEnabled = Boolean.valueOf(getOrDefault(params.get("statsEnabled"), Boolean.FALSE.toString()));
         final Boolean webHookEnabled = Boolean.valueOf(getOrDefault(params.get("webHookEnabled"), Boolean.FALSE.toString()));        
