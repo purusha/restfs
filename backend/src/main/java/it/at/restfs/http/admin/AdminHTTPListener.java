@@ -160,6 +160,18 @@ public class AdminHTTPListener {
 	                                    )
 	                                )
 	                            ),
+
+	                            pathPrefix(uuidSegment(), (UUID containerId) ->
+	                            	pathPrefix(segment("edit"), () ->
+		                                pathEndOrSingleSlash(() ->
+		                                    get(() ->
+		                                        route(
+		                                            pageResolver.editContainer(uriResolver(uri), containerId)
+		                                        )
+		                                    )
+		                                )
+	                                )
+	                            ),
 	                            
 	                            pathPrefix(segment("new"), () ->
 		                            pathEndOrSingleSlash(() ->
@@ -197,21 +209,35 @@ public class AdminHTTPListener {
                         
                         //api
                         pathPrefix(segment(APP_NAME), () ->
-                            pathPrefix(segment(VERSION), () -> {                    
-                                return pathPrefix(segment(CONTAINERS), () ->
-                                    post(() ->
-                                        formFieldMap((Map<String, String> map) ->
-                                            createContainer(map)
-                                        )
+                            pathPrefix(segment(VERSION), () ->                     
+                                pathPrefix(segment(CONTAINERS), () ->
+                                	route(
+                                			
+	                                    post(() ->
+	                                        formFieldMap((Map<String, String> map) ->
+	                                        	createContainer(map)
+	                                        )
+	                                    ),
+
+	                                    patch(() ->
+	                                        formFieldMap((Map<String, String> map) ->
+	                                        	updateContainer(map)
+	                                        )
+	                                    )
+	                                    
                                     )
-                                );
-                            })
-                        )                    
+                                )
+                            )
+                        )
                         
                     )
                 )
             )
         );
+    }
+    
+    private Route updateContainer(Map<String, String> params) {
+    	return null;
     }
 
     private Route createContainer(Map<String, String> params) {

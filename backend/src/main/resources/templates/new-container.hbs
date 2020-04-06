@@ -1,11 +1,13 @@
 {{#partial "main"}}
 <div class="container-fluid">
-    <h1 class="mt-4">New container</h1>        
+	<h1 class="mt-4"> 
+		{{#if container}}Edit {{else}}New {{/if}}container
+	</h1>
     <div class="row">
     	<div class="col-md-6">
-            
+    	
             <div class="card card-primary">
-              <form role="form" action="{{baseUri}}restfs/v1/containers" method="POST">
+              <form role="form" action="{{baseUri}}restfs/v1/containers" method="{{#if container}}PATCH{{else}}POST{{/if}}">
                 <div class="card-body">                
                   <div class="form-group">
                     <label for="containerName">Name</label>
@@ -14,7 +16,7 @@
                   
                   <div class="form-group">
                     <label for="containerId">Identifier</label>
-                    <input type="text" class="form-control" id="containerId" name="id">
+                    <input type="text" class="form-control" id="containerId" name="id" {{#if container}} readonly="readonly" {{/if}} >
                   </div>                                   
                   
                   <div class="row form-group">
@@ -43,17 +45,17 @@
                     <div class="col">
                     	
                     	  <!-- when masterPwd -->
-		                  <div class="form-group" id="masterPwd">
+		                  <div class="form-group" id="masterPwd" style="display: none;">
 		                    <label for="masterPassword">Master password</label>
 		                    <input type="text" class="form-control" id="masterPassword" name="MASTER_PWD">
 		                  </div>
 		                         
 		                 <!-- when basicAuth -->
-		                 <div class="form-group" id="basicAuth-user">
+		                 <div class="form-group" id="basicAuth-user" style="display: none;">
 		                    <label for="user">User</label>
 		                    <input type="text" class="form-control" id="user" name="user">
 		                 </div>
-		                 <div class="form-group" id="basicAuth-password">
+		                 <div class="form-group" id="basicAuth-password" style="display: none;">
 		                    <label for="password">Password</label>
 		                    <input type="text" class="form-control" id="password" name="pwd">                    
 		                 </div>
@@ -110,31 +112,31 @@
 	  return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 	}			
 	
-	$("#masterPwd").hide();
-	$("#basicAuth-user").hide();
-	$("#basicAuth-password").hide();
-	
 	$("#containerAuthorization").change(function() {		
 		$("#masterPwd").hide();
 		$("#basicAuth-user").hide();
 		$("#basicAuth-password").hide();
 		
-		if ($(this).val() == "noAuth") {
+		if ($(this).val() == "NO_AUTH") {
 			//XXX
-		} else if ($(this).val() == "oAuth2") {
+		} else if ($(this).val() == "OAUTH2") {
 			//XXX
-		} else if ($(this).val() == "masterPwd") {
+		} else if ($(this).val() == "MASTER_PWD") {
 			$('#masterPwd').show();
-		} else if ($(this).val() == "basicAuth") {
+		} else if ($(this).val() == "BASIC_AUTH") {
 			$("#basicAuth-user").show();
 			$("#basicAuth-password").show();
 		}		
 	});
 	
-	$(document).ready(function() {
-		$("#containerId").val(guid());
-		$("#containerName").val(name(4) + " " + name(6));
-	});	
+	{{#unless container}}
+	
+		$(document).ready(function() {
+			$("#containerId").val(guid());
+			$("#containerName").val(name(4) + " " + name(6));
+		});	
+	
+	{{/unless}}
 
 {{/partial}}
 

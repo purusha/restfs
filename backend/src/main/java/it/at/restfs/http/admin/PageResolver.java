@@ -15,16 +15,20 @@ import com.google.inject.Singleton;
 import akka.http.javadsl.server.Route;
 import it.at.restfs.storage.ContainerRepository;
 import it.at.restfs.storage.dto.Container;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Singleton    
-@AllArgsConstructor(onConstructor = @__({ @Inject }))
 public class PageResolver {
     
     private final TemplateResover resolver;
     private final ContainerRepository cRepo;
+    
+    @Inject
+    public PageResolver(TemplateResover resolver, ContainerRepository cRepo) {
+    	this.resolver = resolver;
+    	this.cRepo = cRepo;
+	}
     
     public Route dashboard(String baseUri) {
         return inner(
@@ -47,11 +51,26 @@ public class PageResolver {
     }         
 
     public Route getContainer(String baseUri, UUID containerId) {
+    	if (! cRepo.exist(containerId)) {
+    		return inner("404", baseUri);
+    	}
+    	
         return inner(
             "get-container", baseUri,
             "container", cRepo.load(containerId),
             "containerStatistics", cRepo.getStatistics(containerId),
             "containerCalls", cRepo.getCalls(containerId)
+        );
+    }
+
+    public Route editContainer(String baseUri, UUID containerId) {
+    	if (! cRepo.exist(containerId)) {
+    		return inner("404", baseUri);
+    	}
+    	
+    	return inner(
+            "new-container", baseUri,
+            "container", cRepo.load(containerId)
         );
     }
     
