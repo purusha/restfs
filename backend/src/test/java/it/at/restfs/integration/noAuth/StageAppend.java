@@ -11,11 +11,11 @@ import org.junit.Test;
 
 import com.google.common.collect.Iterables;
 
-import it.at.restfs.MasterPwdBaseTest;
+import it.at.restfs.NoAuthBaseTest;
 import it.at.restfs.Operation;
 import okhttp3.ResponseBody;
 
-public class StageAppend extends MasterPwdBaseTest {  
+public class StageAppend extends NoAuthBaseTest {  
     
     private static final String ALL_FALL = "All fall gala hall this\\is/a%test\t_~!@#$%^&*()dude";
     private static final String TEXT = "my body";

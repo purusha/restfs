@@ -18,6 +18,7 @@ import it.at.restfs.IntegrationResolver;
 import it.at.restfs.MasterPwdBaseTest;
 import it.at.restfs.NoAuthBaseTest;
 import it.at.restfs.OSFeatures;
+import it.at.restfs.auth.AuthorizationChecker.Implementation;
 import it.at.restfs.http.services.PathHelper;
 
 public class Token {
@@ -48,7 +49,7 @@ public class Token {
 	    public void tokenWithCorrectAuth() throws Exception {            	
 	        final String response = callToken(getContainer(), Optional.of(getFirstPassword()));
 	        
-	        matchEverywhere("\"type\":\"masterPwd\",\"ttl\"" , response);	        	       
+	        matchEverywhere("\"type\":\"" + Implementation.MASTER_PWD.name() + "\",\"ttl\"" , response);	        	       
 	    }
 	    
 	    @Test

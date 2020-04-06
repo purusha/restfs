@@ -93,9 +93,10 @@
                         	</td>
                             <td>{{files}}</td>
                             <td>{{folders}}</td>
-                            <td>                            
-                            	<button type="button" class="btn btn-warning btn-sm">Disable</button>
-								<button type="button" class="btn btn-danger btn-sm">Purge</button>								                            	                           
+                            <td>
+								<a href="{{baseUri}}containers/{{containerId}}/edit" type="button" class="btn btn-outline-success btn-sm ml-2 mr-2" role="button">Edit</a>
+								<a href="{{baseUri}}containers/{{containerId}}/disable" type="button" class="btn btn-outline-warning btn-sm ml-2 mr-2" role="button">Disable</a>
+								<button type="button" class="btn btn-outline-danger btn-sm ml-2 mr-2">Delete</button>
                             </td>                    	
                     	</tr>
                     {{/each}}  

@@ -67,7 +67,7 @@ public class MangementController implements Controller {
 		final Config authConf = configResolver.get(c);
 		
 		if (ctx.getAuthorization().isPresent() && StringUtils.equals(
-			authConf.getString(Implementation.MASTER_PWD.k), ctx.getAuthorization().get()
+			authConf.getString(Implementation.MASTER_PWD.name()), ctx.getAuthorization().get()
 		)) {				
 			return withFuture(() -> token(authManager.generateTokenFor(c), Implementation.MASTER_PWD));
 		} else {
@@ -106,7 +106,7 @@ public class MangementController implements Controller {
 		
 		response.put("token", token);
 		response.put("ttl", String.valueOf(Integer.MAX_VALUE));
-		response.put("type", authType.k);
+		response.put("type", authType.name());
 		
 		return response;
 	}

@@ -240,7 +240,7 @@ public class AdminHTTPListener {
         
 			case MASTER_PWD: {
 				
-				final String pwd = params.get(AuthorizationChecker.Implementation.MASTER_PWD.k);
+				final String pwd = params.get(AuthorizationChecker.Implementation.MASTER_PWD.name());
 				
 				if (StringUtils.isBlank(pwd)) {
 					throw new RuntimeException("mandatory field not resolved for container: " + id);
@@ -248,7 +248,7 @@ public class AdminHTTPListener {
 				
 				configResolver.save(
 					container, 
-					Collections.singletonMap(AuthorizationChecker.Implementation.MASTER_PWD.k, pwd)
+					Collections.singletonMap(AuthorizationChecker.Implementation.MASTER_PWD.name(), pwd)
 				);
 				
 			}break;
@@ -266,7 +266,10 @@ public class AdminHTTPListener {
 				data.put("user", user);
 				data.put("pwd", pwd);
 				
-				configResolver.save(container, data);
+				configResolver.save(
+					container, 
+					data
+				);
 				
 			}break;
 			

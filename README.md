@@ -1,7 +1,7 @@
 # restfs
 Restfs exposes your file system as a rest api. Is not a static file server, but instead lets you browse stats, and manipulate files through arbitrary paths.  
 
-It is possible to manage multiple containers, each with its own "virtual" file system.  
+It is possible to manage multiple containers (multi tenant), each with its own "virtual" file system.  
 For this reason the X-Container header is mandatory in every single request.  
 Each container has its own method for authenticating requests; the available methods are:
 

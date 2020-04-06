@@ -157,8 +157,9 @@ public abstract class Stage {
     	fields.put("webHookEnabled", Boolean.TRUE.toString());
     	fields.put("authorization", ctx.getType().name());
     	
+    	//XXX do u rember Open-Close principle ???
     	if (ctx.getType() == Implementation.MASTER_PWD) {
-    		fields.put("masterPwd", ctx.getAuthHeader());
+    		fields.put(AuthorizationChecker.Implementation.MASTER_PWD.name(), ctx.getAuthHeader());
     	}
     	
         final Response<ResponseBody> execute = admin.create(AdminHTTPListener.CONTAINERS, fields).execute();
