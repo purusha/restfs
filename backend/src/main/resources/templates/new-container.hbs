@@ -7,16 +7,21 @@
     	<div class="col-md-6">
     	
             <div class="card card-primary">
-              <form role="form" action="{{baseUri}}restfs/v1/containers" method="{{#if container}}PATCH{{else}}POST{{/if}}">
+              <form role="form" action="{{baseUri}}restfs/v1/containers" method="POST">
+              
+              	{{#if container}}
+              		<input type="hidden" name="_method" value="patch" />
+              	{{/if}}
+              
                 <div class="card-body">                
                   <div class="form-group">
                     <label for="containerName">Name</label>
-                    <input type="text" class="form-control" id="containerName" name="name">
+                    <input type="text" class="form-control" id="containerName" name="name" {{#if container}} value="{{this.container.name}}" {{/if}}>
                   </div>
                   
                   <div class="form-group">
                     <label for="containerId">Identifier</label>
-                    <input type="text" class="form-control" id="containerId" name="id" {{#if container}} readonly="readonly" {{/if}} >
+                    <input type="text" class="form-control" id="containerId" name="id" {{#if container}} readonly="readonly" {{/if}} {{#if container}} value="{{this.container.id}}" {{/if}}>	
                   </div>                                   
                   
                   <div class="row form-group">

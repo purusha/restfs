@@ -34,7 +34,6 @@ public class TemplateResover {
     
     public Template get(String name) throws IOException {
         //XXX NOT Recompile mode            	
-
     	/*
         return mapping.computeIfAbsent(name, s -> {
             try {
@@ -45,7 +44,6 @@ public class TemplateResover {
             }
         });
     	*/
-    	
         //XXX Recompile mode
         return handlebars().compile(name); 
     }
