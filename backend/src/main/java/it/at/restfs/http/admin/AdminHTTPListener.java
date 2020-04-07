@@ -200,27 +200,25 @@ public class AdminHTTPListener {
                         ),
                         
                         //api
-                        pathPrefix(segment(APP_NAME), () ->
-                            pathPrefix(segment(VERSION), () ->                     
-                                pathPrefix(segment(CONTAINERS), () ->
-                                	route(
-	                                    post(() ->
-	                                        formFieldMap((Map<String, String> map) -> {
-	                                        	final Container c;
-	                                        	
-	                                        	if (map.containsKey("_method") && StringUtils.equals(map.get("_method"), "patch")) {
-	                                        		c = provisioning.updateContainer(map);
-	                                        	} else {
-	                                        		c = provisioning.createContainer(map);
-	                                        	}
-	                                        	
-	                                        	return redirect(Uri.create("http://" + host + ":" + port + "/" + CONTAINERS + "/" + c.getId()), StatusCodes.SEE_OTHER);
-	                                        })
-	                                    )
-                                    )
-                                )
+                        pathPrefix(segment(APP_NAME), () -> pathPrefix(segment(VERSION), () -> pathPrefix(segment(CONTAINERS), () ->                        	
+                            post(() ->
+                                formFieldMap((Map<String, String> map) -> {
+                                	final Container c;
+                                	
+                                	//XXX try to think about another way to do this
+                                	if (map.containsKey("_method") && StringUtils.equals(map.get("_method"), "patch")) {
+                                		c = provisioning.updateContainer(map);
+                                	} else {
+                                		c = provisioning.createContainer(map);
+                                	}
+                                	
+                                	return redirect(
+                            			Uri.create("http://" + host + ":" + port + "/" + CONTAINERS + "/" + c.getId()), 
+                            			StatusCodes.SEE_OTHER
+                        			);
+                                })
                             )
-                        )
+                        )))
                         
                     )
                 )

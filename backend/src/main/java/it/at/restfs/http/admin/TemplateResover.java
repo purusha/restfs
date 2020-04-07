@@ -3,6 +3,7 @@ package it.at.restfs.http.admin;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -27,14 +28,13 @@ public class TemplateResover {
     private final static ObjectMapper MAPPER = new ObjectMapper();
     
     //XXX NOT Recompile mode
-    //private final Map<String, Template> mapping = new HashMap<>();
+    private final Map<String, Template> mapping = new HashMap<>();
     
     //XXX NOT Recompile mode
-    //private final Handlebars handlebars = handlebars();
+    private final Handlebars handlebars = handlebars();
     
     public Template get(String name) throws IOException {
         //XXX NOT Recompile mode            	
-    	/*
         return mapping.computeIfAbsent(name, s -> {
             try {
                 return handlebars.compile(s);
@@ -43,9 +43,9 @@ public class TemplateResover {
                 return null;
             }
         });
-    	*/
+
         //XXX Recompile mode
-        return handlebars().compile(name); 
+        //return handlebars().compile(name); 
     }
     
     /*
